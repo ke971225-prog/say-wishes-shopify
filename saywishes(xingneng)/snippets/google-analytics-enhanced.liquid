@@ -1,0 +1,163 @@
+{% comment %}
+  Google Analytics 4 增强配置
+  支持电商跟踪、自定义事件和转化优化
+{% endcomment %}
+
+{% if settings.google_analytics_id != blank %}
+<!-- Google Analytics 4 Enhanced -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.google_analytics_id }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  
+  // 基础配置
+  gtag('config', '{{ settings.google_analytics_id }}', {
+    {% if settings.ga_enhanced_ecommerce %}enhanced_ecommerce: true,{% endif %}
+    {% if settings.ga_anonymize_ip %}anonymize_ip: true,{% endif %}
+    {% if settings.ga_cookie_domain %}cookie_domain: '{{ settings.ga_cookie_domain }}',{% endif %}
+    send_page_view: true
+  });
+  
+  {% comment %} 电商事件跟踪 {% endcomment %}
+  {% if template contains 'product' %}
+    // 产品页面浏览
+    gtag('event', 'view_item', {
+      currency: '{{ cart.currency.iso_code }}',
+      value: {{ product.price | money_without_currency | remove: ',' }},
+      items: [{
+        item_id: '{{ product.id }}',
+        item_name: '{{ product.title | escape }}',
+        item_category: '{{ product.type | escape }}',
+        item_variant: '{{ product.selected_or_first_available_variant.title | escape }}',
+        price: {{ product.selected_or_first_available_variant.price | money_without_currency | remove: ',' }},
+        quantity: 1
+      }]
+    });
+  {% endif %}
+  
+  {% if template contains 'collection' %}
+    // 商品列表浏览
+    gtag('event', 'view_item_list', {
+      item_list_id: '{{ collection.id }}',
+      item_list_name: '{{ collection.title | escape }}'
+    });
+  {% endif %}
+  
+  {% comment %} 自定义事件跟踪 {% endcomment %}
+  // 视频播放跟踪
+  document.addEventListener('DOMContentLoaded', function() {
+    const videos = document.querySelectorAll('video');
+    videos.forEach(function(video) {
+      video.addEventListener('play', function() {
+        gtag('event', 'video_play', {
+          video_title: video.getAttribute('data-title') || 'Custom Video',
+          video_duration: video.duration || 0
+        });
+      });
+      
+      video.addEventListener('ended', function() {
+        gtag('event', 'video_complete', {
+          video_title: video.getAttribute('data-title') || 'Custom Video'
+        });
+      });
+    });
+    
+    // 自定义产品选项交互
+    const customOptions = document.querySelectorAll('.custom-option');
+    customOptions.forEach(function(option) {
+      option.addEventListener('change', function() {
+        gtag('event', 'custom_option_select', {
+          option_type: this.getAttribute('data-option-type'),
+          option_value: this.value
+        });
+      });
+    });
+    
+    // 表单提交跟踪
+    const forms = document.querySelectorAll('form[action*="cart"]');
+    forms.forEach(function(form) {
+      form.addEventListener('submit', function() {
+        gtag('event', 'add_to_cart', {
+          currency: '{{ cart.currency.iso_code }}',
+          value: parseFloat(form.querySelector('[name="price"]')?.value || 0)
+        });
+      });
+    });
+    
+    // 页面滚动深度跟踪
+    let scrollDepth = 0;
+    window.addEventListener('scroll', function() {
+      const currentDepth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      if (currentDepth > scrollDepth && currentDepth % 25 === 0) {
+        scrollDepth = currentDepth;
+        gtag('event', 'scroll_depth', {
+          scroll_depth: scrollDepth
+        });
+      }
+    });
+  });
+  
+  {% comment %} 购物车事件 {% endcomment %}
+  {% if template contains 'cart' %}
+    // 购物车页面浏览
+    gtag('event', 'view_cart', {
+      currency: '{{ cart.currency.iso_code }}',
+      value: {{ cart.total_price | money_without_currency | remove: ',' }},
+      items: [
+        {% for item in cart.items %}
+        {
+          item_id: '{{ item.product.id }}',
+          item_name: '{{ item.product.title | escape }}',
+          item_category: '{{ item.product.type | escape }}',
+          item_variant: '{{ item.variant.title | escape }}',
+          price: {{ item.price | money_without_currency | remove: ',' }},
+          quantity: {{ item.quantity }}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    });
+  {% endif %}
+  
+  {% comment %} 结账流程跟踪 {% endcomment %}
+  {% if checkout %}
+    gtag('event', 'begin_checkout', {
+      currency: '{{ checkout.currency }}',
+      value: {{ checkout.total_price | money_without_currency | remove: ',' }},
+      items: [
+        {% for line_item in checkout.line_items %}
+        {
+          item_id: '{{ line_item.product.id }}',
+          item_name: '{{ line_item.product.title | escape }}',
+          item_category: '{{ line_item.product.type | escape }}',
+          price: {{ line_item.price | money_without_currency | remove: ',' }},
+          quantity: {{ line_item.quantity }}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    });
+  {% endif %}
+  
+  {% comment %} 购买完成跟踪 {% endcomment %}
+  {% if template contains 'customers/order' and order %}
+    gtag('event', 'purchase', {
+      transaction_id: '{{ order.order_number }}',
+      currency: '{{ order.currency }}',
+      value: {{ order.total_price | money_without_currency | remove: ',' }},
+      shipping: {{ order.shipping_price | money_without_currency | remove: ',' }},
+      tax: {{ order.tax_price | money_without_currency | remove: ',' }},
+      items: [
+        {% for line_item in order.line_items %}
+        {
+          item_id: '{{ line_item.product.id }}',
+          item_name: '{{ line_item.product.title | escape }}',
+          item_category: '{{ line_item.product.type | escape }}',
+          price: {{ line_item.price | money_without_currency | remove: ',' }},
+          quantity: {{ line_item.quantity }}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    });
+  {% endif %}
+</script>
+{% endif %}

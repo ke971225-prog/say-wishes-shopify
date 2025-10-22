@@ -1,0 +1,76 @@
+Shopify 页面速度与 PageSpeed Insights 最佳实践与落地方案
+
+目标与核心指标
+- LCP（Largest Contentful Paint）：≤ 2.5s（首屏主要内容尽快可视）
+- INP（Interaction to Next Paint）：≤ 200ms（真实交互响应不拖沓）
+- CLS（Cumulative Layout Shift）：≤ 0.1（布局稳定不抖动）
+- 评估基准：以移动/桌面各自第 75 百分位达标为准（真实用户数据优先）
+- 页面权重（用于总体影响衡量）：首页 17%，产品页 40%，集合页 43%
+
+Shopify 主题性能最佳实践（官方方向）
+- 脚本加载：统一使用 `defer/async`，有执行顺序需求优先 `defer`，避免解析阻塞
+- JS 体量：尽量控制主包 ≤ 16KB（压缩后），非必要功能改为“交互时加载”（import on interaction）
+- 资源提示：每模板审慎使用 1–2 个 `preload`（关键样式或首屏主图），避免拥塞与过度提示
+- 托管与网络：尽量通过主题 `/assets`（Shopify CDN）提供资源，减少跨源连接，受益 HTTP/2 优先级
+- 质量工具：使用 Theme Check 检出大包 JS/CSS、阻塞脚本与远程资产问题；使用 Shopify 性能仪表板/报告持续监控
+
+图片与媒体优化
+- 首屏主图（常为 LCP）：
+  - `<img loading="eager" fetchpriority="high">` 提升优先级与下载排序，避免懒加载
+  - 响应式主图在 `<head>` 预加载：
+    `<link rel="preload" as="image" imagesrcset="..." imagesizes="...">`
+    用于 JS/背景图晚发现场景，确保更早请求，显著改善 LCP
+- 非首屏图片：统一 `loading="lazy"`，可配 `fetchpriority="low"`，减少与关键资源竞争
+- 尺寸与稳定：输出 `width/height` 或固定容器 `aspect-ratio`，预留空间防止 CLS
+- 合理格式与尺寸：优先 WebP/AVIF，提供 `srcset/sizes` 响应式源，配合 Shopify CDN 按需裁切与压缩
+
+第三方脚本与 App 管理
+- 仅在需要的页面加载 App（App Embed Blocks）；避免 App 直接改写主题代码，提升可维护性
+- 延迟非关键第三方（热图、聊天、营销）：改为首个用户交互（scroll/mousemove/touchstart/keydown）或 `requestIdleCallback` 注入
+- 精简跨源连接：仅为必要域使用 `preconnect/dns-prefetch`，过多会适得其反
+- 持续评估影响：按首页/产品/集合加权计算总体评分变化，量化第三方与 App 的真实影响
+
+INP（交互）专项优化
+- 拆分长任务：在回调中用调度切片（如 `setTimeout(0)`/scheduler），避免主线程长时间占用
+- 轻量事件处理：对滚动/触摸等监听设置 `passive: true`；对输入做防抖/节流；减少同步重排
+- DOM 更新优化：减少庞大同步 DOM 操作，避免强制布局与频繁回流；必要时批量更新/合并渲染
+- 降低依赖：移除不必要 JS，避免大型框架；能用原生 API 就不用库
+
+验证与测试流程
+- PSI（PageSpeed Insights）：
+  - 使用“Run with original URL”，以移动端为主，连续多次运行取均值
+  - 关注 LCP/INP/CLS 与辅助指标 TTFB/FCP/TBT，定位根因
+- WebPageTest：固定网络（如 4G）、地域与设备，分步 A/B 对比单项优化的前后变化
+- Search Console & CrUX：站点级真实用户数据监控，关注分组与趋势，优先修复“差/需改进”
+- Theme Check：在开发周期定期执行，修复解析阻塞、过大包体与远程资产问题
+- Shopify 性能仪表板/报告：结合线上真实表现，持续跟踪并回归验证
+
+落地实施清单（建议顺序：先 LCP → 阻塞资源 → 第三方延迟 → CLS → INP）
+- 首页 Hero 主图：改为 `eager + fetchpriority=high`；若由 JS 注入或为 CSS 背景，加响应式 `<link rel="preload">`
+- 产品页主图（LCP）：同上；确保主媒体容器有固定比例或尺寸，防 CLS
+- 集合/搜索首卡图：仅 `forloop.first` 使用 `fetchpriority=high`，其余保持 `lazy + low`
+- 非首屏图片：统一 `loading="lazy"`；合理 `srcset/sizes`；容器尺寸稳定
+- 第三方（Hotjar/聊天/营销）：首次交互或 `requestIdleCallback` 之后注入；必要时按页面启用
+- 脚本策略：全站 `defer/async`；有依赖序用 `defer`；减少内联同步脚本
+- 资源提示：每模板 ≤ 2 个关键 `preload`（优先关键 CSS + 主图），避免提示泛滥
+- 字体：关键字体审慎 `preload`；其余 `font-display: swap`，降低 FOIT 与潜在 CLS
+- 托管与网络：自有资源放 `/assets` 走 Shopify CDN；减少多域名与跨源开销
+- 质量校验：Theme Check/WPT/PSI 回归，确认 LCP/INP/CLS 达标并收敛
+
+参考链接（权威资料）
+- web.dev 核心网页指标与阈值：https://web.dev/articles/vitals
+- web.dev 阈值方法论：https://web.dev/articles/defining-core-web-vitals-thresholds
+- web.dev Fetch Priority（`fetchpriority` 提升 LCP）：https://web.dev/articles/fetch-priority
+- web.dev 预加载响应式图片（`imagesrcset`/`imagesizes`）：https://web.dev/articles/preload-responsive-images
+- Google Search 对 Core Web Vitals 与搜索的解释：https://developers.google.com/search/docs/appearance/core-web-vitals
+- Search Console 核心网页指标报告说明：https://support.google.com/webmasters/answer/9205520?hl=zh-CN
+- Shopify 主题性能最佳实践：https://shopify.dev/docs/storefronts/themes/best-practices/performance
+- Shopify Storefront Performance（加权评分与 App 影响）：https://shopify.dev/docs/apps/build/performance/storefront
+- Addy Osmani（预加载 Hero 图与 `fetchpriority` 的效果）：
+  - https://addyosmani.com/blog/preload-hero-images/
+  - https://addyosmani.com/blog/fetch-priority/
+
+注意与提醒
+- 不要滥用 `fetchpriority="high"`：仅对首屏关键图使用；过多高优先级会与关键资源竞争，反而拖慢
+- `preload` 要“少而精”：每模板 1–2 个关键资源，避免浪费带宽与优先级争夺
+- 真正目标是改善真实用户数据（CrUX/Search Console），实验室分数用来定位和回归验证

@@ -1,0 +1,268 @@
+{% comment %}
+  A/B测试框架
+  支持多种测试场景和转化优化
+{% endcomment %}
+
+{% if settings.ab_testing_enabled %}
+<script>
+  // A/B测试框架初始化
+  window.ABTestFramework = {
+    tests: {},
+    userSegment: null,
+    
+    // 初始化用户分组
+    init: function() {
+      this.userSegment = this.getUserSegment();
+      this.loadActiveTests();
+      this.trackTestExposure();
+    },
+    
+    // 获取用户分组（基于cookie或localStorage）
+    getUserSegment: function() {
+      let segment = localStorage.getItem('ab_user_segment');
+      if (!segment) {
+        // 基于用户ID或随机数生成稳定的分组
+        const userId = '{{ customer.id | default: "anonymous" }}';
+        const hash = this.hashCode(userId + document.location.hostname);
+        segment = Math.abs(hash) % 100; // 0-99的分组
+        localStorage.setItem('ab_user_segment', segment);
+      }
+      return parseInt(segment);
+    },
+    
+    // 简单哈希函数
+    hashCode: function(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // 转换为32位整数
+      }
+      return hash;
+    },
+    
+    // 加载活跃的测试配置
+    loadActiveTests: function() {
+      // 产品页面标题测试
+      this.tests.productTitle = {
+        name: 'Product Title Optimization',
+        variants: {
+          control: { weight: 50, title: 'original' },
+          variant_a: { weight: 25, title: 'emotional' },
+          variant_b: { weight: 25, title: 'benefit_focused' }
+        }
+      };
+      
+      // 购买按钮文案测试
+      this.tests.buyButton = {
+        name: 'Buy Button Text',
+        variants: {
+          control: { weight: 50, text: 'Add to Cart' },
+          variant_a: { weight: 25, text: 'Order Your Video Now' },
+          variant_b: { weight: 25, text: 'Create My Video' }
+        }
+      };
+      
+      // 价格展示测试
+      this.tests.priceDisplay = {
+        name: 'Price Display Format',
+        variants: {
+          control: { weight: 50, format: 'standard' },
+          variant_a: { weight: 25, format: 'crossed_out' },
+          variant_b: { weight: 25, format: 'value_emphasis' }
+        }
+      };
+      
+      // 社会证明测试
+      this.tests.socialProof = {
+        name: 'Social Proof Display',
+        variants: {
+          control: { weight: 50, show: false },
+          variant_a: { weight: 25, show: true, type: 'reviews' },
+          variant_b: { weight: 25, show: true, type: 'recent_orders' }
+        }
+      };
+    },
+    
+    // 获取测试变体
+    getVariant: function(testName) {
+      const test = this.tests[testName];
+      if (!test) return null;
+      
+      let cumulativeWeight = 0;
+      const randomValue = this.userSegment;
+      
+      for (const [variantName, config] of Object.entries(test.variants)) {
+        cumulativeWeight += config.weight;
+        if (randomValue < cumulativeWeight) {
+          return {
+            name: variantName,
+            config: config,
+            testName: testName
+          };
+        }
+      }
+      
+      // 默认返回控制组
+      return {
+        name: 'control',
+        config: test.variants.control,
+        testName: testName
+      };
+    },
+    
+    // 应用测试变体
+    applyVariant: function(testName, element) {
+      const variant = this.getVariant(testName);
+      if (!variant) return;
+      
+      switch (testName) {
+        case 'productTitle':
+          this.applyProductTitleVariant(variant, element);
+          break;
+        case 'buyButton':
+          this.applyBuyButtonVariant(variant, element);
+          break;
+        case 'priceDisplay':
+          this.applyPriceDisplayVariant(variant, element);
+          break;
+        case 'socialProof':
+          this.applySocialProofVariant(variant, element);
+          break;
+      }
+      
+      // 标记元素已应用测试
+      element.setAttribute('data-ab-test', testName);
+      element.setAttribute('data-ab-variant', variant.name);
+    },
+    
+    // 产品标题变体应用
+    applyProductTitleVariant: function(variant, element) {
+      const originalTitle = element.textContent;
+      
+      switch (variant.config.title) {
+        case 'emotional':
+          element.textContent = 'Create Unforgettable Memories with ' + originalTitle;
+          break;
+        case 'benefit_focused':
+          element.textContent = originalTitle + ' - Delivered in 24 Hours';
+          break;
+        // control保持原样
+      }
+    },
+    
+    // 购买按钮变体应用
+    applyBuyButtonVariant: function(variant, element) {
+      if (variant.config.text) {
+        element.textContent = variant.config.text;
+      }
+    },
+    
+    // 价格展示变体应用
+    applyPriceDisplayVariant: function(variant, element) {
+      switch (variant.config.format) {
+        case 'crossed_out':
+          const originalPrice = element.textContent;
+          const higherPrice = parseFloat(originalPrice.replace(/[^\d.]/g, '')) * 1.3;
+          element.innerHTML = `<span style="text-decoration: line-through; color: #999;">${higherPrice.toFixed(2)}</span> ${originalPrice}`;
+          break;
+        case 'value_emphasis':
+          element.style.fontSize = '1.2em';
+          element.style.fontWeight = 'bold';
+          element.style.color = '#e74c3c';
+          break;
+      }
+    },
+    
+    // 社会证明变体应用
+    applySocialProofVariant: function(variant, element) {
+      if (variant.config.show) {
+        element.style.display = 'block';
+        
+        if (variant.config.type === 'reviews') {
+          element.innerHTML = '⭐⭐⭐⭐⭐ Over 1,000 happy customers!';
+        } else if (variant.config.type === 'recent_orders') {
+          element.innerHTML = '🔥 3 people ordered this in the last hour';
+        }
+      } else {
+        element.style.display = 'none';
+      }
+    },
+    
+    // 跟踪测试曝光
+    trackTestExposure: function() {
+      // 发送测试曝光事件到分析工具
+      if (typeof gtag === 'function') {
+        for (const testName of Object.keys(this.tests)) {
+          const variant = this.getVariant(testName);
+          gtag('event', 'ab_test_exposure', {
+            test_name: testName,
+            variant_name: variant.name,
+            user_segment: this.userSegment
+          });
+        }
+      }
+    },
+    
+    // 跟踪转化事件
+    trackConversion: function(conversionType, value = null) {
+      const activeTests = document.querySelectorAll('[data-ab-test]');
+      
+      activeTests.forEach(element => {
+        const testName = element.getAttribute('data-ab-test');
+        const variantName = element.getAttribute('data-ab-variant');
+        
+        if (typeof gtag === 'function') {
+          gtag('event', 'ab_test_conversion', {
+            test_name: testName,
+            variant_name: variantName,
+            conversion_type: conversionType,
+            conversion_value: value,
+            user_segment: this.userSegment
+          });
+        }
+      });
+    }
+  };
+  
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', function() {
+    window.ABTestFramework.init();
+    
+    // 应用产品页面测试
+    {% if template contains 'product' %}
+      const productTitle = document.querySelector('.product__title, h1');
+      if (productTitle) {
+        window.ABTestFramework.applyVariant('productTitle', productTitle);
+      }
+      
+      const buyButtons = document.querySelectorAll('.btn--add-to-cart, [name="add"]');
+      buyButtons.forEach(button => {
+        window.ABTestFramework.applyVariant('buyButton', button);
+      });
+      
+      const priceElements = document.querySelectorAll('.price, .product__price');
+      priceElements.forEach(price => {
+        window.ABTestFramework.applyVariant('priceDisplay', price);
+      });
+      
+      const socialProofElements = document.querySelectorAll('.social-proof, .product-reviews-summary');
+      socialProofElements.forEach(element => {
+        window.ABTestFramework.applyVariant('socialProof', element);
+      });
+    {% endif %}
+    
+    // 跟踪转化事件
+    document.addEventListener('submit', function(e) {
+      if (e.target.matches('form[action*="cart"]')) {
+        window.ABTestFramework.trackConversion('add_to_cart');
+      }
+    });
+    
+    // 跟踪购买完成
+    {% if template contains 'customers/order' %}
+      window.ABTestFramework.trackConversion('purchase', {{ order.total_price | money_without_currency | remove: ',' }});
+    {% endif %}
+  });
+</script>
+{% endif %}

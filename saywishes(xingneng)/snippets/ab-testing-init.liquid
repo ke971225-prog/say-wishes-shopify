@@ -1,0 +1,166 @@
+{% comment %}
+  SayWishes A/B Testing Initialization Snippet
+  专为 wishesvideo.com 定制的 A/B 测试初始化代码
+  
+  使用方法:
+  在 theme.liquid 的 </head> 标签前添加:
+  {% render 'ab-testing-init' %}
+  
+  性能优化:
+  - 只有在启用 A/B 测试时才加载相关代码
+  - 使用 defer 属性避免阻塞页面渲染
+  - 在主题设置中可以完全关闭以提升性能
+{% endcomment %}
+
+{% comment %} 检查是否启用 A/B 测试 {% endcomment %}
+{% if settings.ab_test_enabled %}
+  {% comment %} 加载 A/B 测试 JavaScript 文件 {% endcomment %}
+  <script src="{{ 'ab-testing.js' | asset_url }}" defer></script>
+
+  {% comment %} A/B 测试初始化脚本 {% endcomment %}
+  <script>
+    // SayWishes A/B 测试配置
+    window.sayWishesABConfig = {
+      // 测试名称
+      testName: 'saywishes_hero_ab_test',
+      
+      // 是否启用调试模式
+      debug: {{ settings.ab_test_debug | default: false }},
+      
+      // 测试持续时间（小时）
+      testDuration: {{ settings.ab_test_duration | default: 24 }},
+      
+      // Google Analytics 跟踪ID
+      gaTrackingId: '{{ settings.google_analytics_id }}',
+      
+      // 当前页面信息
+      currentPage: {
+        url: '{{ request.url }}',
+        path: '{{ request.path }}',
+        template: '{{ template.name }}',
+        handle: '{{ handle | default: "" }}'
+      },
+      
+      // 用户信息
+      customer: {
+        {% if customer %}
+          id: {{ customer.id }},
+          email: '{{ customer.email }}',
+          tags: {{ customer.tags | json }}
+        {% else %}
+          id: null,
+          email: null,
+          tags: []
+        {% endif %}
+      },
+      
+      // 购物车信息
+      cart: {
+        itemCount: {{ cart.item_count }},
+        totalPrice: {{ cart.total_price | money_without_currency }},
+        currency: '{{ cart.currency.iso_code }}'
+      }
+    };
+
+    // 初始化 A/B 测试系统
+    document.addEventListener('DOMContentLoaded', function() {
+      // 确保 A/B 测试系统已加载
+      if (typeof window.sayWishesABTest !== 'undefined') {
+        // 设置配置
+        window.sayWishesABTest.config = window.sayWishesABConfig;
+        
+        // 如果是调试模式，输出配置信息
+        if (window.sayWishesABConfig.debug) {
+          console.log('SayWishes A/B Test Config:', window.sayWishesABConfig);
+          console.log('Current A/B Test Version:', window.sayWishesABTest.getVersion());
+        }
+        
+        // 跟踪页面加载事件
+        window.sayWishesABTest.trackEvent('page_loaded', {
+          template: window.sayWishesABConfig.currentPage.template,
+          customer_id: window.sayWishesABConfig.customer.id,
+          cart_items: window.sayWishesABConfig.cart.itemCount
+        });
+      }
+    });
+
+    // 为特定页面设置 A/B 测试跟踪
+    {% if template.name == 'index' %}
+      // 首页特定跟踪
+      document.addEventListener('DOMContentLoaded', function() {
+        // 跟踪首页访问
+        if (window.sayWishesABTest) {
+          window.sayWishesABTest.trackEvent('homepage_visit', {
+            referrer: document.referrer,
+            user_agent: navigator.userAgent.substring(0, 100)
+          });
+        }
+      });
+    {% endif %}
+
+    {% if template.name == 'product' %}
+      // 产品页面特定跟踪
+      document.addEventListener('DOMContentLoaded', function() {
+        if (window.sayWishesABTest) {
+          window.sayWishesABTest.trackEvent('product_page_visit', {
+            product_id: {{ product.id | default: 0 }},
+            product_title: '{{ product.title | default: "" | escape }}',
+            product_price: {{ product.price | default: 0 }},
+            product_available: {{ product.available | default: false }}
+          });
+        }
+      });
+    {% endif %}
+
+    {% if template.name == 'cart' %}
+      // 购物车页面特定跟踪
+      document.addEventListener('DOMContentLoaded', function() {
+        if (window.sayWishesABTest) {
+          window.sayWishesABTest.trackEvent('cart_page_visit', {
+            cart_total: {{ cart.total_price | money_without_currency }},
+            cart_items: {{ cart.item_count }}
+          });
+        }
+      });
+    {% endif %}
+
+    // 设置全局调试工具
+    window.abTestDebug = {
+      // 设置版本
+      setVersion: function(version) {
+        if (window.sayWishesABTest) {
+          window.sayWishesABTest.setVersion(version);
+          console.log('A/B Test version set to:', version);
+        }
+      },
+      
+      // 重置测试
+      reset: function() {
+        if (window.sayWishesABTest) {
+          window.sayWishesABTest.reset();
+          console.log('A/B Test reset');
+        }
+      },
+      
+      // 获取当前版本
+      getVersion: function() {
+        return window.sayWishesABTest ? window.sayWishesABTest.getVersion() : 'Unknown';
+      },
+      
+      // 显示测试信息
+      showInfo: function() {
+        if (window.sayWishesABTest) {
+          console.log('A/B Test Version:', window.sayWishesABTest.getVersion());
+          console.log('A/B Test Config:', window.sayWishesABConfig);
+        }
+      }
+    };
+    
+    // 在控制台显示调试信息
+    if (window.sayWishesABConfig.debug) {
+      console.log('SayWishes A/B Test Debug Mode Enabled');
+      console.log('Available commands: abTestDebug.setVersion("A"), abTestDebug.setVersion("B"), abTestDebug.reset(), abTestDebug.getVersion(), abTestDebug.showInfo()');
+    }
+  </script>
+
+{% endif %}

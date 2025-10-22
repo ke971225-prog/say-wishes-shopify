@@ -1,0 +1,267 @@
+/* =================================
+   CRITICAL CSS - ABOVE THE FOLD
+   ================================= */
+
+/* Reset and base styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif);
+  line-height: 1.6;
+  color: rgb(var(--color-foreground, 18, 18, 18));
+  background-color: rgb(var(--color-background, 255, 255, 255));
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header critical styles */
+.header {
+  position: relative;
+  z-index: 3;
+  background-color: rgb(var(--color-background, 255, 255, 255));
+  border-bottom: 1px solid rgba(var(--color-foreground, 18, 18, 18), 0.08);
+}
+
+.header.sticky {
+  position: sticky;
+  top: 0;
+}
+
+/* Navigation critical styles */
+.header__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  max-width: var(--page-width, 120rem);
+  margin: 0 auto;
+}
+
+@media screen and (min-width: 750px) {
+  .header__wrapper {
+    padding: 1.5rem 5rem;
+  }
+}
+
+/* Logo critical styles */
+.header__heading {
+  margin: 0;
+  line-height: 1;
+}
+
+.header__heading-link {
+  display: block;
+  text-decoration: none;
+  color: rgb(var(--color-foreground, 18, 18, 18));
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+/* Hero section critical styles */
+.banner {
+  position: relative;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(var(--color-background, 255, 255, 255));
+}
+
+.banner__content {
+  text-align: center;
+  max-width: 80rem;
+  padding: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.banner__heading {
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 1.5rem;
+  color: rgb(var(--color-foreground, 18, 18, 18));
+}
+
+.banner__text {
+  font-size: 1.6rem;
+  line-height: 1.5;
+  margin: 0 0 2rem;
+  color: rgba(var(--color-foreground, 18, 18, 18), 0.8);
+}
+
+/* Button critical styles */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 3rem;
+  background-color: rgb(var(--color-button, 18, 18, 18));
+  color: rgb(var(--color-button-text, 255, 255, 255));
+  text-decoration: none;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 4.4rem;
+}
+
+.button:hover {
+  background-color: rgba(var(--color-button, 18, 18, 18), 0.9);
+  transform: translateY(-1px);
+}
+
+/* Product grid critical styles */
+.collection {
+  padding: 4rem 2rem;
+  max-width: var(--page-width, 120rem);
+  margin: 0 auto;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 3rem;
+  margin-top: 3rem;
+}
+
+@media screen and (min-width: 750px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 4rem;
+  }
+}
+
+/* Card critical styles */
+.card {
+  background-color: rgb(var(--color-background, 255, 255, 255));
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(var(--color-foreground, 18, 18, 18), 0.08);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(var(--color-shadow, 18, 18, 18), 0.15);
+}
+
+/* Image critical styles */
+.card__media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+.card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .card__media img {
+  transform: scale(1.05);
+}
+
+/* Content critical styles */
+.card__content {
+  padding: 1.5rem;
+}
+
+.card__heading {
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0 0 1rem;
+  color: rgb(var(--color-foreground, 18, 18, 18));
+}
+
+.price {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: rgb(var(--color-button, 18, 18, 18));
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.loading__spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(var(--color-foreground, 18, 18, 18), 0.3);
+  border-radius: 50%;
+  border-top-color: rgb(var(--color-foreground, 18, 18, 18));
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Utility classes */
+.hidden {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  word-wrap: normal !important;
+}
+
+/* Mobile optimizations */
+@media screen and (max-width: 749px) {
+  .collection {
+    padding: 2rem 1.5rem;
+  }
+  
+  .banner__content {
+    padding: 1.5rem;
+  }
+  
+  .header__wrapper {
+    padding: 1rem 1.5rem;
+  }
+  
+  .product-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+}
+
+/* Performance optimizations */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

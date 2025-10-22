@@ -1,0 +1,455 @@
+{{ 'component-image-with-text.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .happy-customers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  @media screen and (max-width: 749px) {
+    .happy-customers {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+
+  .happy-customers-content {
+    text-align: center;
+  }
+
+  .happy-customers-title {
+    font-size: {{ section.settings.title_font_size | default: 1.8 }}rem;
+    font-weight: {{ section.settings.title_font_weight | default: 'bold' }};
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .happy-customers-subtitle {
+    font-size: {{ section.settings.subtitle_font_size | default: 1 }}rem;
+    font-weight: {{ section.settings.subtitle_font_weight | default: 'normal' }};
+    margin-bottom: 1.5rem;
+    color: #666;
+  }
+
+  .happy-customers-text-content {
+    background: #f8f8f8;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .happy-customers-rating {
+    font-size: {{ section.settings.rating_font_size | default: 2 }}rem;
+    margin-bottom: 1rem;
+  }
+
+  .happy-customers-rating-text {
+    font-size: {{ section.settings.rating_text_font_size | default: 0.9 }}rem;
+    font-weight: {{ section.settings.rating_text_font_weight | default: 'normal' }};
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .happy-customers-description {
+    font-size: {{ section.settings.description_font_size | default: 0.9 }}rem;
+    font-weight: {{ section.settings.description_font_weight | default: 'normal' }};
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 1.5rem;
+  }
+
+  .happy-customers-button {
+    background: #e91e63;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    font-size: {{ section.settings.button_font_size | default: 1 }}rem;
+    font-weight: {{ section.settings.button_font_weight | default: 'bold' }};
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s;
+  }
+
+  .happy-customers-button:hover {
+    background: #c2185b;
+  }
+
+  .happy-customers-image {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .happy-customers-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+
+  /* 移动端响应式设置 */
+  @media screen and (max-width: 749px) {
+    .happy-customers-title {
+      font-size: {{ section.settings.mobile_title_font_size | default: 1.5 }}rem;
+    }
+    
+    .happy-customers-subtitle {
+      font-size: {{ section.settings.mobile_subtitle_font_size | default: 0.9 }}rem;
+    }
+    
+    .happy-customers-description {
+      font-size: {{ section.settings.mobile_description_font_size | default: 0.8 }}rem;
+    }
+    
+    .happy-customers-button {
+      font-size: {{ section.settings.mobile_button_font_size | default: 0.9 }}rem;
+    }
+    
+    .happy-customers-rating {
+      font-size: {{ section.settings.mobile_rating_font_size | default: 1.8 }}rem;
+    }
+    
+    .happy-customers-rating-text {
+      font-size: {{ section.settings.mobile_rating_text_font_size | default: 0.8 }}rem;
+    }
+  }
+{%- endstyle -%}
+
+// ... existing code ...
+
+{% schema %}
+{
+  "name": "Happy Customers",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "OUR HAPPY CUSTOMERS! 🎉",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Small"
+        },
+        {
+          "value": "h1",
+          "label": "Medium"
+        },
+        {
+          "value": "h0",
+          "label": "Large"
+        }
+      ],
+      "default": "h1",
+      "label": "Heading size"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "default": "Our customers love their greeting videos. Here are some of the great things they said about us.",
+      "label": "Subtitle"
+    },
+    {
+      "type": "header",
+      "content": "Content Section"
+    },
+    {
+      "type": "text",
+      "id": "content_title",
+      "default": "RATED 4.9/5 BY 50,000+ CUSTOMERS! ⭐",
+      "label": "Content Title"
+    },
+    {
+      "type": "text",
+      "id": "rating_stars",
+      "default": "⭐⭐⭐⭐⭐",
+      "label": "Rating Stars"
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "default": "Rated 4.9/5 by 50,000+ Happy Customers",
+      "label": "Rating Text"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "default": "<p>Our customers love their personalized greeting videos from Africa. The authentic messages and beautiful landscapes create unforgettable moments that bring joy to families worldwide. 🎁</p>",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "➜ ORDER NOW",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Customer Reviews Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Customer Reviews Image"
+    },
+    {
+      "type": "header",
+      "content": "文字大小设置"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size",
+      "label": "副标题文字大小",
+      "min": 0.6,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "subtitle_font_weight",
+      "label": "副标题文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "主标题文字大小",
+      "min": 1.2,
+      "max": 3,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.8
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "主标题文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" },
+        { "value": "700", "label": "粗体" },
+        { "value": "800", "label": "超粗体" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "label": "描述文字大小",
+      "min": 0.7,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.9
+    },
+    {
+      "type": "select",
+      "id": "description_font_weight",
+      "label": "描述文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "500", "label": "中等" },
+        { "value": "600", "label": "半粗体" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "按钮文字大小",
+      "min": 0.8,
+      "max": 1.8,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "按钮文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" },
+        { "value": "700", "label": "粗体" },
+        { "value": "800", "label": "超粗体" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "range",
+      "id": "rating_font_size",
+      "label": "评分星星大小",
+      "min": 1.2,
+      "max": 3,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "rating_text_font_size",
+      "label": "评分文字大小",
+      "min": 0.7,
+      "max": 1.3,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.9
+    },
+    {
+      "type": "select",
+      "id": "rating_text_font_weight",
+      "label": "评分文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "header",
+      "content": "移动端文字大小设置"
+    },
+    {
+      "type": "range",
+      "id": "mobile_subtitle_font_size",
+      "label": "移动端副标题文字大小",
+      "min": 0.6,
+      "max": 1.3,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_font_size",
+      "label": "移动端主标题文字大小",
+      "min": 1,
+      "max": 2.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.5
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_font_size",
+      "label": "移动端描述文字大小",
+      "min": 0.6,
+      "max": 1.3,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.8
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_font_size",
+      "label": "移动端按钮文字大小",
+      "min": 0.7,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_rating_font_size",
+      "label": "移动端评分星星大小",
+      "min": 1,
+      "max": 2.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.8
+    },
+    {
+      "type": "range",
+      "id": "mobile_rating_text_font_size",
+      "label": "移动端评分文字大小",
+      "min": 0.6,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.8
+    },
+    {
+      "type": "header",
+      "content": "Section Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "section_color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Happy Customers"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,681 @@
+{% comment %}
+  SEO增强工具
+  自动优化SEO元素、结构化数据、性能等
+{% endcomment %}
+
+{% if settings.seo_enhancement_enabled %}
+<script>
+  // SEO增强控制器
+  window.SEOEnhancement = {
+    config: {
+      autoOptimize: true,
+      trackSEOMetrics: true,
+      enableSchemaMarkup: true,
+      optimizeImages: true,
+      monitorPageSpeed: true
+    },
+    
+    init: function() {
+      this.optimizeMetaTags();
+      this.enhanceStructuredData();
+      this.optimizeImages();
+      this.improvePageSpeed();
+      this.trackSEOMetrics();
+      this.setupSEOMonitoring();
+    },
+    
+    // 优化Meta标签
+    optimizeMetaTags: function() {
+      // 自动添加缺失的meta标签
+      this.ensureMetaTag('description');
+      {% if template == 'index' %}
+      this.ensureMetaTag('keywords');
+      {% endif %}
+      this.ensureMetaTag('author');
+      
+      // 优化Open Graph标签
+      this.optimizeOpenGraph();
+      
+      // 优化Twitter Card标签
+      this.optimizeTwitterCard();
+      
+      // 添加移动端优化标签
+      this.addMobileOptimization();
+      
+      // 添加性能优化标签
+      this.addPerformanceOptimization();
+    },
+    
+    // 确保meta标签存在
+    ensureMetaTag: function(name) {
+      if (!document.querySelector(`meta[name="${name}"]`)) {
+        const meta = document.createElement('meta');
+        meta.name = name;
+        
+        switch(name) {
+          case 'description':
+            meta.content = this.generateDescription();
+            break;
+          case 'keywords':
+            meta.content = this.generateKeywords();
+            break;
+          case 'author':
+            meta.content = '{{ shop.name }}';
+            break;
+        }
+        
+        document.head.appendChild(meta);
+      }
+    },
+    
+    // 生成页面描述
+    generateDescription: function() {
+      {% if template contains 'product' %}
+        return '{{ product.description | strip_html | truncate: 155 | escape }}';
+      {% elsif template contains 'collection' %}
+        return '{{ collection.description | strip_html | truncate: 155 | escape }}';
+      {% elsif template contains 'article' %}
+        return '{{ article.excerpt | strip_html | truncate: 155 | escape }}';
+      {% else %}
+        return '{{ page_description | default: shop.description | strip_html | truncate: 155 | escape }}';
+      {% endif %}
+    },
+    
+    // 生成关键词
+    generateKeywords: function() {
+      const keywords = [];
+      
+      {% if template contains 'product' %}
+        keywords.push('{{ product.title | escape }}');
+        {% for tag in product.tags %}
+          keywords.push('{{ tag | escape }}');
+        {% endfor %}
+        keywords.push('{{ product.type | escape }}');
+        keywords.push('{{ product.vendor | escape }}');
+      {% elsif template contains 'collection' %}
+        keywords.push('{{ collection.title | escape }}');
+        {% for product in collection.products limit: 5 %}
+          keywords.push('{{ product.title | escape }}');
+        {% endfor %}
+      {% endif %}
+      
+      keywords.push('{{ shop.name | escape }}');
+      
+      return keywords.filter(k => k).join(', ');
+    },
+    
+    // 优化Open Graph
+    optimizeOpenGraph: function() {
+      const ogTags = {
+        'og:site_name': '{{ shop.name | escape }}',
+        'og:url': window.location.href,
+        'og:type': this.getOGType(),
+        'og:title': this.getOGTitle(),
+        'og:description': this.getOGDescription(),
+        'og:image': this.getOGImage()
+      };
+      
+      Object.entries(ogTags).forEach(([property, content]) => {
+        if (content && !document.querySelector(`meta[property="${property}"]`)) {
+          const meta = document.createElement('meta');
+          meta.setAttribute('property', property);
+          meta.content = content;
+          document.head.appendChild(meta);
+        }
+      });
+    },
+    
+    // 获取OG类型
+    getOGType: function() {
+      {% if template contains 'product' %}
+        return 'product';
+      {% elsif template contains 'article' %}
+        return 'article';
+      {% else %}
+        return 'website';
+      {% endif %}
+    },
+    
+    // 获取OG标题
+    getOGTitle: function() {
+      {% if template contains 'product' %}
+        return '{{ product.title | escape }}';
+      {% elsif template contains 'collection' %}
+        return '{{ collection.title | escape }}';
+      {% elsif template contains 'article' %}
+        return '{{ article.title | escape }}';
+      {% else %}
+        return '{{ page_title | escape }}';
+      {% endif %}
+    },
+    
+    // 获取OG描述
+    getOGDescription: function() {
+      return this.generateDescription();
+    },
+    
+    // 获取OG图片
+    getOGImage: function() {
+      {% if template contains 'product' and product.featured_image %}
+        return '{{ product.featured_image | image_url: width: 1200 }}';
+      {% elsif template contains 'collection' and collection.image %}
+        return '{{ collection.image | image_url: width: 1200 }}';
+      {% elsif template contains 'article' and article.image %}
+        return '{{ article.image | image_url: width: 1200 }}';
+      {% else %}
+        return '{{ settings.logo | image_url: width: 1200 }}';
+      {% endif %}
+    },
+    
+    // 优化Twitter Card
+    optimizeTwitterCard: function() {
+      const twitterTags = {
+        'twitter:card': 'summary_large_image',
+        'twitter:site': '{{ settings.twitter_handle | default: "@" | append: shop.name | handle }}',
+        'twitter:title': this.getOGTitle(),
+        'twitter:description': this.getOGDescription(),
+        'twitter:image': this.getOGImage()
+      };
+      
+      Object.entries(twitterTags).forEach(([name, content]) => {
+        if (content && !document.querySelector(`meta[name="${name}"]`)) {
+          const meta = document.createElement('meta');
+          meta.name = name;
+          meta.content = content;
+          document.head.appendChild(meta);
+        }
+      });
+    },
+    
+    // 添加移动端优化
+    addMobileOptimization: function() {
+      const mobileTags = [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
+        { name: 'format-detection', content: 'telephone=no' },
+        { name: 'mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'default' }
+      ];
+      
+      mobileTags.forEach(tag => {
+        if (!document.querySelector(`meta[name="${tag.name}"]`)) {
+          const meta = document.createElement('meta');
+          meta.name = tag.name;
+          meta.content = tag.content;
+          document.head.appendChild(meta);
+        }
+      });
+    },
+    
+    // 添加性能优化标签
+    addPerformanceOptimization: function() {
+      // DNS预解析
+      const domains = ['fonts.googleapis.com', 'fonts.gstatic.com', 'www.google-analytics.com'];
+      domains.forEach(domain => {
+        if (!document.querySelector(`link[href="//${domain}"]`)) {
+          const link = document.createElement('link');
+          link.rel = 'dns-prefetch';
+          link.href = `//${domain}`;
+          document.head.appendChild(link);
+        }
+      });
+      
+      // 预连接关键资源
+      const preconnectDomains = ['fonts.gstatic.com'];
+      preconnectDomains.forEach(domain => {
+        if (!document.querySelector(`link[href="https://${domain}"][rel="preconnect"]`)) {
+          const link = document.createElement('link');
+          link.rel = 'preconnect';
+          link.href = `https://${domain}`;
+          link.crossOrigin = 'anonymous';
+          document.head.appendChild(link);
+        }
+      });
+    },
+    
+    // 增强结构化数据
+    enhanceStructuredData: function() {
+      // Skip if JSON-LD already exists to avoid duplication with server-rendered schema
+      if (document.querySelector('script[type="application/ld+json"]')) {
+        return;
+      }
+      {% if template contains 'product' %}
+        this.addProductSchema();
+      {% elsif template contains 'organization' or template == 'index' %}
+        this.addOrganizationSchema();
+      {% elsif template contains 'article' %}
+        this.addArticleSchema();
+      {% endif %}
+      
+      this.addBreadcrumbSchema();
+      this.addWebsiteSchema();
+    },
+    
+    // 添加产品结构化数据
+    addProductSchema: function() {
+      {% if template contains 'product' %}
+      const productSchema = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": "{{ product.title | escape }}",
+        "description": "{{ product.description | strip_html | escape }}",
+        "image": [
+          {% for image in product.images limit: 5 %}
+            "{{ image | image_url: width: 800 }}"{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ],
+        "brand": {
+          "@type": "Brand",
+          "name": "{{ product.vendor | escape }}"
+        },
+        "sku": "{{ product.selected_or_first_available_variant.sku }}",
+        "offers": {
+          "@type": "Offer",
+          "url": "{{ shop.secure_url }}{{ product.url }}",
+          "priceCurrency": "{{ cart.currency.iso_code }}",
+          "price": "{{ product.selected_or_first_available_variant.price | money_without_currency | remove: ',' }}",
+          "availability": "{% if product.selected_or_first_available_variant.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+          "seller": {
+            "@type": "Organization",
+            "name": "{{ shop.name | escape }}"
+          }
+        }
+      };
+      
+      // 添加评分（如果有）
+      {% if product.metafields.reviews.rating %}
+      productSchema.aggregateRating = {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ product.metafields.reviews.rating }}",
+        "reviewCount": "{{ product.metafields.reviews.count | default: 1 }}"
+      };
+      {% endif %}
+      
+      this.addJSONLD(productSchema);
+      {% endif %}
+    },
+    
+    // 添加组织结构化数据
+    addOrganizationSchema: function() {
+      const organizationSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "{{ shop.name | escape }}",
+        "url": "{{ shop.secure_url }}",
+        "logo": "{{ settings.logo | image_url: width: 600 }}",
+        "sameAs": [
+          {% if settings.social_facebook_link != blank %}"{{ settings.social_facebook_link }}",{% endif %}
+          {% if settings.social_instagram_link != blank %}"{{ settings.social_instagram_link }}",{% endif %}
+          {% if settings.social_twitter_link != blank %}"{{ settings.social_twitter_link }}"{% endif %}
+        ].filter(url => url)
+      };
+      
+      this.addJSONLD(organizationSchema);
+    },
+    
+    // 添加文章结构化数据
+    addArticleSchema: function() {
+      {% if template contains 'article' %}
+      const articleSchema = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "{{ article.title | escape }}",
+        "description": "{{ article.excerpt | strip_html | escape }}",
+        "image": "{{ article.image | image_url: width: 1200 }}",
+        "author": {
+          "@type": "Person",
+          "name": "{{ article.author | escape }}"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "{{ shop.name | escape }}",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "{{ settings.logo | image_url: width: 600 }}"
+          }
+        },
+        "datePublished": "{{ article.published_at | date: '%Y-%m-%d' }}",
+        "dateModified": "{{ article.updated_at | date: '%Y-%m-%d' }}"
+      };
+      
+      this.addJSONLD(articleSchema);
+      {% endif %}
+    },
+    
+    // 添加面包屑结构化数据
+    addBreadcrumbSchema: function() {
+      const breadcrumbs = this.generateBreadcrumbs();
+      
+      if (breadcrumbs.length > 1) {
+        const breadcrumbSchema = {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": breadcrumbs.map((item, index) => ({
+            "@type": "ListItem",
+            "position": index + 1,
+            "name": item.name,
+            "item": item.url
+          }))
+        };
+        
+        this.addJSONLD(breadcrumbSchema);
+      }
+    },
+    
+    // 生成面包屑
+    generateBreadcrumbs: function() {
+      const breadcrumbs = [{
+        name: 'Home',
+        url: '{{ shop.secure_url }}'
+      }];
+      
+      {% if template contains 'collection' %}
+        breadcrumbs.push({
+          name: '{{ collection.title | escape }}',
+          url: '{{ shop.secure_url }}{{ collection.url }}'
+        });
+      {% elsif template contains 'product' %}
+        {% if collection %}
+          breadcrumbs.push({
+            name: '{{ collection.title | escape }}',
+            url: '{{ shop.secure_url }}{{ collection.url }}'
+          });
+        {% endif %}
+        breadcrumbs.push({
+          name: '{{ product.title | escape }}',
+          url: '{{ shop.secure_url }}{{ product.url }}'
+        });
+      {% elsif template contains 'article' %}
+        breadcrumbs.push({
+          name: 'Blog',
+          url: '{{ shop.secure_url }}{{ blog.url }}'
+        });
+        breadcrumbs.push({
+          name: '{{ article.title | escape }}',
+          url: '{{ shop.secure_url }}{{ article.url }}'
+        });
+      {% endif %}
+      
+      return breadcrumbs;
+    },
+    
+    // 添加网站结构化数据
+    addWebsiteSchema: function() {
+      const websiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "{{ shop.name | escape }}",
+        "url": "{{ shop.secure_url }}",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "{{ shop.secure_url }}/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      };
+      
+      this.addJSONLD(websiteSchema);
+    },
+    
+    // 添加JSON-LD
+    addJSONLD: function(schema) {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(schema);
+      document.head.appendChild(script);
+    },
+    
+    // 优化图片
+    optimizeImages: function() {
+      const images = document.querySelectorAll('img');
+      
+      images.forEach(img => {
+        // 添加alt属性（如果缺失）
+        if (!img.alt) {
+          img.alt = this.generateImageAlt(img);
+        }
+        
+        // 添加loading="lazy"（除了首屏图片）
+        if (!img.loading && !this.isAboveFold(img)) {
+          img.loading = 'lazy';
+        }
+        
+        // 添加decoding="async"
+        if (!img.decoding) {
+          img.decoding = 'async';
+        }
+      });
+    },
+    
+    // 生成图片alt文本
+    generateImageAlt: function(img) {
+      const src = img.src;
+      const filename = src.split('/').pop().split('.')[0];
+      
+      {% if template contains 'product' %}
+        return '{{ product.title | escape }} - ' + filename.replace(/[-_]/g, ' ');
+      {% else %}
+        return filename.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      {% endif %}
+    },
+    
+    // 检查是否在首屏
+    isAboveFold: function(img) {
+      const rect = img.getBoundingClientRect();
+      return rect.top < window.innerHeight;
+    },
+    
+    // 改善页面速度
+    improvePageSpeed: function() {
+      // 预加载关键资源
+      this.preloadCriticalResources();
+      
+      // 延迟加载非关键脚本
+      this.deferNonCriticalScripts();
+      
+      // 优化字体加载
+      this.optimizeFontLoading();
+      
+      // 压缩和缓存
+      this.enableCompression();
+    },
+    
+    // 预加载关键资源
+    preloadCriticalResources: function() {
+      // 预加载关键CSS
+      const criticalCSS = document.querySelector('link[rel="stylesheet"]');
+      if (criticalCSS && !criticalCSS.hasAttribute('preload')) {
+        const preload = document.createElement('link');
+        preload.rel = 'preload';
+        preload.href = criticalCSS.href;
+        preload.as = 'style';
+        document.head.insertBefore(preload, criticalCSS);
+      }
+      
+      // 预加载关键图片
+      {% if template contains 'product' and product.featured_image %}
+        const heroImage = document.createElement('link');
+        heroImage.rel = 'preload';
+        heroImage.href = '{{ product.featured_image | image_url: width: 800 }}';
+        heroImage.as = 'image';
+        document.head.appendChild(heroImage);
+      {% endif %}
+    },
+    
+    // 延迟非关键脚本
+    deferNonCriticalScripts: function() {
+      const scripts = document.querySelectorAll('script[src]');
+      
+      scripts.forEach(script => {
+        if (!script.hasAttribute('defer') && !script.hasAttribute('async')) {
+          // 检查是否是关键脚本
+          const src = script.src;
+          const isCritical = src.includes('jquery') || 
+                           src.includes('theme') || 
+                           src.includes('critical');
+          
+          if (!isCritical) {
+            script.defer = true;
+          }
+        }
+      });
+    },
+    
+    // 优化字体加载
+    optimizeFontLoading: function() {
+      const fontLinks = document.querySelectorAll('link[href*="fonts"]');
+      
+      fontLinks.forEach(link => {
+        if (!link.hasAttribute('display')) {
+          link.style.fontDisplay = 'swap';
+        }
+      });
+    },
+    
+    // 启用压缩
+    enableCompression: function() {
+      // 添加压缩提示
+      if (!document.querySelector('meta[http-equiv="Content-Encoding"]')) {
+        const meta = document.createElement('meta');
+        meta.httpEquiv = 'Content-Encoding';
+        meta.content = 'gzip';
+        document.head.appendChild(meta);
+      }
+    },
+    
+    // 跟踪SEO指标
+    trackSEOMetrics: function() {
+      // 跟踪页面加载时间
+      window.addEventListener('load', () => {
+        const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+        this.reportSEOMetric('page_load_time', loadTime);
+      });
+      
+      // 跟踪首次内容绘制
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          entries.forEach((entry) => {
+            if (entry.name === 'first-contentful-paint') {
+              this.reportSEOMetric('first_contentful_paint', entry.startTime);
+            }
+          });
+        });
+        
+        observer.observe({ entryTypes: ['paint'] });
+      }
+      
+      // 跟踪页面大小
+      this.trackPageSize();
+      
+      // 跟踪移动友好性
+      this.trackMobileFriendliness();
+    },
+    
+    // 跟踪页面大小
+    trackPageSize: function() {
+      window.addEventListener('load', () => {
+        const resources = performance.getEntriesByType('resource');
+        let totalSize = 0;
+        
+        resources.forEach(resource => {
+          totalSize += resource.transferSize || 0;
+        });
+        
+        this.reportSEOMetric('page_size', totalSize);
+      });
+    },
+    
+    // 跟踪移动友好性
+    trackMobileFriendliness: function() {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const hasViewport = !!document.querySelector('meta[name="viewport"]');
+      const hasResponsiveDesign = window.innerWidth <= 768;
+      
+      this.reportSEOMetric('mobile_friendly', {
+        isMobile: isMobile,
+        hasViewport: hasViewport,
+        hasResponsiveDesign: hasResponsiveDesign,
+        score: (hasViewport ? 1 : 0) + (hasResponsiveDesign ? 1 : 0)
+      });
+    },
+    
+    // 设置SEO监控
+    setupSEOMonitoring: function() {
+      // 监控404错误
+      this.monitor404Errors();
+      
+      // 监控重定向
+      this.monitorRedirects();
+      
+      // 监控重复内容
+      this.monitorDuplicateContent();
+    },
+    
+    // 监控404错误
+    monitor404Errors: function() {
+      if (document.title.includes('404') || window.location.pathname.includes('404')) {
+        this.reportSEOIssue('404_error', {
+          url: window.location.href,
+          referrer: document.referrer
+        });
+      }
+    },
+    
+    // 监控重定向
+    monitorRedirects: function() {
+      const navigation = performance.getEntriesByType('navigation')[0];
+      if (navigation && navigation.redirectCount > 0) {
+        this.reportSEOIssue('redirect_chain', {
+          redirectCount: navigation.redirectCount,
+          url: window.location.href
+        });
+      }
+    },
+    
+    // 监控重复内容
+    monitorDuplicateContent: function() {
+      const canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        this.reportSEOIssue('missing_canonical', {
+          url: window.location.href
+        });
+      } else if (canonical.href !== window.location.href) {
+        this.reportSEOIssue('canonical_mismatch', {
+          canonical: canonical.href,
+          current: window.location.href
+        });
+      }
+    },
+    
+    // 报告SEO指标
+    reportSEOMetric: function(name, value) {
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'seo_metric', {
+          'metric_name': name,
+          'metric_value': value,
+          'page_type': '{{ template | split: "." | first }}'
+        });
+      }
+    },
+    
+    // 报告SEO问题
+    reportSEOIssue: function(type, data) {
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'seo_issue', {
+          'issue_type': type,
+          'issue_data': JSON.stringify(data),
+          'page_type': '{{ template | split: "." | first }}'
+        });
+      }
+    }
+  };
+  
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', function() {
+    window.SEOEnhancement.init();
+  });
+</script>
+{% endif %}

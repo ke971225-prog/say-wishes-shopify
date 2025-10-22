@@ -1,0 +1,168 @@
+<style>
+  .surprise-gift {
+    padding: 60px 20px;
+    background: #f8f9fa;
+  }
+  
+  .surprise-gift__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .surprise-gift__subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .surprise-gift__title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 30px;
+    line-height: 1.2;
+  }
+  
+  .surprise-gift__description {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 40px;
+    line-height: 1.6;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .surprise-gift__button {
+    background: linear-gradient(135deg, #e91e63, #f06292);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.3s ease;
+    margin-bottom: 30px;
+  }
+  
+  .surprise-gift__button:hover {
+    transform: translateY(-2px);
+  }
+  
+  .surprise-gift__rating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .surprise-gift__stars {
+    color: #ffd700;
+    font-size: 1.2rem;
+  }
+  
+  .surprise-gift__rating-text {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  @media (max-width: 768px) {
+    .surprise-gift__title {
+      font-size: 2rem;
+    }
+    
+    .surprise-gift__description {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<div class="surprise-gift">
+  <div class="surprise-gift__container">
+    {% if section.settings.subtitle != blank %}
+      <p class="surprise-gift__subtitle">{{ section.settings.subtitle }}</p>
+    {% endif %}
+    
+    <h2 class="surprise-gift__title">{{ section.settings.title }}</h2>
+    
+    {% if section.settings.description != blank %}
+      <p class="surprise-gift__description">{{ section.settings.description }}</p>
+    {% endif %}
+    
+    {% if section.settings.button_label != blank %}
+      <a href="{{ section.settings.button_link }}" class="surprise-gift__button">
+        {{ section.settings.button_label }}
+      </a>
+    {% endif %}
+    
+    <div class="surprise-gift__rating">
+      <span class="surprise-gift__stars">{{ section.settings.rating_stars }}</span>
+      <span class="surprise-gift__rating-text">{{ section.settings.rating_text }}</span>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Surprise Gift",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "subtitle",
+      "default": "VIDEO MESSAGE FROM AFRICA",
+      "label": "Subtitle"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "default": "SURPRISE YOUR LOVED ONE WITH A UNIQUE GIFT!",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "default": "Surprise someone with a joyful video message from Africa, a truly unforgettable gift!",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "ORDER YOUR VIDEO",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "text",
+      "id": "rating_stars",
+      "default": "⭐⭐⭐⭐⭐",
+      "label": "Rating Stars"
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "default": "Rated 4.9/5 by 50,000+ Happy Customers!",
+      "label": "Rating Text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Surprise Gift"
+    }
+  ]
+}
+{% endschema %}

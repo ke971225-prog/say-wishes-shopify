@@ -1,0 +1,831 @@
+<section class="hero-section" style="{% if section.settings.hero_image != blank %}--bg-desktop: url('{{ section.settings.hero_image | image_url: width: 2400 }}');{% endif %}{% if section.settings.hero_image_mobile != blank %} --bg-mobile: url('{{ section.settings.hero_image_mobile | image_url: width: 1400 }}');{% elsif section.settings.hero_image != blank %} --bg-mobile: url('{{ section.settings.hero_image | image_url: width: 1400 }}');{% endif %} --bg-brightness: {{ section.settings.bg_brightness | default: 1 }}; --bg-brightness-mobile: {{ section.settings.bg_brightness_mobile | default: 1 }}; --bg-overlay-color: {{ section.settings.overlay_color_start | default: 'rgba(0,0,0,0.6)' }}; --bg-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 | default: 0.2 }}; --hover-overlay-color: {{ section.settings.hover_overlay_color | default: 'rgba(0, 0, 0, 0.4)' }}; --hover-overlay-opacity: {{ section.settings.hover_overlay_opacity | default: 0.2 }};">
+  <div class="hero-background">
+    <div class="hero-overlay" style="background: linear-gradient(135deg, {{ section.settings.overlay_color_start | default: 'rgba(0,0,0,0.6)' }}, {{ section.settings.overlay_color_end | default: 'rgba(0,0,0,0.3)' }});"></div>
+  </div>
+  {% comment %} Preload hero background images to improve LCP discovery and avoid duplicate requests {% endcomment %}
+  {% if section.settings.hero_image != blank %}
+    <link rel="preload" as="image" href="{{ section.settings.hero_image | image_url: width: 2400 }}" imagesrcset="{{ section.settings.hero_image | image_url: width: 480 }} 480w, {{ section.settings.hero_image | image_url: width: 768 }} 768w, {{ section.settings.hero_image | image_url: width: 1024 }} 1024w, {{ section.settings.hero_image | image_url: width: 1366 }} 1366w, {{ section.settings.hero_image | image_url: width: 1600 }} 1600w, {{ section.settings.hero_image | image_url: width: 2000 }} 2000w, {{ section.settings.hero_image | image_url: width: 2400 }} 2400w" imagesizes="100vw">
+  {% endif %}
+  {% if section.settings.hero_image_mobile != blank %}
+    <link rel="preload" as="image" href="{{ section.settings.hero_image_mobile | image_url: width: 1400 }}" imagesrcset="{{ section.settings.hero_image_mobile | image_url: width: 480 }} 480w, {{ section.settings.hero_image_mobile | image_url: width: 768 }} 768w, {{ section.settings.hero_image_mobile | image_url: width: 1024 }} 1024w, {{ section.settings.hero_image_mobile | image_url: width: 1366 }} 1366w, {{ section.settings.hero_image_mobile | image_url: width: 1400 }} 1400w" imagesizes="100vw">
+  {% elsif section.settings.hero_image != blank %}
+    <link rel="preload" as="image" href="{{ section.settings.hero_image | image_url: width: 1400 }}" imagesrcset="{{ section.settings.hero_image | image_url: width: 480 }} 480w, {{ section.settings.hero_image | image_url: width: 768 }} 768w, {{ section.settings.hero_image | image_url: width: 1024 }} 1024w, {{ section.settings.hero_image | image_url: width: 1366 }} 1366w, {{ section.settings.hero_image | image_url: width: 1400 }} 1400w" imagesizes="100vw">
+  {% endif %}
+  <div class="hero-content">
+    <div class="hero-container" style="text-align: {{ section.settings.text_alignment | default: 'center' }};">
+      {% for block in section.blocks %}
+        {% case block.type %}
+        {% when 'security_badge' %}
+        <div class="hero-security-banner" style="--badge-text-color: {{ block.settings.text_color | default: '#18A03D' }}; --badge-text-size: {{ block.settings.text_size | default: '14px' }}; --badge-icon-color: {{ block.settings.icon_color | default: '#18A03D' }}; --badge-icon-size: {{ block.settings.icon_size | default: '18px' }};" {{ block.shopify_attributes }}>
+          <span class="svg-wrapper" aria-hidden="true">{{- 'icon-padlock.svg' | inline_asset_content -}}</span>
+          <span class="hero-security-text">{{ block.settings.text | default: 'SSL encryption enabled to protect your information security' }}</span>
+        </div>
+        {% endcase %}
+      {% endfor %}
+      <div class="hero-text">
+        {% if section.settings.hero_title %}
+          {% if request.page_type == 'index' %}
+            <h1 class="hero-title" style="color: {{ section.settings.title_color | default: 'white' }};">{{ section.settings.hero_title }}</h1>
+          {% else %}
+            <h2 class="hero-title" style="color: {{ section.settings.title_color | default: 'white' }};">{{ section.settings.hero_title }}</h2>
+          {% endif %}
+        {% endif %}
+        
+        {% if section.settings.hero_subtitle %}
+          <p class="hero-subtitle" style="color: {{ section.settings.subtitle_color | default: 'white' }};">{{ section.settings.hero_subtitle }}</p>
+        {% endif %}
+        
+        <div class="hero-actions" style="justify-content: {{ section.settings.buttons_alignment | default: 'center' }};">
+          {% if section.settings.primary_button_text %}
+            <a href="{{ section.settings.primary_button_link | default: '#' }}" 
+               class="hero-btn hero-btn-primary" 
+               style="background: linear-gradient(135deg, {{ section.settings.primary_btn_color_start | default: '#007bff' }}, {{ section.settings.primary_btn_color_end | default: '#0056b3' }}); color: {{ section.settings.primary_btn_text_color | default: 'white' }}; border: 2px solid {{ section.settings.primary_btn_border_color | default: 'transparent' }};">
+              {{ section.settings.primary_button_text }}
+            </a>
+          {% endif %}
+        </div>
+        </div>
+        
+        {% for block in section.blocks %}
+          {% case block.type %}
+          {% when 'secure_payment' %}
+            <div class="hero-secure-payment" style="justify-content: {{ block.settings.alignment | default: 'center' }}; margin-top: {{ block.settings.margin_top | default: 12 }}px; margin-bottom: {{ block.settings.margin_bottom | default: 12 }}px; --icon-size: {{ block.settings.icon_size | default: 24 }}px;" {{ block.shopify_attributes }}>
+              {% if block.settings.heading_text %}
+                <div class="secure-payment-heading" style="color: {{ block.settings.heading_color | default: '#333' }}; font-size: {{ block.settings.heading_size | default: 14 }}px; font-weight: {{ block.settings.heading_weight | default: 600 }};">
+                  <span class="secure-lock">{{- 'icon-padlock.svg' | inline_asset_content -}}</span>
+                  {{ block.settings.heading_text }}
+                </div>
+              {% endif %}
+              {%- render 'payment-icons', show_heading: block.settings.show_snippet_heading, show_note: block.settings.show_snippet_note, heading_text: block.settings.heading_text, decorative: true -%}
+            </div>
+          {% when 'social_proof' %}
+            <div class="hero-social-proof" style="justify-content: {{ block.settings.alignment | default: 'center' }}; margin-top: {{ block.settings.margin_top | default: 8 }}px; margin-bottom: {{ block.settings.margin_bottom | default: 8 }}px; --star-fill: {{ block.settings.star_color | default: '#ffd700' }}; --star-empty: {{ block.settings.star_empty_color | default: '#ddd' }}; --star-text-color: {{ block.settings.text_color | default: '#333' }}; --star-text-weight: {{ block.settings.text_weight | default: 500 }}; --star-caption-size: {{ block.settings.text_size | default: 12 }}px;" {{ block.shopify_attributes }}>
+              {% render 'star-rating', rating: block.settings.rating, show_text: block.settings.show_rating_text, size: block.settings.star_size %}
+              {% if block.settings.caption_text %}
+                <div class="social-proof-caption" style="color: {{ block.settings.text_color | default: '#333' }}; font-size: {{ block.settings.text_size | default: 12 }}px; font-weight: {{ block.settings.text_weight | default: 500 }};">
+                  {{ block.settings.caption_text }}
+                </div>
+              {% endif %}
+            </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+      
+      {% if section.settings.show_features %}
+        <div class="hero-features">
+          <div class="feature-item" style="background: {{ section.settings.feature_bg_color | default: 'rgba(255,255,255,0.1)' }}; border-color: {{ section.settings.feature_border_color | default: 'rgba(255,255,255,0.2)' }};">
+            <span class="feature-icon" style="color: {{ section.settings.feature_icon_color | default: 'white' }};">🚚</span>
+            <span class="feature-text" style="color: {{ section.settings.feature_text_color | default: 'white' }};">{{ section.settings.feature_1 | default: 'Fastest Delivery: 1-2 days!' }}</span>
+          </div>
+          <div class="feature-item" style="background: {{ section.settings.feature_bg_color | default: 'rgba(255,255,255,0.1)' }}; border-color: {{ section.settings.feature_border_color | default: 'rgba(255,255,255,0.2)' }};">
+            <span class="feature-icon" style="color: {{ section.settings.feature_icon_color | default: 'white' }};">🚚</span>
+            <span class="feature-text" style="color: {{ section.settings.feature_text_color | default: 'white' }};">{{ section.settings.feature_2 | default: 'Fastest Delivery: 1-2 days!' }}</span>
+          </div>
+          <div class="feature-item" style="background: {{ section.settings.feature_bg_color | default: 'rgba(255,255,255,0.1)' }}; border-color: {{ section.settings.feature_border_color | default: 'rgba(255,255,255,0.2)' }};">
+            <span class="feature-icon" style="color: {{ section.settings.feature_icon_color | default: 'white' }};">🚚</span>
+            <span class="feature-text" style="color: {{ section.settings.feature_text_color | default: 'white' }};">{{ section.settings.feature_3 | default: 'Fastest Delivery: 1-2 days!' }}</span>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+</section>
+
+<style>
+  .hero-section {
+    position: relative;
+    z-index: 0; /* 建立层叠上下文并确保该区块整体位于固定头部之下 */
+    /* 防止固定头部覆盖：使用增强头部高度变量或回退到 Dawn 的 --header-height */
+    padding-top: var(--enhanced-header-height, var(--header-height));
+    /* 让页面内锚点滚动时也考虑头部高度 */
+    scroll-margin-top: var(--enhanced-header-height, var(--header-height));
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start | default: '#8BC34A' }}, {{ section.settings.gradient_color_end | default: '#E91E63' }});
+    {% else %}
+      background-color: {{ section.settings.section_bg_color | default: 'transparent' }};
+    {% endif %}
+  }
+
+  /* 使用 CSS 背景变量绘制背景图：桌面优先，移动端覆盖 */
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--bg-desktop);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(var(--bg-brightness, 1));
+    z-index: 0;
+  }
+
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--bg-overlay-color, transparent);
+    opacity: var(--bg-overlay-opacity, 0);
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, background 0.3s ease;
+  }
+
+  .hero-section:hover::after {
+    background: var(--hover-overlay-color, {{ section.settings.hover_overlay_color | default: 'rgba(0, 0, 0, 0.4)' }});
+    opacity: var(--hover-overlay-opacity, {{ section.settings.hover_overlay_opacity | default: 0.2 }});
+  }
+
+  @media screen and (max-width: 768px) {
+    .hero-section::before {
+      background-image: var(--bg-mobile, var(--bg-desktop));
+      filter: brightness(var(--bg-brightness-mobile, var(--bg-brightness, 1)));
+    }
+  }
+
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .hero-bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(var(--bg-brightness, 1));
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    opacity: var(--bg-overlay-opacity, 0);
+    z-index: 1; /* 叠在背景图之上，但保持在内容之下 */
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .hero-bg-image {
+      filter: brightness(var(--bg-brightness-mobile, var(--bg-brightness, 1)));
+    }
+    .hero-overlay {
+      opacity: var(--bg-overlay-opacity-mobile, var(--bg-overlay-opacity, 0));
+    }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2; /* 内容层级低于固定头部（1200），但高于背景与叠层 */
+    width: 100%;
+  }
+  .visually-hidden-bg-image {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    left: -9999px;
+  }
+  .visually-hidden-bg-image--mobile { display: none; }
+  .visually-hidden-bg-image--desktop { display: none; }
+
+  .hero-security-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px auto 0;
+    color: var(--badge-text-color, #18A03D);
+    font-size: var(--badge-text-size, 14px);
+    line-height: 1.4;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  .hero-security-banner .svg-wrapper svg {
+    width: var(--badge-icon-size, 18px);
+    height: var(--badge-icon-size, 18px);
+    display: block;
+  }
+
+  .hero-security-banner .svg-wrapper svg * {
+    fill: var(--badge-icon-color, #18A03D);
+    stroke: var(--badge-icon-color, #18A03D);
+  }
+
+  .hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: bold;
+    margin: 0 0 20px 0;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px {{ section.settings.title_shadow_color | default: 'rgba(0,0,0,0.5)' }};
+    animation: fadeInUp 1s ease-out;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    margin: 0 0 40px 0;
+    opacity: 0.9;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+    text-shadow: 1px 1px 2px {{ section.settings.subtitle_shadow_color | default: 'rgba(0,0,0,0.3)' }};
+    animation: fadeInUp 1s ease-out 0.2s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 60px;
+    animation: fadeInUp 1s ease-out 0.4s both;
+  }
+
+  .hero-btn {
+    display: inline-block;
+    padding: 15px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px {{ section.settings.primary_btn_hover_shadow | default: 'rgba(0,123,255,0.4)' }};
+    background: linear-gradient(135deg, {{ section.settings.primary_btn_hover_bg_start | default: '#c2185b' }}, {{ section.settings.primary_btn_hover_bg_end | default: '#e91e63' }}) !important;
+    color: {{ section.settings.primary_btn_hover_text_color | default: 'white' }} !important;
+  }
+
+  .hero-btn-secondary {
+    border: 2px solid;
+  }
+
+  .hero-btn-secondary:hover {
+    background: {{ section.settings.secondary_btn_hover_bg | default: 'white' }} !important;
+    color: {{ section.settings.secondary_btn_hover_text | default: '#333' }} !important;
+    transform: translateY(-2px);
+  }
+
+  .hero-features {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    animation: fadeInUp 1s ease-out 0.6s both;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+    border: 1px solid;
+  }
+
+  .feature-icon {
+    font-size: 20px;
+  }
+
+  /* Secure payment below CTA */
+  .hero-secure-payment {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: fadeInUp 0.6s ease-out both;
+  }
+
+  .hero-secure-payment .secure-payment-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hero-secure-payment .secure-lock svg {
+    width: var(--icon-size, 18px);
+    height: var(--icon-size, 18px);
+  }
+
+  /* Social proof (stars + caption) */
+  .hero-social-proof {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hero-social-proof .social-proof-caption {
+    text-align: center;
+  }
+
+  /* Override star colors using block-level CSS variables */
+  .hero-social-proof .star-rating .star {
+    color: var(--star-empty, #ddd);
+  }
+  .hero-social-proof .star-rating .star.filled {
+    color: var(--star-fill, #ffd700);
+  }
+  .hero-social-proof .star-rating .rating-text {
+    color: var(--star-text-color, rgb(var(--color-foreground)));
+    font-weight: var(--star-text-weight, 500);
+  }
+
+  .feature-text {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-section {
+      /* 移动端同样避免被头部遮挡 */
+      z-index: 0; /* 与桌面端保持一致，避免在移动端出现层叠冲突 */
+      padding-top: var(--enhanced-header-height, var(--header-height));
+      min-height: 60vh;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-btn {
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .hero-features {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .feature-item {
+      justify-content: center;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Hero Section",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    },
+    {
+      "type": "text",
+      "id": "hero_image_alt",
+      "label": "Hero image Alt text",
+      "default": "Personalized African video message background"
+    },
+    {
+      "type": "text",
+      "id": "hero_image_title",
+      "label": "Hero image Title",
+      "default": "African Video Message Hero"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image_mobile",
+      "label": "Hero Image (Mobile)"
+    },
+    {
+      "type": "text",
+      "id": "hero_image_mobile_alt",
+      "label": "Hero image Alt text (Mobile)",
+      "default": "Personalized African video message background (mobile)"
+    },
+    {
+      "type": "text",
+      "id": "hero_image_mobile_title",
+      "label": "Hero image Title (Mobile)",
+      "default": "African Video Message Hero (Mobile)"
+    },
+    {
+      "type": "range",
+      "id": "bg_overlay_opacity_mobile",
+      "label": "移动端背景遮罩不透明度",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "bg_brightness_mobile",
+      "label": "移动端背景亮度（0.5 较暗，1 正常）",
+      "min": 0.5,
+      "max": 1.2,
+      "step": 0.1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "bg_overlay_opacity",
+      "label": "背景遮罩不透明度",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "bg_brightness",
+      "label": "背景亮度（0.5 较暗，1 正常）",
+      "min": 0.5,
+      "max": 1.2,
+      "step": 0.1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Section Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "启用渐变背景",
+      "default": false,
+      "info": "启用此选项以使用渐变背景而不是纯色背景"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "transparent"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "渐变起始颜色",
+      "default": "#8BC34A",
+      "info": "渐变的起始颜色（左上角）"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "渐变结束颜色",
+      "default": "#E91E63",
+      "info": "渐变的结束颜色（右下角）"
+    },
+    {
+      "type": "header",
+      "content": "Text Content"
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Hero Title",
+      "default": "Personalized African Video Messages"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_subtitle",
+      "label": "Hero Subtitle",
+      "default": "Custom videos with photos & messages delivered in 1-2 days"
+    },
+    {
+      "type": "header",
+      "content": "Text Colors & Shadows"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_shadow_color",
+      "label": "Title Shadow Color",
+      "default": "rgba(0,0,0,0.5)"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_shadow_color",
+      "label": "Subtitle Shadow Color",
+      "default": "rgba(0,0,0,0.3)"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Overlay Settings"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color_start",
+      "label": "Overlay Gradient Start",
+      "default": "rgba(0,0,0,0.6)"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color_end",
+      "label": "Overlay Gradient End",
+      "default": "rgba(0,0,0,0.3)"
+    },
+    {
+      "type": "header",
+      "content": "Primary Button Colors"
+    },
+    {
+      "type": "text",
+      "id": "primary_button_text",
+      "label": "Primary Button Text",
+      "default": "ORDER NOW"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_link",
+      "label": "Primary Button Link"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_color_start",
+      "label": "Primary Button Gradient Start",
+      "default": "#007bff"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_color_end",
+      "label": "Primary Button Gradient End",
+      "default": "#0056b3"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_text_color",
+      "label": "Primary Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_border_color",
+      "label": "Primary Button Border Color",
+      "default": "transparent"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_hover_shadow",
+      "label": "Primary Button Hover Shadow",
+      "default": "rgba(0,123,255,0.4)"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_hover_bg_start",
+      "label": "Primary Button Hover Gradient Start",
+      "default": "#c2185b"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_hover_bg_end",
+      "label": "Primary Button Hover Gradient End",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_hover_text_color",
+      "label": "Primary Button Hover Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button Colors"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary Button Text"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary Button Link"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_bg_color",
+      "label": "Secondary Button Background",
+      "default": "transparent"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_border_color",
+      "label": "Secondary Button Border Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_text_color",
+      "label": "Secondary Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_hover_bg",
+      "label": "Secondary Button Hover Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_hover_text",
+      "label": "Secondary Button Hover Text",
+      "default": "#333333"
+    },
+    {
+      "type": "select",
+      "id": "buttons_alignment",
+      "label": "Buttons Alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+
+    {
+      "type": "header",
+      "content": "Feature Items Colors"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_features",
+      "label": "Show Feature Items",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "feature_bg_color",
+      "label": "Feature Background Color",
+      "default": "rgba(255,255,255,0.1)"
+    },
+    {
+      "type": "color",
+      "id": "feature_border_color",
+      "label": "Feature Border Color",
+      "default": "rgba(255,255,255,0.2)"
+    },
+    {
+      "type": "color",
+      "id": "feature_text_color",
+      "label": "Feature Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "feature_icon_color",
+      "label": "Feature Icon Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "feature_1",
+      "label": "Feature 1",
+      "default": "Fastest Delivery: 1-2 days!"
+    },
+    {
+      "type": "text",
+      "id": "feature_2",
+      "label": "Feature 2",
+      "default": "Fastest Delivery: 1-2 days!"
+    },
+    {
+      "type": "text",
+      "id": "feature_3",
+      "label": "Feature 3",
+      "default": "Fastest Delivery: 1-2 days!"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "security_badge",
+      "name": "Security badge",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "text", "label": "Badge text", "default": "SSL encryption enabled to protect your information security" },
+        { "type": "color", "id": "text_color", "label": "Text color", "default": "#18A03D" },
+        { "type": "color", "id": "icon_color", "label": "Icon color", "default": "#18A03D" },
+        { "type": "range", "id": "text_size", "label": "Text size (px)", "min": 10, "max": 24, "step": 1, "default": 14 },
+        { "type": "range", "id": "icon_size", "label": "Icon size (px)", "min": 12, "max": 32, "step": 1, "default": 18 }
+      ]
+    },
+    {
+      "type": "secure_payment",
+      "name": "Secure payment",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading_text", "label": "Heading text", "default": "Secure payment" },
+        { "type": "checkbox", "id": "show_snippet_heading", "label": "Show snippet heading (from payment-icons)", "default": false },
+        { "type": "checkbox", "id": "show_snippet_note", "label": "Show snippet note (from payment-icons)", "default": false },
+        { "type": "select", "id": "alignment", "label": "Alignment", "options": [
+          { "value": "flex-start", "label": "Left" },
+          { "value": "center", "label": "Center" },
+          { "value": "flex-end", "label": "Right" }
+        ], "default": "center" },
+        { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#333333" },
+        { "type": "range", "id": "heading_size", "label": "Heading font size (px)", "min": 10, "max": 24, "step": 1, "default": 14 },
+        { "type": "range", "id": "heading_weight", "label": "Heading font weight", "min": 300, "max": 800, "step": 100, "default": 600 },
+        { "type": "range", "id": "icon_size", "label": "Icon size (px)", "min": 16, "max": 48, "step": 1, "default": 24 },
+        { "type": "range", "id": "margin_top", "label": "Top spacing (px)", "min": 0, "max": 40, "step": 2, "default": 12 },
+        { "type": "range", "id": "margin_bottom", "label": "Bottom spacing (px)", "min": 0, "max": 40, "step": 2, "default": 12 }
+      ]
+    },
+    {
+      "type": "social_proof",
+      "name": "Social proof (rating)",
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "rating", "label": "Star rating", "min": 0, "max": 5, "step": 1, "default": 5 },
+        { "type": "checkbox", "id": "show_rating_text", "label": "Show rating text (X out of 5)", "default": false },
+        { "type": "range", "id": "star_size", "label": "Star size (px)", "min": 10, "max": 40, "step": 1, "default": 18 },
+        { "type": "color", "id": "star_color", "label": "Filled star color", "default": "#ffd700" },
+        { "type": "color", "id": "star_empty_color", "label": "Empty star color", "default": "#dddddd" },
+        { "type": "text", "id": "caption_text", "label": "Caption text", "default": "L'abu is loved by thousands worldwide" },
+        { "type": "color", "id": "text_color", "label": "Caption text color", "default": "#333333" },
+        { "type": "range", "id": "text_size", "label": "Caption text size (px)", "min": 10, "max": 20, "step": 1, "default": 12 },
+        { "type": "select", "id": "alignment", "label": "Alignment", "options": [
+          { "value": "flex-start", "label": "Left" },
+          { "value": "center", "label": "Center" },
+          { "value": "flex-end", "label": "Right" }
+        ], "default": "center" },
+        { "type": "range", "id": "text_weight", "label": "Caption font weight", "min": 300, "max": 800, "step": 100, "default": 500 },
+        { "type": "range", "id": "margin_top", "label": "Top spacing (px)", "min": 0, "max": 40, "step": 2, "default": 8 },
+        { "type": "range", "id": "margin_bottom", "label": "Bottom spacing (px)", "min": 0, "max": 40, "step": 2, "default": 8 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Section",
+      "blocks": [
+        { "type": "security_badge" },
+        { "type": "secure_payment" },
+        { "type": "social_proof" }
+      ]
+    }
+  ]
+}
+{% endschema %}

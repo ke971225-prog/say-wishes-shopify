@@ -1,0 +1,124 @@
+<!-- sections/order-steps-custom.liquid -->
+<section class="order-steps-custom">
+  <div class="container">
+    <!-- 标题 -->
+    <h2 class="steps-title">Order in Just 6 Simple Steps! 🤩</h2>
+    
+    <!-- 步骤网格 -->
+    <div class="steps-grid">
+      <!-- Step 1 -->
+      <div class="step-item">
+        <div class="step-icon">🎁</div>
+        <h3 class="step-title">Step 1</h3>
+        <p class="step-text">Add a photo of the person you want to surprise. 📸</p>
+      </div>
+      <!-- Step 2 -->
+      <div class="step-item">
+        <div class="step-icon">👫</div>
+        <h3 class="step-title">Step 2</h3>
+        <p class="step-text">Choose between Women or Men team to personalize your surprise! 🧡</p>
+      </div>
+      <!-- Step 3 -->
+      <div class="step-item">
+        <div class="step-icon">📝</div>
+        <h3 class="step-title">Step 3</h3>
+        <p class="step-text">Write 2-4 short lines, they’ll appear on the chalkboard in the video. ✨</p>
+      </div>
+      <!-- Step 4 -->
+      <div class="step-item">
+        <div class="step-icon">🗣️</div>
+        <h3 class="step-title">Step 4</h3>
+        <p class="step-text">Let us know exactly what you want to hear so our African friends can pronounce it. 🌍</p>
+      </div>
+      <!-- Step 5 -->
+      <div class="step-item">
+        <div class="step-icon">🎵</div>
+        <h3 class="step-title">Step 5</h3>
+        <p class="step-text">Add your favorite song or let us pick a song. 🎶</p>
+      </div>
+      <!-- Step 6 -->
+      <div class="step-item">
+        <div class="step-icon">📧</div>
+        <h3 class="step-title">Step 6</h3>
+        <p class="step-text">Once the video has been made, it will be delivered by email within 1 to 2 days. ⏳</p>
+      </div>
+    </div>
+    
+    <!-- 按钮 -->
+    <a href="#" class="steps-cta">ORDER NOW</a>
+  </div>
+</section>
+
+<!-- 样式直接写死，无需额外设置 -->
+<style>
+.order-steps-custom {
+  background: #fbc07b; /* 目标橙色背景 */
+  padding: 40px 20px;
+  text-align: center;
+  margin: 40px 0;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.steps-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 30px;
+}
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3列布局 */
+  gap: 30px;
+  margin-bottom: 40px;
+}
+.step-item {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.step-icon {
+  font-size: 40px;
+  color: #000;
+  margin-bottom: 15px;
+}
+.step-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 10px;
+}
+.step-text {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+}
+.steps-cta {
+  background: #e63946; /* 目标按钮颜色 */
+  color: #fff;
+  padding: 12px 30px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.steps-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(230,57,70,0.2);
+}
+</style>
+
+<!-- 区块配置（固定内容，无需后台设置） -->
+{% schema %}
+{
+  "name": "Order Steps Custom",
+  "presets": [
+    {
+      "name": "Order Steps Custom",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

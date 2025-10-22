@@ -1,0 +1,16 @@
+{
+  "name": "psi-fetcher",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fetch PageSpeed Insights (mobile & desktop) and write markdown report",
+  "scripts": {
+    "psi:fetch": "node fetch-psi-report.js",
+    "psi:mobile": "node fetch-psi-report.js --strategy mobile",
+    "psi:desktop": "node fetch-psi-report.js --strategy desktop",
+    "psi:demo": "node fetch-psi-report.js https://wishesvideo.com/ https://wishesvideo.com/collections/all --output 交付物\\性能报告.md --json 交付物\\psi-results.json"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  },
+  "type": "module"
+}

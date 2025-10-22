@@ -1,0 +1,325 @@
+<style>
+  .customer-happiness {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .customer-happiness::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+    opacity: 0.3;
+  }
+  
+  .customer-happiness__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .customer-happiness__header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  
+  .customer-happiness__title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  
+  .customer-happiness__subtitle {
+    font-size: 1.3rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  
+  .customer-happiness__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 60px;
+  }
+  
+  .stat-card {
+    text-align: center;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  .stat-card__icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: block;
+  }
+  
+  .stat-card__number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #ffd700;
+  }
+  
+  .stat-card__label {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .customer-happiness__guarantees {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+  }
+  
+  .guarantee-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .guarantee-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(10px);
+  }
+  
+  .guarantee-card__icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+  }
+  
+  .guarantee-card__content h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  
+  .guarantee-card__content p {
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+  
+  @media (max-width: 768px) {
+    .customer-happiness {
+      padding: 60px 0;
+    }
+    
+    .customer-happiness__title {
+      font-size: 2.2rem;
+    }
+    
+    .customer-happiness__stats {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    
+    .customer-happiness__guarantees {
+      grid-template-columns: 1fr;
+    }
+    
+    .guarantee-card {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+
+<div class="customer-happiness">
+  <div class="customer-happiness__container">
+    <div class="customer-happiness__header">
+      <h2 class="customer-happiness__title">{{ section.settings.title }}</h2>
+      {% if section.settings.subtitle != blank %}
+        <p class="customer-happiness__subtitle">{{ section.settings.subtitle }}</p>
+      {% endif %}
+    </div>
+    
+    <div class="customer-happiness__stats">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'stat' %}
+            <div class="stat-card" {{ block.shopify_attributes }}>
+              {% if block.settings.icon != blank %}
+                <span class="stat-card__icon">{{ block.settings.icon }}</span>
+              {% endif %}
+              <div class="stat-card__number">{{ block.settings.number }}</div>
+              <div class="stat-card__label">{{ block.settings.label }}</div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+    
+    <div class="customer-happiness__guarantees">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'guarantee' %}
+            <div class="guarantee-card" {{ block.shopify_attributes }}>
+              {% if block.settings.icon != blank %}
+                <span class="guarantee-card__icon">{{ block.settings.icon }}</span>
+              {% endif %}
+              <div class="guarantee-card__content">
+                <h3>{{ block.settings.title }}</h3>
+                <p>{{ block.settings.description }}</p>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Customer Happiness",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Customer Happiness Guaranteed"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Section Subtitle",
+      "default": "Join thousands of satisfied customers who have created unforgettable memories"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Statistic",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon (Emoji)",
+          "default": "⭐"
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number",
+          "default": "50,000+"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Happy Customers"
+        }
+      ]
+    },
+    {
+      "type": "guarantee",
+      "name": "Guarantee",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon (Emoji)",
+          "default": "✅"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "100% Satisfaction"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "We guarantee your complete satisfaction or your money back"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer Happiness",
+      "blocks": [
+        {
+          "type": "stat",
+          "settings": {
+            "icon": "⭐",
+            "number": "50,000+",
+            "label": "Happy Customers"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "icon": "🎥",
+            "number": "4.9/5",
+            "label": "Average Rating"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "icon": "🚀",
+            "number": "1-2 Days",
+            "label": "Fast Delivery"
+          }
+        },
+        {
+          "type": "guarantee",
+          "settings": {
+            "icon": "✅",
+            "title": "100% Satisfaction",
+            "description": "We guarantee your complete satisfaction or your money back"
+          }
+        },
+        {
+          "type": "guarantee",
+          "settings": {
+            "icon": "🔒",
+            "title": "Secure Payment",
+            "description": "Your payment information is always safe and secure"
+          }
+        },
+        {
+          "type": "guarantee",
+          "settings": {
+            "icon": "🎁",
+            "title": "Unique Gift",
+            "description": "Create memories that will last a lifetime"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

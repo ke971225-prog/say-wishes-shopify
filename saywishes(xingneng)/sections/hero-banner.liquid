@@ -1,0 +1,307 @@
+<style>
+  .hero-banner {
+    background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%);
+    padding: 60px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+  }
+  
+  .hero-banner__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .hero-banner__star {
+    color: #d4af37;
+    font-size: 24px;
+    margin: 0 5px;
+    display: inline-block;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+  
+  .hero-banner__star:nth-child(2) { animation-delay: 0.2s; }
+  .hero-banner__star:nth-child(3) { animation-delay: 0.4s; }
+  
+  @keyframes sparkle {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
+  }
+  
+  .hero-banner__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 20px 0;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .hero-banner__subtitle {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin: 15px 0 30px;
+    font-weight: 500;
+  }
+  
+  .hero-banner__rating {
+    margin: 25px 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    font-weight: 600;
+  }
+  
+  .hero-banner__rating-stars {
+    margin: 0 10px;
+    color: #f39c12;
+    font-size: 1.3rem;
+  }
+  
+  .hero-banner__rating-number {
+    font-weight: 700;
+    color: #e74c3c;
+  }
+  
+  .hero-banner__button {
+    background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%);
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+    text-decoration: none;
+    display: inline-block;
+    margin: 20px 0;
+  }
+  
+  .hero-banner__button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(233, 30, 99, 0.4);
+    background: linear-gradient(135deg, #ad1457 0%, #e91e63 100%);
+  }
+  
+  .hero-banner__guarantee {
+    margin-top: 25px;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    font-weight: 600;
+  }
+  
+  .hero-banner__guarantee-icon {
+    color: #f39c12;
+    margin-right: 8px;
+  }
+  
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .hero-banner {
+      padding: 40px 15px;
+    }
+    
+    .hero-banner__title {
+      font-size: 2rem;
+    }
+    
+    .hero-banner__subtitle {
+      font-size: 1rem;
+    }
+    
+    .hero-banner__button {
+      padding: 12px 30px;
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .hero-banner__title {
+      font-size: 1.8rem;
+    }
+    
+    .hero-banner__star {
+      font-size: 20px;
+    }
+  }
+</style>
+
+<div class="hero-banner color-{{ section.settings.color_scheme }}">
+  <div class="hero-banner__container">
+    {% if section.settings.show_stars %}
+      <div class="hero-banner__stars">
+        <span class="hero-banner__star">☆</span>
+        <span class="hero-banner__star">☆</span>
+        <span class="hero-banner__star">☆</span>
+      </div>
+    {% endif %}
+    
+    {% if section.settings.title != blank %}
+      <h1 class="hero-banner__title">{{ section.settings.title }}</h1>
+    {% endif %}
+    
+    {% if section.settings.subtitle != blank %}
+      <p class="hero-banner__subtitle">{{ section.settings.subtitle }}</p>
+    {% endif %}
+    
+    {% if section.settings.show_rating %}
+      <div class="hero-banner__rating">
+        {{ section.settings.rating_text }}
+        <span class="hero-banner__rating-stars">★★★★★</span>
+        <span class="hero-banner__rating-number">{{ section.settings.rating_number }}</span>
+      </div>
+    {% endif %}
+    
+    {% if section.settings.button_label != blank %}
+      <a href="{{ section.settings.button_link }}" class="hero-banner__button">
+        {{ section.settings.button_label }}
+      </a>
+    {% endif %}
+    
+    {% if section.settings.show_guarantee and section.settings.guarantee_text != blank %}
+      <div class="hero-banner__guarantee">
+        <span class="hero-banner__guarantee-icon">🛡️</span>
+        {{ section.settings.guarantee_text }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_stars",
+      "label": "显示装饰星星",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "主标题",
+      "default": "Make every moment special with a personalized video message!"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "副标题",
+      "default": "Order your personalized video message now!"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "显示评分",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "label": "评分文字",
+      "default": "Customers rate us on average with an"
+    },
+    {
+      "type": "text",
+      "id": "rating_number",
+      "label": "评分数字",
+      "default": "4.9/5"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "按钮文字",
+      "default": "ORDER NOW"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "按钮链接"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_guarantee",
+      "label": "显示保证信息",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "guarantee_text",
+      "label": "保证文字",
+      "default": "100% MONEY BACK GUARANTEE!"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "配色方案",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "间距设置"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "顶部间距",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "底部间距",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner",
+      "settings": {
+        "title": "Make every moment special with a personalized video message!",
+        "subtitle": "Order your personalized video message now!",
+        "rating_text": "Customers rate us on average with an",
+        "rating_number": "4.9/5",
+        "button_label": "ORDER NOW",
+        "guarantee_text": "100% MONEY BACK GUARANTEE!",
+        "show_stars": true,
+        "show_rating": true,
+        "show_guarantee": true
+      }
+    }
+  ]
+}
+{% endschema %}

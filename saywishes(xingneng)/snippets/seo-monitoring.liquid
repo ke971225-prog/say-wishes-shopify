@@ -1,0 +1,517 @@
+{% comment %}
+  SEO监控和分析工具
+  实时监控网站SEO性能和竞争对手表现
+{% endcomment %}
+
+<script>
+// SEO监控控制器
+window.SEOMonitoring = {
+  config: {
+    trackingEnabled: true,
+    competitorUrls: [
+      'wishesmadeeasy.com',
+      'surprisefromafrica.com', 
+      'africanbirthdayvideos.com'
+    ],
+    targetKeywords: [
+      'personalized video messages',
+      'custom video greetings',
+      'video messages from africa',
+      'african video greetings',
+      'birthday video messages',
+      'personalized wishes'
+    ],
+    monitoringInterval: 24 * 60 * 60 * 1000 // 24小时
+  },
+  
+  init: function() {
+    this.trackPagePerformance();
+    this.monitorSEOMetrics();
+    this.trackUserBehavior();
+    this.checkTechnicalSEO();
+    this.setupPeriodicMonitoring();
+  },
+  
+  // 页面性能监控
+  trackPagePerformance: function() {
+    if ('performance' in window) {
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const perfData = performance.getEntriesByType('navigation')[0];
+          const metrics = {
+            loadTime: perfData.loadEventEnd - perfData.loadEventStart,
+            domContentLoaded: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
+            firstPaint: this.getFirstPaint(),
+            largestContentfulPaint: this.getLCP(),
+            cumulativeLayoutShift: this.getCLS(),
+            firstInputDelay: this.getFID()
+          };
+          
+          this.sendMetrics('page_performance', metrics);
+        }, 1000);
+      });
+    }
+  },
+  
+  // 获取First Paint时间
+  getFirstPaint: function() {
+    const paintEntries = performance.getEntriesByType('paint');
+    const firstPaint = paintEntries.find(entry => entry.name === 'first-paint');
+    return firstPaint ? firstPaint.startTime : null;
+  },
+  
+  // 获取Largest Contentful Paint
+  getLCP: function() {
+    return new Promise((resolve) => {
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          const lastEntry = entries[entries.length - 1];
+          resolve(lastEntry.startTime);
+        });
+        observer.observe({ entryTypes: ['largest-contentful-paint'] });
+        
+        // 超时处理
+        setTimeout(() => resolve(null), 5000);
+      } else {
+        resolve(null);
+      }
+    });
+  },
+  
+  // 获取Cumulative Layout Shift
+  getCLS: function() {
+    return new Promise((resolve) => {
+      if ('PerformanceObserver' in window) {
+        let clsValue = 0;
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (!entry.hadRecentInput) {
+              clsValue += entry.value;
+            }
+          }
+        });
+        observer.observe({ entryTypes: ['layout-shift'] });
+        
+        setTimeout(() => {
+          observer.disconnect();
+          resolve(clsValue);
+        }, 5000);
+      } else {
+        resolve(null);
+      }
+    });
+  },
+  
+  // 获取First Input Delay
+  getFID: function() {
+    return new Promise((resolve) => {
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            resolve(entry.processingStart - entry.startTime);
+            observer.disconnect();
+            return;
+          }
+        });
+        observer.observe({ entryTypes: ['first-input'] });
+        
+        setTimeout(() => resolve(null), 10000);
+      } else {
+        resolve(null);
+      }
+    });
+  },
+  
+  // SEO指标监控
+  monitorSEOMetrics: function() {
+    const seoMetrics = {
+      pageTitle: document.title,
+      metaDescription: this.getMetaContent('description'),
+      metaKeywords: this.getMetaContent('keywords'),
+      canonicalUrl: this.getCanonicalUrl(),
+      ogTitle: this.getMetaProperty('og:title'),
+      ogDescription: this.getMetaProperty('og:description'),
+      ogImage: this.getMetaProperty('og:image'),
+      twitterCard: this.getMetaContent('twitter:card'),
+      structuredData: this.getStructuredData(),
+      internalLinks: this.countInternalLinks(),
+      externalLinks: this.countExternalLinks(),
+      images: this.analyzeImages(),
+      headings: this.analyzeHeadings()
+    };
+    
+    this.sendMetrics('seo_metrics', seoMetrics);
+  },
+  
+  // 获取Meta标签内容
+  getMetaContent: function(name) {
+    const meta = document.querySelector(`meta[name="${name}"]`);
+    return meta ? meta.content : null;
+  },
+  
+  // 获取Meta属性内容
+  getMetaProperty: function(property) {
+    const meta = document.querySelector(`meta[property="${property}"]`);
+    return meta ? meta.content : null;
+  },
+  
+  // 获取Canonical URL
+  getCanonicalUrl: function() {
+    const canonical = document.querySelector('link[rel="canonical"]');
+    return canonical ? canonical.href : null;
+  },
+  
+  // 获取结构化数据
+  getStructuredData: function() {
+    const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+    const structuredData = [];
+    
+    scripts.forEach(script => {
+      try {
+        const data = JSON.parse(script.textContent);
+        structuredData.push(data);
+      } catch (e) {
+        console.warn('Invalid structured data:', e);
+      }
+    });
+    
+    return structuredData;
+  },
+  
+  // 统计内部链接
+  countInternalLinks: function() {
+    const links = document.querySelectorAll('a[href]');
+    let internalCount = 0;
+    
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href.startsWith('/') || href.includes(window.location.hostname))) {
+        internalCount++;
+      }
+    });
+    
+    return internalCount;
+  },
+  
+  // 统计外部链接
+  countExternalLinks: function() {
+    const links = document.querySelectorAll('a[href]');
+    let externalCount = 0;
+    
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('http') && !href.includes(window.location.hostname)) {
+        externalCount++;
+      }
+    });
+    
+    return externalCount;
+  },
+  
+  // 分析图片
+  analyzeImages: function() {
+    const images = document.querySelectorAll('img');
+    let withAlt = 0;
+    let withoutAlt = 0;
+    let totalSize = 0;
+    
+    images.forEach(img => {
+      if (img.alt && img.alt.trim()) {
+        withAlt++;
+      } else {
+        withoutAlt++;
+      }
+      
+      // 估算图片大小（如果可能）
+      if (img.naturalWidth && img.naturalHeight) {
+        totalSize += img.naturalWidth * img.naturalHeight;
+      }
+    });
+    
+    return {
+      total: images.length,
+      withAlt: withAlt,
+      withoutAlt: withoutAlt,
+      estimatedSize: totalSize
+    };
+  },
+  
+  // 分析标题结构
+  analyzeHeadings: function() {
+    const headings = {
+      h1: document.querySelectorAll('h1').length,
+      h2: document.querySelectorAll('h2').length,
+      h3: document.querySelectorAll('h3').length,
+      h4: document.querySelectorAll('h4').length,
+      h5: document.querySelectorAll('h5').length,
+      h6: document.querySelectorAll('h6').length
+    };
+    
+    return headings;
+  },
+  
+  // 用户行为跟踪
+  trackUserBehavior: function() {
+    let scrollDepth = 0;
+    let timeOnPage = Date.now();
+    let interactions = 0;
+    
+    // 滚动深度跟踪
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const currentDepth = Math.round((currentScroll / documentHeight) * 100);
+      
+      if (currentDepth > scrollDepth) {
+        scrollDepth = currentDepth;
+      }
+    });
+    
+    // 交互跟踪
+    ['click', 'keydown', 'mousemove'].forEach(event => {
+      document.addEventListener(event, () => {
+        interactions++;
+      }, { once: true, passive: true });
+    });
+    
+    // 页面离开时发送数据
+    window.addEventListener('beforeunload', () => {
+      const behaviorData = {
+        timeOnPage: Date.now() - timeOnPage,
+        scrollDepth: scrollDepth,
+        interactions: interactions,
+        pageUrl: window.location.href,
+        referrer: document.referrer
+      };
+      
+      this.sendMetrics('user_behavior', behaviorData);
+    });
+  },
+  
+  // 技术SEO检查
+  checkTechnicalSEO: function() {
+    const technicalIssues = [];
+    
+    // 检查页面标题
+    if (!document.title || document.title.length < 30 || document.title.length > 60) {
+      technicalIssues.push('Page title length issue');
+    }
+    
+    // 检查Meta描述
+    const description = this.getMetaContent('description');
+    if (!description || description.length < 120 || description.length > 160) {
+      technicalIssues.push('Meta description length issue');
+    }
+    
+    // 检查H1标签
+    const h1Tags = document.querySelectorAll('h1');
+    if (h1Tags.length === 0) {
+      technicalIssues.push('Missing H1 tag');
+    } else if (h1Tags.length > 1) {
+      technicalIssues.push('Multiple H1 tags');
+    }
+    
+    // 检查图片Alt属性
+    const imagesWithoutAlt = document.querySelectorAll('img:not([alt])');
+    if (imagesWithoutAlt.length > 0) {
+      technicalIssues.push(`${imagesWithoutAlt.length} images without alt text`);
+    }
+    
+    // 检查内部链接
+    const brokenLinks = this.checkBrokenLinks();
+    if (brokenLinks.length > 0) {
+      technicalIssues.push(`${brokenLinks.length} potentially broken links`);
+    }
+    
+    this.sendMetrics('technical_seo', { issues: technicalIssues });
+  },
+  
+  // 检查损坏的链接
+  checkBrokenLinks: function() {
+    const links = document.querySelectorAll('a[href]');
+    const suspiciousLinks = [];
+    
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === '#' || href === 'javascript:void(0)' || href === '')) {
+        suspiciousLinks.push(href);
+      }
+    });
+    
+    return suspiciousLinks;
+  },
+  
+  // 设置定期监控
+  setupPeriodicMonitoring: function() {
+    // 每24小时检查一次
+    setInterval(() => {
+      this.monitorSEOMetrics();
+      this.checkTechnicalSEO();
+    }, this.config.monitoringInterval);
+  },
+  
+  // 发送指标数据
+  sendMetrics: function(type, data) {
+    const payload = {
+      type: type,
+      data: data,
+      timestamp: new Date().toISOString(),
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight
+      }
+    };
+    
+    // 发送到Google Analytics（Shopify官方推荐的分析方式）
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'seo_monitoring', {
+        event_category: 'SEO',
+        event_label: type,
+        custom_parameter: JSON.stringify(payload)
+      });
+    }
+    
+    // 发送到Shopify Analytics（如果可用）
+    if (typeof ShopifyAnalytics !== 'undefined' && ShopifyAnalytics.lib) {
+      ShopifyAnalytics.lib.track('SEO Monitoring', {
+        type: type,
+        data: data,
+        timestamp: payload.timestamp
+      });
+    }
+    
+    // 存储到本地存储以供后续分析
+    this.storeLocalMetrics(type, payload);
+  },
+  
+  // 本地存储指标
+  storeLocalMetrics: function(type, data) {
+    try {
+      const key = `seo_metrics_${type}`;
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      existing.push(data);
+      
+      // 只保留最近100条记录
+      if (existing.length > 100) {
+        existing.splice(0, existing.length - 100);
+      }
+      
+      localStorage.setItem(key, JSON.stringify(existing));
+    } catch (error) {
+      console.warn('Failed to store metrics locally:', error);
+    }
+  },
+  
+  // 获取本地存储的指标
+  getLocalMetrics: function(type) {
+    try {
+      const key = `seo_metrics_${type}`;
+      return JSON.parse(localStorage.getItem(key) || '[]');
+    } catch (error) {
+      console.warn('Failed to retrieve local metrics:', error);
+      return [];
+    }
+  },
+  
+  // 生成SEO报告
+  generateSEOReport: function() {
+    const report = {
+      performance: this.getLocalMetrics('page_performance'),
+      seoMetrics: this.getLocalMetrics('seo_metrics'),
+      userBehavior: this.getLocalMetrics('user_behavior'),
+      technicalSEO: this.getLocalMetrics('technical_seo')
+    };
+    
+    console.log('SEO Report:', report);
+    return report;
+  }
+};
+
+// 初始化SEO监控
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.SEOMonitoring) {
+    window.SEOMonitoring.init();
+  }
+});
+
+// 暴露全局方法供调试使用
+window.getSEOReport = function() {
+  return window.SEOMonitoring.generateSEOReport();
+};
+</script>
+
+<!-- SEO监控样式 -->
+<style>
+.seo-debug-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 9999;
+  max-width: 300px;
+  font-size: 12px;
+  display: none;
+}
+
+.seo-debug-panel.active {
+  display: block;
+}
+
+.seo-debug-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #007cba;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 18px;
+}
+</style>
+
+<!-- SEO调试面板 (仅在开发环境显示) -->
+{% if settings.seo_debug_mode %}
+<button class="seo-debug-toggle" onclick="toggleSEODebug()">SEO</button>
+<div id="seo-debug-panel" class="seo-debug-panel">
+  <h4>SEO Debug Info</h4>
+  <div id="seo-debug-content">
+    <p>Loading SEO metrics...</p>
+  </div>
+</div>
+
+<script>
+function toggleSEODebug() {
+  const panel = document.getElementById('seo-debug-panel');
+  panel.classList.toggle('active');
+  
+  if (panel.classList.contains('active')) {
+    updateSEODebugInfo();
+  }
+}
+
+function updateSEODebugInfo() {
+  const content = document.getElementById('seo-debug-content');
+  const metrics = window.SEOMonitoring.monitorSEOMetrics();
+  
+  content.innerHTML = `
+    <p><strong>Title:</strong> ${document.title.length} chars</p>
+    <p><strong>Description:</strong> ${window.SEOMonitoring.getMetaContent('description')?.length || 0} chars</p>
+    <p><strong>H1 Tags:</strong> ${document.querySelectorAll('h1').length}</p>
+    <p><strong>Images without Alt:</strong> ${document.querySelectorAll('img:not([alt])').length}</p>
+    <p><strong>Internal Links:</strong> ${window.SEOMonitoring.countInternalLinks()}</p>
+    <p><strong>External Links:</strong> ${window.SEOMonitoring.countExternalLinks()}</p>
+  `;
+}
+</script>
+{% endif %}

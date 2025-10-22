@@ -1,0 +1,1063 @@
+<style>
+/* Spin Wheel Popup Styles */
+.spin-wheel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.spin-wheel-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.spin-wheel-popup {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.spin-wheel-overlay.show .spin-wheel-popup {
+  transform: scale(1);
+}
+
+.popup-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  z-index: 1;
+}
+
+.popup-close:hover {
+  color: #333;
+}
+
+.popup-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.popup-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.popup-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+/* Wheel Container */
+.wheel-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto 30px;
+}
+
+.wheel-canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.wheel-pointer {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 25px solid #ff4757;
+  z-index: 2;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.wheel-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #ff6b6b, #ff4757);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  transition: all 0.2s ease;
+}
+
+.wheel-center:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.wheel-center.spinning {
+  pointer-events: none;
+}
+
+/* Spin Button */
+.spin-button {
+  display: block;
+  width: 200px;
+  margin: 0 auto 20px;
+  padding: 15px 30px;
+  background: linear-gradient(135deg, #ff6b6b, #ff4757);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.spin-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.spin-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Email Form */
+.email-form {
+  margin-bottom: 20px;
+}
+
+.email-input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e1e8ed;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.email-input:focus {
+  outline: none;
+  border-color: #ff6b6b;
+}
+
+/* Result Display */
+.result-display {
+  text-align: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 15px;
+  margin-top: 20px;
+  display: none;
+}
+
+.result-display.show {
+  display: block;
+}
+
+.result-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  color: #2ecc71;
+}
+
+.result-discount {
+  font-size: 36px;
+  font-weight: bold;
+  color: #ff4757;
+  margin: 10px 0;
+}
+
+.result-code {
+  font-size: 18px;
+  font-weight: bold;
+  background: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 2px dashed #ff4757;
+  margin: 15px 0;
+  color: #ff4757;
+}
+
+.copy-code-btn {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.copy-code-btn:hover {
+  background: #ff3742;
+}
+
+/* removed apply-discount-btn styles: popup remains a pure coupon-code interface */
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .spin-wheel-popup {
+    width: 95%;
+    max-width: 400px;
+    max-height: 85vh;
+    padding: 20px;
+    margin: 20px;
+    overflow-y: auto;
+  }
+  
+  .wheel-container {
+    width: 250px;
+    height: 250px;
+  }
+  
+  .popup-close {
+    font-size: 28px;
+    min-height: 44px;
+    min-width: 44px;
+    top: 10px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .spin-button {
+    min-height: 48px;
+    min-width: 120px;
+    font-size: 16px;
+    padding: 12px 24px;
+    touch-action: manipulation;
+  }
+  
+  .email-input {
+    font-size: 16px; /* Prevent iOS zoom */
+    min-height: 44px;
+    padding: 12px;
+  }
+  
+  .popup-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .popup-subtitle {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .wheel-center {
+    width: 50px;
+    height: 50px;
+    font-size: 12px;
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+  
+  .copy-code-btn {
+    min-height: 48px;
+    font-size: 16px;
+    padding: 12px 24px;
+    touch-action: manipulation;
+  }
+}
+
+/* Animation Classes */
+@keyframes wheelSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(var(--spin-rotation)); }
+}
+
+.wheel-spinning {
+  animation: wheelSpin 3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes celebrate {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.celebrate {
+  animation: celebrate 0.6s ease-in-out;
+}
+
+/* 背景图片模式，确保文字可读 */
+.spin-wheel-popup.use-bg {
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+
+.spin-wheel-popup.use-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, var(--overlay-alpha, 0.4));
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.spin-wheel-popup.use-bg .popup-title,
+.spin-wheel-popup.use-bg .popup-subtitle,
+.spin-wheel-popup.use-bg .result-title {
+  color: #fff;
+}
+</style>
+
+<!-- Spin Wheel Popup -->
+{% if section.settings.enable_spin_wheel %}
+<div class="spin-wheel-overlay" id="spinWheelOverlay">
+  <div class="spin-wheel-popup {% if section.settings.background_image %}use-bg{% endif %}" role="dialog" aria-modal="true" aria-labelledby="spinWheelTitle" tabindex="-1" {% if section.settings.background_image %}style="background-image: url({{ section.settings.background_image | image_url: width: 2000 }}); --overlay-alpha: {{ section.settings.background_overlay_opacity | default: 40 | times: 0.01 }};"{% endif %}>
+    <button class="popup-close" aria-label="Close popup" onclick="closeSpinWheel()">&times;</button>
+    
+    <div class="popup-header">
+      <h2 id="spinWheelTitle" class="popup-title">{{ section.settings.popup_title | default: '🎉 Spin to Win!' }}</h2>
+      <p class="popup-subtitle">{{ section.settings.popup_subtitle | default: 'Enter your email and spin for a chance to win amazing discounts!' }}</p>
+    </div>
+    
+    <div class="wheel-container">
+      <div class="wheel-pointer"></div>
+      <canvas class="wheel-canvas" id="wheelCanvas" width="300" height="300"></canvas>
+      <div class="wheel-center" id="wheelCenter" onclick="spinWheel()">SPIN</div>
+    </div>
+    
+    <form class="email-form" id="emailForm" onsubmit="handleEmailSubmit(event)">
+      <input 
+        type="email" 
+        class="email-input" 
+        id="emailInput" 
+        placeholder="Enter your email address"
+        required
+      >
+      
+      <button type="submit" class="spin-button" id="spinButton">🎯 Spin the Wheel!</button>
+    </form>
+    
+    <div class="result-display" id="resultDisplay">
+      <h3 class="result-title">Congratulations! 🎉</h3>
+      <div class="result-discount" id="resultDiscount"></div>
+      <div class="result-code" id="resultCode"></div>
+      <button class="copy-code-btn" onclick="copyDiscountCode(event)">Copy Code</button>
+      <p style="margin-top: 15px; font-size: 14px; color: #666;">Use this code at checkout to get your discount!</p>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+class SpinWheelManager {
+  constructor() {
+    this.canvas = null;
+    this.ctx = null;
+    this.isSpinning = false;
+    this.hasSpun = false;
+    this.currentRotation = 0;
+    this.emailSubmitted = false;
+    this.userEmail = null;
+    this.popupShown = false;
+    
+    // Get discount mappings from settings
+    this.discountMappings = this.parseDiscountMappings('{{ section.settings.discount_mappings | default: "5% OFF:SPIN5:5,10% OFF:SPIN10:10,15% OFF:SPIN15:15,20% OFF:SPIN20:20,25% OFF:SPIN25:25,Try Again:TRYAGAIN:0" }}');
+    
+    this.segments = this.discountMappings.length;
+    this.segmentAngle = 360 / this.segments;
+    
+    this.colors = [
+      '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', 
+      '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd'
+    ];
+    
+    this.init();
+  }
+  
+  parseDiscountMappings(mappingsString) {
+    return mappingsString.split(',').map(mapping => {
+      const [display, code, percentage] = mapping.split(':');
+      return {
+        display: display.trim(),
+        code: code.trim(),
+        percentage: parseInt(percentage) || 0
+      };
+    });
+  }
+  
+  init() {
+    this.canvas = document.getElementById('wheelCanvas');
+    if (!this.canvas) return;
+    
+    this.ctx = this.canvas.getContext('2d');
+    this.drawWheel();
+    
+    // Show popup based on settings
+    if ({{ section.settings.auto_show | default: false }}) {
+      const delayMs = {{ section.settings.popup_delay_seconds | default: 7 | times: 1000 }};
+      setTimeout(() => { this.showPopup(); }, delayMs);
+    }
+  }
+  
+  drawWheel() {
+    const centerX = this.canvas.width / 2;
+    const centerY = this.canvas.height / 2;
+    const radius = Math.min(centerX, centerY) - 10;
+    
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    for (let i = 0; i < this.segments; i++) {
+      const startAngle = (i * this.segmentAngle - 90) * Math.PI / 180;
+      const endAngle = ((i + 1) * this.segmentAngle - 90) * Math.PI / 180;
+      
+      // Draw segment
+      this.ctx.beginPath();
+      this.ctx.moveTo(centerX, centerY);
+      this.ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      this.ctx.closePath();
+      this.ctx.fillStyle = this.colors[i % this.colors.length];
+      this.ctx.fill();
+      
+      // Draw border
+      this.ctx.strokeStyle = '#fff';
+      this.ctx.lineWidth = 3;
+      this.ctx.stroke();
+      
+      // Draw text
+      this.ctx.save();
+      this.ctx.translate(centerX, centerY);
+      this.ctx.rotate(startAngle + (this.segmentAngle * Math.PI / 180) / 2);
+      this.ctx.textAlign = 'center';
+      this.ctx.fillStyle = '#fff';
+      this.ctx.font = 'bold 14px Arial';
+      this.ctx.fillText(this.discountMappings[i].display, radius * 0.7, 5);
+      this.ctx.restore();
+    }
+  }
+  
+  showPopup() {
+    // Check if popup was already shown in this session
+    if (this.popupShown) {
+      return;
+    }
+    
+    // Check if user has spun recently
+    const lastSpin = localStorage.getItem('lastSpinTime');
+    const now = Date.now();
+    const cooldown = 24 * 60 * 60 * 1000; // 24 hours
+    
+    if (lastSpin && (now - parseInt(lastSpin)) < cooldown) {
+      return;
+    }
+    
+    const overlay = document.getElementById('spinWheelOverlay');
+    const dialog = document.querySelector('.spin-wheel-popup');
+    this._previouslyFocused = document.activeElement;
+    if (overlay) {
+      overlay.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      this.popupShown = true;
+      // Move focus into dialog for accessibility
+      setTimeout(() => {
+        try {
+          const emailInput = document.getElementById('emailInput');
+          if (emailInput) emailInput.focus();
+          else if (dialog) dialog.focus();
+        } catch (e) {}
+      }, 50);
+    }
+  }
+  
+  hidePopup() {
+    const overlay = document.getElementById('spinWheelOverlay');
+    if (overlay) {
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
+      // Restore focus to previously focused element
+      try {
+        if (this._previouslyFocused) this._previouslyFocused.focus();
+      } catch (e) {}
+    }
+  }
+  
+  spin() {
+    if (this.isSpinning || !this.emailSubmitted) return;
+    
+    this.isSpinning = true;
+    this.hasSpun = true;
+    
+    // Disable spin button
+    const spinButton = document.getElementById('spinButton');
+    const wheelCenter = document.getElementById('wheelCenter');
+    if (spinButton) spinButton.disabled = true;
+    if (wheelCenter) wheelCenter.classList.add('spinning');
+    
+    // Calculate random result
+    const winningSegment = Math.floor(Math.random() * this.segments);
+    const baseRotation = 360 * 5; // 5 full rotations
+    const segmentRotation = winningSegment * this.segmentAngle;
+    const finalRotation = baseRotation + (360 - segmentRotation) + (this.segmentAngle / 2);
+    
+    // Apply rotation
+    this.canvas.style.setProperty('--spin-rotation', finalRotation + 'deg');
+    this.canvas.classList.add('wheel-spinning');
+    
+    // Show result after animation
+    setTimeout(() => {
+      this.showResult(winningSegment);
+      this.isSpinning = false;
+      if (wheelCenter) wheelCenter.classList.remove('spinning');
+    }, 3000);
+  }
+  
+  showResult(segmentIndex) {
+    const result = this.discountMappings[segmentIndex];
+    const resultDisplay = document.getElementById('resultDisplay');
+    const resultDiscount = document.getElementById('resultDiscount');
+    const resultCode = document.getElementById('resultCode');
+    
+    if (result.percentage > 0) {
+      // Record the successful spin only when user wins a real discount
+      if (this.userEmail) {
+        recordSpin(this.userEmail);
+      }
+      
+      resultDiscount.textContent = result.display;
+      resultCode.textContent = result.code;
+      resultDisplay.classList.add('show');
+      resultDisplay.classList.add('celebrate');
+      
+      // Store result for analytics
+      this.trackConversion(result);
+      
+      // Auto-apply discount if possible
+      this.applyDiscount(result.code);
+    } else {
+      // Try again result - don't record as a completed spin
+      resultDiscount.textContent = 'Try Again!';
+      resultCode.textContent = 'Better luck next time!';
+      resultDisplay.classList.add('show');
+      
+      // Allow another spin after delay
+      setTimeout(() => {
+        this.resetWheel();
+      }, 3000);
+    }
+  }
+  
+  resetWheel() {
+    this.hasSpun = false;
+    this.isSpinning = false;
+    this.emailSubmitted = false;
+    this.userEmail = null;
+    this.canvas.classList.remove('wheel-spinning');
+    this.canvas.style.removeProperty('--spin-rotation');
+    
+    const resultDisplay = document.getElementById('resultDisplay');
+    const spinButton = document.getElementById('spinButton');
+    const wheelCenter = document.getElementById('wheelCenter');
+    const emailForm = document.getElementById('emailForm');
+    const emailInput = document.getElementById('emailInput');
+    
+    if (resultDisplay) resultDisplay.classList.remove('show', 'celebrate');
+    if (spinButton) spinButton.disabled = false;
+    if (wheelCenter) {
+      wheelCenter.classList.remove('spinning');
+      wheelCenter.innerHTML = 'SPIN';
+    }
+    if (emailForm) emailForm.style.display = 'block';
+    if (emailInput) emailInput.value = '';
+  }
+  
+  applyDiscount(code) {
+    // Spin wheel is a coupon-code popup: only show code and persist locally; do not create links or navigate
+    if (code && code !== 'TRYAGAIN') {
+      try { localStorage.setItem('spinWheelDiscountCode', code); } catch (e) {}
+      // ensure result code text is set (defensive)
+      try {
+        const resultCodeEl = document.getElementById('resultCode');
+        if (resultCodeEl && !resultCodeEl.textContent.trim()) {
+          resultCodeEl.textContent = code;
+        }
+      } catch (e) {}
+    }
+  }
+  
+  trackConversion(result) {
+    // Track conversion for analytics
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'spin_wheel_conversion', {
+        'event_category': 'engagement',
+        'event_label': result.code,
+        'value': result.percentage
+      });
+    }
+    
+    // Store in localStorage for dashboard
+    const emailData = {
+      email: document.getElementById('emailInput').value,
+      source: 'spin_wheel',
+      discount: result.code,
+      percentage: result.percentage,
+      timestamp: new Date().toISOString()
+    };
+    
+    const existingData = JSON.parse(localStorage.getItem('emailCollectionData') || '[]');
+    existingData.push(emailData);
+    localStorage.setItem('emailCollectionData', JSON.stringify(existingData));
+  }
+}
+
+// Global functions
+function handleEmailSubmit(event) {
+  event.preventDefault();
+  const email = document.getElementById('emailInput').value.trim();
+  
+  if (!email) {
+    alert('Please enter your email address');
+    return;
+  }
+  
+  // Consent optional: proceed even if box is unchecked
+  // if (consent && !consent.checked) {
+  //   alert('Please check the marketing consent before submitting');
+  //   try { consent.focus(); } catch (e) {}
+  //   return;
+  // }
+  
+  // Enhanced email validation
+  if (!validateEmail(email)) {
+    return;
+  }
+  
+  // Check for spam prevention
+  if (!checkSpinEligibility(email)) {
+    alert('You can only spin once per day. Please try again tomorrow!');
+    return;
+  }
+  
+  // Submit to hidden Shopify newsletter form using hCaptcha-protected flow
+  const tpl = document.getElementById('fod-newsletter-template');
+  if (tpl) {
+    const form = tpl.querySelector('form');
+    const emailInputHidden = tpl.querySelector('input[name="contact[email]"]');
+    const tagsInputHidden = tpl.querySelector('input[name="contact[tags]"]');
+    if (form && emailInputHidden) {
+      emailInputHidden.value = email;
+      const baseTags = (tagsInputHidden && tagsInputHidden.value || '').trim();
+      const spinTag = 'spin_wheel';
+      if (tagsInputHidden) { tagsInputHidden.value = baseTags ? baseTags + ',' + spinTag : spinTag; }
+      try {
+        if (window.Shopify && window.Shopify.captcha && typeof window.Shopify.captcha.protect === 'function') {
+          window.Shopify.captcha.protect(form, function(){ try { form.submit(); } catch (e) {} });
+        } else {
+          form.submit();
+        }
+      } catch (e) { console.log('Newsletter form submit error', e); }
+    }
+  }
+  
+  window.spinWheelManager.emailSubmitted = true;
+  
+  // Store email for later recording when spin actually happens
+  window.spinWheelManager.userEmail = email;
+  
+  // Hide email form and show spin instruction
+  const emailForm = document.getElementById('emailForm');
+  if (emailForm) {
+    emailForm.style.display = 'none';
+  }
+  
+  // Update wheel center text
+  const wheelCenter = document.getElementById('wheelCenter');
+  if (wheelCenter) {
+    wheelCenter.innerHTML = 'SPIN<br>NOW!';
+  }
+  
+  // Track email submission
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'email_submitted', {
+      'event_category': 'lead_generation',
+      'event_label': 'spin_wheel'
+    });
+  }
+}
+
+function validateEmail(email) {
+  // Basic format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Please enter a valid email address');
+    return false;
+  }
+  
+  // Check for disposable email domains
+  const disposableDomains = [
+    '10minutemail.com', 'tempmail.org', 'guerrillamail.com', 
+    'mailinator.com', 'throwaway.email', 'temp-mail.org',
+    'getnada.com', 'maildrop.cc', 'yopmail.com'
+  ];
+  
+  const domain = email.split('@')[1]?.toLowerCase();
+  if (disposableDomains.includes(domain)) {
+    alert('Please use a permanent email address');
+    return false;
+  }
+  
+  // Check for common typos in popular domains
+  const commonDomains = {
+    'gmial.com': 'gmail.com',
+    'gmai.com': 'gmail.com',
+    'yahooo.com': 'yahoo.com',
+    'hotmial.com': 'hotmail.com',
+    'outlok.com': 'outlook.com'
+  };
+  
+  if (commonDomains[domain]) {
+    if (confirm(`Did you mean ${email.replace(domain, commonDomains[domain])}?`)) {
+      document.getElementById('emailInput').value = email.replace(domain, commonDomains[domain]);
+      return false; // Let user confirm the correction
+    }
+  }
+  
+  return true;
+}
+
+function checkSpinEligibility(email) {
+  const lastSpin = localStorage.getItem('lastSpinTime');
+  const lastEmail = localStorage.getItem('lastSpinEmail');
+  const now = Date.now();
+  const cooldown = 24 * 60 * 60 * 1000; // 24 hours
+  
+  // Check time-based cooldown
+  if (lastSpin && (now - parseInt(lastSpin)) < cooldown) {
+    return false;
+  }
+  
+  // Check email-based prevention
+  if (lastEmail === email) {
+    return false;
+  }
+  
+  return true;
+}
+
+function recordSpin(email) {
+  localStorage.setItem('lastSpinTime', Date.now().toString());
+  localStorage.setItem('lastSpinEmail', email);
+}
+
+function spinWheel() {
+  if (window.spinWheelManager) {
+    window.spinWheelManager.spin();
+  }
+}
+
+function closeSpinWheel() {
+  if (window.spinWheelManager) {
+    window.spinWheelManager.hidePopup();
+  }
+}
+
+function copyDiscountCode(event) {
+  const codeElement = document.getElementById('resultCode');
+  const text = codeElement ? codeElement.textContent.trim() : '';
+  if (!text) { return; }
+  const btn = event && event.target ? event.target : document.querySelector('.copy-code-btn');
+  const originalText = btn ? btn.textContent : null;
+
+  const indicateCopied = () => {
+    if (btn && originalText) {
+      btn.textContent = '已复制';
+      setTimeout(() => { btn.textContent = originalText; }, 2000);
+    }
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(indicateCopied).catch(() => {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-1000px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        if (ok) indicateCopied();
+      } catch (e) {}
+    });
+  } else {
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.top = '-1000px';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      if (ok) indicateCopied();
+    } catch (e) {}
+  }
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  if ({{ section.settings.enable_spin_wheel | default: true }}) {
+    window.spinWheelManager = new SpinWheelManager();
+
+    // Show popup on exit intent (desktop only)
+    if (!window.matchMedia('(max-width: 768px)').matches && {{ section.settings.exit_intent | default: true }}) {
+      let exitIntentShown = false;
+      document.addEventListener('mouseleave', function(e) {
+        if (e.clientY <= 0 && !exitIntentShown && window.spinWheelManager) {
+          exitIntentShown = true;
+          window.spinWheelManager.showPopup();
+        }
+      });
+    }
+
+    // Mobile-specific triggers with enhanced UX
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      let mobileShown = false;
+      let userEngaged = false;
+      let scrollStartTime = Date.now();
+      
+      // Track user engagement
+      ['touchstart', 'scroll', 'click'].forEach(eventName => {
+        document.addEventListener(eventName, function() {
+          userEngaged = true;
+        }, { once: true });
+      });
+      
+      // Enhanced mobile scroll trigger - show after scrolling threshold with engagement check
+      if ({{ section.settings.mobile_scroll_trigger | default: true }}) {
+        let scrollThreshold = {{ section.settings.mobile_scroll_threshold | default: 70 }} / 100;
+        window.addEventListener('scroll', function() {
+          if (!mobileShown && userEngaged && 
+              (window.scrollY / (document.body.scrollHeight - window.innerHeight)) > scrollThreshold &&
+              (Date.now() - scrollStartTime) > 10000) { // At least 10 seconds on page
+            mobileShown = true;
+            window.spinWheelManager.showPopup();
+          }
+        });
+      }
+      
+      // Enhanced mobile time trigger with engagement check
+      if ({{ section.settings.mobile_time_trigger | default: false }}) {
+        setTimeout(function() {
+          if (!mobileShown && userEngaged && window.spinWheelManager) {
+            mobileShown = true;
+            window.spinWheelManager.showPopup();
+          }
+        }, {{ section.settings.mobile_trigger_delay | default: 45 | times: 1000 }});
+      }
+      
+      // Exit intent simulation for mobile - rapid upward scroll
+      let lastScrollY = window.scrollY;
+      let rapidScrollCount = 0;
+      window.addEventListener('scroll', function() {
+        if (window.scrollY < lastScrollY - 100 && window.scrollY < 200) {
+          rapidScrollCount++;
+          if (rapidScrollCount >= 2 && !mobileShown && userEngaged) {
+            mobileShown = true;
+            window.spinWheelManager.showPopup();
+          }
+        }
+        lastScrollY = window.scrollY;
+      });
+    }
+  }
+});
+
+</script>
+
+{% schema %}
+{
+  "name": "抽奖转盘弹窗",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "基础设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_spin_wheel",
+      "label": "启用抽奖弹窗",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_show",
+      "label": "自动弹出",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "popup_delay_seconds",
+      "min": 3,
+      "max": 30,
+      "step": 1,
+      "unit": "s",
+      "label": "弹窗延迟（秒）",
+      "info": "从 3 秒到 30 秒，默认 7 秒",
+      "default": 7
+    },
+    {
+      "type": "header",
+      "content": "背景设置"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "背景图片"
+    },
+    {
+      "type": "range",
+      "id": "background_overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "label": "背景遮罩不透明度（%）",
+      "info": "用于降低亮度以保证文字可读",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "exit_intent",
+      "label": "桌面端退出意图触发",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "移动端设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_scroll_trigger",
+      "label": "移动端滚动触发",
+      "info": "当用户滚动到页面阈值时显示弹窗",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_time_trigger",
+      "label": "移动端时间触发",
+      "info": "在指定时间后显示弹窗",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "mobile_scroll_threshold",
+      "label": "移动端滚动阈值（%）",
+      "info": "显示弹窗前的页面滚动百分比",
+      "min": 30,
+      "max": 90,
+      "step": 5,
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "mobile_trigger_delay",
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "unit": "s",
+      "label": "移动端触发延迟",
+      "info": "在移动端显示弹窗前的时间（秒）",
+      "default": 30
+    },
+    {
+      "type": "text",
+      "id": "popup_title",
+      "label": "弹窗标题",
+      "default": "🎉 Spin to Win!"
+    },
+    {
+      "type": "text",
+      "id": "popup_subtitle",
+      "label": "弹窗副标题",
+      "default": "Enter your email and spin for a chance to win amazing discounts!"
+    },
+    {
+      "type": "header",
+      "content": "折扣设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_discount_codes",
+      "label": "启用折扣码",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "discount_code_prefix",
+      "label": "折扣码前缀",
+      "default": "SPIN"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_mappings",
+      "label": "折扣映射",
+      "info": "格式：显示文本:折扣码:百分比（每项用逗号分隔）",
+      "default": "5% OFF:SPIN5:5,10% OFF:SPIN10:10,15% OFF:SPIN15:15,20% OFF:SPIN20:20,25% OFF:SPIN25:25,Try Again:TRYAGAIN:0"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_exit_discount",
+      "label": "启用退出折扣",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "抽奖转盘弹窗"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,234 @@
+{% comment %}
+  Enhanced Meta Tags for Better SEO
+  This snippet provides comprehensive meta tag optimization for all page types
+{% endcomment %}
+
+{%- assign seo_title = page_title -%}
+{%- assign seo_description = page_description -%}
+
+{% comment %}
+  首页SEO优化 - 使用推荐的标题和描述
+{% endcomment %}
+{%- if template.name == 'index' -%}
+  {%- assign seo_title = 'Personalized African Video Messages | 1–2 Day Delivery' -%}
+  {%- assign seo_description = 'Order a custom African video greeting with your photo and message. Fast 1–2 day delivery and fair pay to creators. Perfect for birthdays, family and more.' -%}
+{%- endif -%}
+
+{% comment %}
+  产品页面SEO优化
+{% endcomment %}
+{%- if template.name == 'product' -%}
+  {%- assign product_title = product.title | escape -%}
+  {%- assign product_description = product.description | strip_html | truncatewords: 30 | escape -%}
+  {%- assign seo_title = product_title | append: ' | Personalized African Video Message' -%}
+  {%- assign seo_description = product_description -%}
+{%- endif -%}
+
+{% comment %}
+  页面SEO优化（包括FAQ页面）
+{% endcomment %}
+{%- if template.name == 'page' -%}
+  {%- assign page_title_custom = page.title | escape -%}
+  {%- assign page_description_custom = page.content | strip_html | truncatewords: 30 | escape -%}
+  {%- assign seo_title = page_title_custom | append: ' | SayWishes' -%}
+  {%- assign seo_description = page_description_custom -%}
+{%- endif -%}
+
+{% comment %}
+  集合页面SEO优化
+{% endcomment %}
+{%- if template.name == 'collection' -%}
+  {%- assign collection_title = collection.title | escape -%}
+  {%- assign collection_description = collection.description | strip_html | truncatewords: 30 | escape -%}
+  {%- assign seo_title = collection_title | append: ' Collection | SayWishes' -%}
+  {%- assign seo_description = collection_description -%}
+{%- endif -%}
+
+{% comment %}
+  博客页面SEO优化
+{% endcomment %}
+{%- if template.name == 'article' -%}
+  {%- assign article_title = article.title | escape -%}
+  {%- assign article_description = article.excerpt_or_content | strip_html | truncatewords: 30 | escape -%}
+  {%- assign seo_title = article_title | append: ' | SayWishes Blog' -%}
+  {%- assign seo_description = article_description -%}
+{%- endif -%}
+
+<title>{{ seo_title | escape }}</title>
+
+<meta name="description" content="{{ seo_description | escape }}" />
+
+{% comment %}
+  添加关键词meta标签
+{% endcomment %}
+{%- if template.name == 'index' -%}
+  <meta name="keywords" content="personalized African video messages, African birthday video, custom video greeting, ethical gift, fast video greeting">
+{%- elsif template.name == 'product' -%}
+  <meta name="keywords" content="{{ product.tags | join: ', ' }}">
+{%- endif -%}
+
+{% comment %}
+  Open Graph元标签
+{% endcomment %}
+<meta property="og:site_name" content="{{ shop.name | escape }}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:title" content="{{ seo_title | escape }}">
+<meta property="og:description" content="{{ seo_description | escape }}">
+
+{%- if template.name == 'index' -%}
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https:{{ 'social-share-home.jpg' | asset_url }}">
+  <meta property="og:image:secure_url" content="https:{{ 'social-share-home.jpg' | asset_url }}">
+{%- elsif template.name == 'product' -%}
+  <meta property="og:type" content="product">
+  <meta property="og:image" content="http:{{ product.featured_image.src | product_img_url: '1024x1024' }}">
+  <meta property="og:image:secure_url" content="https:{{ product.featured_image.src | product_img_url: '1024x1024' }}">
+  <meta property="product:price:amount" content="{{ product.price | money_without_currency }}">
+  <meta property="product:price:currency" content="{{ cart.currency.iso_code }}">
+{%- else -%}
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https:{{ 'social-share-default.jpg' | asset_url }}">
+  <meta property="og:image:secure_url" content="https:{{ 'social-share-default.jpg' | asset_url }}">
+{%- endif -%}
+
+{% comment %}
+  Twitter Card元标签
+{% endcomment %}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ seo_title | escape }}">
+<meta name="twitter:description" content="{{ seo_description | escape }}">
+{%- if template.name == 'index' -%}
+  <meta name="twitter:image" content="https:{{ 'social-share-home.jpg' | asset_url }}">
+{%- elsif template.name == 'product' -%}
+  <meta name="twitter:image" content="https:{{ product.featured_image.src | product_img_url: '1024x1024' }}">
+{%- else -%}
+  <meta name="twitter:image" content="https:{{ 'social-share-default.jpg' | asset_url }}">
+{%- endif -%}
+
+{%- comment -%}
+  Enhanced Keywords Meta Tag removed per Shopify guidelines (not used by Google)
+{%- endcomment -%}
+{%- if false and meta_keywords != blank -%}
+  <meta name="keywords" content="{{ meta_keywords | downcase }}">
+{%- endif -%}
+
+{%- comment -%}
+  Removed non-essential meta tags per Shopify guidelines: author, publisher, language, geo, rating, revisit-after
+{%- endcomment -%}
+{%- comment -%}<meta name="author" content="{{ shop.name }}">{%- endcomment -%}
+{%- comment -%}<meta name="publisher" content="{{ shop.name }}">{%- endcomment -%}
+{%- comment -%}<meta name="language" content="{{ request.locale.iso_code }}">{%- endcomment -%}
+{%- comment -%}<meta name="geo.region" content="{{ shop.address.country_code }}">{%- endcomment -%}
+{%- comment -%}<meta name="geo.placename" content="{{ shop.address.city }}">{%- endcomment -%}
+{%- comment -%}<meta name="rating" content="general">{%- endcomment -%}
+{%- comment -%}<meta name="revisit-after" content="7 days">{%- endcomment -%}
+
+{%- comment -%}
+  Product-specific meta tags disabled; use JSON-LD Product schema instead
+{%- endcomment -%}
+{%- if false and request.page_type == 'product' -%}
+  <!-- Product Availability -->
+  {%- if product.available -%}
+    <meta name="product:availability" content="in stock">
+  {%- else -%}
+    <meta name="product:availability" content="out of stock">
+  {%- endif -%}
+  
+  <!-- Product Price -->
+  {%- if product.price -%}
+    <meta name="product:price:amount" content="{{ product.price | money_without_currency }}">
+    <meta name="product:price:currency" content="{{ cart.currency.iso_code }}">
+  {%- endif -%}
+  
+  <!-- Product Brand -->
+  {%- if product.vendor -%}
+    <meta name="product:brand" content="{{ product.vendor }}">
+  {%- endif -%}
+  
+  <!-- Product Category -->
+  {%- if product.type -%}
+    <meta name="product:category" content="{{ product.type }}">
+  {%- endif -%}
+  
+  <!-- Product Condition -->
+  <meta name="product:condition" content="new">
+{%- endif -%}
+
+{%- comment -%}
+  Article-specific meta tags disabled; use ``og:type=article`` and JSON-LD Article schema
+{%- endcomment -%}
+{%- if false and request.page_type == 'article' -%}
+  <meta name="article:published_time" content="{{ article.created_at | date: '%Y-%m-%dT%H:%M:%S%z' }}">
+  <meta name="article:modified_time" content="{{ article.updated_at | date: '%Y-%m-%dT%H:%M:%S%z' }}">
+  <meta name="article:author" content="{{ article.author | default: shop.name }}">
+  <meta name="article:section" content="{{ blog.title }}">
+  {%- for tag in article.tags limit: 5 -%}
+    <meta name="article:tag" content="{{ tag }}">
+  {%- endfor -%}
+{%- endif -%}
+
+{%- comment -%}
+  Social Media Optimization
+{%- endcomment -%}
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+{%- if settings.social_twitter_link != blank -%}
+  {%- assign twitter_handle = settings.social_twitter_link | split: 'twitter.com/' | last | split: '?' | first | remove: '/' -%}
+  <meta name="twitter:site" content="@{{ twitter_handle }}">
+{%- endif -%}
+<meta name="twitter:title" content="{{ seo_title }}">
+<meta name="twitter:description" content="{{ meta_description }}">
+
+{%- if request.page_type == 'product' and product.featured_image -%}
+  <meta name="twitter:image" content="{{ product.featured_image | image_url: width: 1200, height: 630 }}">
+{%- elsif request.page_type == 'article' and article.image -%}
+  <meta name="twitter:image" content="{{ article.image | image_url: width: 1200, height: 630 }}">
+{%- elsif settings.logo -%}
+  <meta name="twitter:image" content="{{ settings.logo | image_url: width: 1200, height: 630 }}">
+{%- endif -%}
+
+{%- comment -%}
+  Open Graph (static, server-rendered)
+{%- endcomment -%}
+{%- liquid
+  assign og_type = 'website'
+  if request.page_type == 'product'
+    assign og_type = 'product'
+  elsif request.page_type == 'article'
+    assign og_type = 'article'
+  endif
+
+  assign og_image = ''
+  if request.page_type == 'product' and product.featured_image
+    assign og_image = product.featured_image | image_url: width: 1200, height: 630
+  elsif request.page_type == 'article' and article.image
+    assign og_image = article.image | image_url: width: 1200, height: 630
+  elsif settings.logo
+    assign og_image = settings.logo | image_url: width: 1200, height: 630
+  endif
+  assign og_url = canonical_url | split: '?' | first
+-%}
+<meta property="og:site_name" content="{{ shop.name }}">
+<meta property="og:url" content="{{ og_url }}">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:title" content="{{ seo_title }}">
+<meta property="og:description" content="{{ meta_description }}">
+{%- if og_image != blank -%}
+<meta property="og:image" content="{{ og_image }}">
+{%- endif -%}
+
+{%- comment -%}
+  Mobile Optimization
+{%- endcomment -%}
+
+<!-- Mobile Web App Capable -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="{{ shop.name }}">
+
+<!-- Theme Color -->
+<meta name="theme-color" content="{{ settings.colors_accent_1 | default: '#000000' }}">
+<meta name="msapplication-navbutton-color" content="{{ settings.colors_accent_1 | default: '#000000' }}">
+<meta name="apple-mobile-web-app-status-bar-style" content="{{ settings.colors_accent_1 | default: '#000000' }}">

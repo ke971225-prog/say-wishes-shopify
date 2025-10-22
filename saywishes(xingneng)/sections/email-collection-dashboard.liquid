@@ -1,0 +1,401 @@
+<style>
+  .email-dashboard {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .dashboard-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 1.1rem;
+    color: #718096;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #3182ce;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .email-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .table-header {
+    background: #4299e1;
+    color: white;
+    padding: 1rem;
+    font-weight: 600;
+  }
+
+  .table-content {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .email-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    align-items: center;
+  }
+
+  .email-row:hover {
+    background: #f7fafc;
+  }
+
+  .email-address {
+    font-weight: 500;
+    color: #2d3748;
+  }
+
+  .source-tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .source-spin-wheel {
+    background: #fed7d7;
+    color: #c53030;
+  }
+
+  .source-exit-intent {
+    background: #feebc8;
+    color: #dd6b20;
+  }
+
+  .discount-badge {
+    background: #c6f6d5;
+    color: #22543d;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .timestamp {
+    font-size: 0.8rem;
+    color: #718096;
+  }
+
+  .export-button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: transform 0.2s;
+  }
+
+  .export-button:hover {
+    transform: translateY(-2px);
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 3rem;
+    color: #718096;
+  }
+
+  @media (max-width: 768px) {
+    .email-dashboard {
+      margin: 1rem;
+      padding: 1rem;
+    }
+
+    .email-row {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .dashboard-title {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<div class="email-dashboard">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">📧 邮件收集仪表板</h1>
+    <p class="dashboard-subtitle">查看从营销弹窗收集的客户邮件信息</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number" id="totalEmails">0</div>
+      <div class="stat-label">总邮件数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="spinWheelEmails">0</div>
+      <div class="stat-label">转盘弹窗</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="exitIntentEmails">0</div>
+      <div class="stat-label">退出意图</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="todayEmails">0</div>
+      <div class="stat-label">今日新增</div>
+    </div>
+  </div>
+
+  <button class="export-button" onclick="exportEmails()">📥 导出邮件列表</button>
+
+  <div class="email-table">
+    <div class="table-header">
+      <div class="email-row">
+        <div>邮件地址</div>
+        <div>来源</div>
+        <div>折扣</div>
+        <div>时间</div>
+      </div>
+    </div>
+    <div class="table-content" id="emailTableContent">
+      <div class="no-data">
+        <p>暂无邮件数据</p>
+        <p>当客户在弹窗中填写邮件后，数据将显示在这里</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  class EmailDashboard {
+    constructor() {
+      this.emails = [];
+      this.init();
+    }
+
+    init() {
+      this.loadEmails();
+      this.updateStats();
+      this.renderTable();
+      
+      // 每30秒刷新一次数据
+      setInterval(() => {
+        this.loadEmails();
+        this.updateStats();
+        this.renderTable();
+      }, 30000);
+    }
+
+    loadEmails() {
+      // 从本地存储加载邮件数据
+      const localEmails = JSON.parse(localStorage.getItem('popupEmails') || '[]');
+      
+      // 从Shopify加载邮件数据（如果有API访问权限）
+      this.loadShopifyEmails().then(shopifyEmails => {
+        this.emails = [...localEmails, ...shopifyEmails];
+        this.updateStats();
+        this.renderTable();
+      });
+    }
+
+    async loadShopifyEmails() {
+      try {
+        // 查找带有营销弹窗标签的客户
+        const response = await fetch('/admin/api/2023-10/customers.json?limit=250&tags=marketing_popup', {
+          headers: {
+            'X-Shopify-Access-Token': '{{ shop.metafields.custom.admin_api_token }}'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          return data.customers.map(customer => ({
+            email: customer.email,
+            source: this.extractSourceFromTags(customer.tags),
+            discount: this.extractDiscountFromTags(customer.tags),
+            timestamp: customer.created_at
+          }));
+        }
+      } catch (error) {
+        console.log('无法从Shopify加载数据:', error);
+      }
+      return [];
+    }
+
+    extractSourceFromTags(tags) {
+      if (tags.includes('spin_wheel')) return 'spin_wheel';
+      if (tags.includes('exit_intent')) return 'exit_intent';
+      return 'unknown';
+    }
+
+    extractDiscountFromTags(tags) {
+      const match = tags.match(/discount_([^,]+)/);
+      return match ? match[1] : 'N/A';
+    }
+
+    updateStats() {
+      const total = this.emails.length;
+      const spinWheel = this.emails.filter(e => e.source === 'spin_wheel').length;
+      const exitIntent = this.emails.filter(e => e.source === 'exit_intent').length;
+      
+      const today = new Date().toDateString();
+      const todayCount = this.emails.filter(e => 
+        new Date(e.timestamp).toDateString() === today
+      ).length;
+
+      document.getElementById('totalEmails').textContent = total;
+      document.getElementById('spinWheelEmails').textContent = spinWheel;
+      document.getElementById('exitIntentEmails').textContent = exitIntent;
+      document.getElementById('todayEmails').textContent = todayCount;
+    }
+
+    renderTable() {
+      const tableContent = document.getElementById('emailTableContent');
+      
+      if (this.emails.length === 0) {
+        tableContent.innerHTML = `
+          <div class="no-data">
+            <p>暂无邮件数据</p>
+            <p>当客户在弹窗中填写邮件后，数据将显示在这里</p>
+          </div>
+        `;
+        return;
+      }
+
+      // 按时间倒序排列
+      const sortedEmails = this.emails.sort((a, b) => 
+        new Date(b.timestamp) - new Date(a.timestamp)
+      );
+
+      tableContent.innerHTML = sortedEmails.map(email => `
+        <div class="email-row">
+          <div class="email-address">${email.email}</div>
+          <div>
+            <span class="source-tag source-${email.source}">
+              ${email.source === 'spin_wheel' ? '转盘弹窗' : '退出意图'}
+            </span>
+          </div>
+          <div>
+            <span class="discount-badge">${email.discount}</span>
+          </div>
+          <div class="timestamp">
+            ${new Date(email.timestamp).toLocaleString('en-US')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    exportEmails() {
+      if (this.emails.length === 0) {
+        alert('暂无数据可导出');
+        return;
+      }
+
+      const csvContent = [
+        ['邮件地址', '来源', '折扣', '时间'],
+        ...this.emails.map(email => [
+          email.email,
+          email.source === 'spin_wheel' ? 'Spin Wheel' : 'Exit Intent',
+          email.discount,
+          new Date(email.timestamp).toLocaleString('en-US')
+        ])
+      ].map(row => row.join(',')).join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `popup-emails-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+  }
+
+  // 全局函数
+  function exportEmails() {
+    if (window.emailDashboard) {
+      window.emailDashboard.exportEmails();
+    }
+  }
+
+  // 初始化仪表板
+  document.addEventListener('DOMContentLoaded', function() {
+    window.emailDashboard = new EmailDashboard();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Email Dashboard",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Dashboard Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dashboard",
+      "label": "Show Email Dashboard",
+      "default": true,
+      "info": "Display the email collection dashboard for admin users"
+    },
+    {
+      "type": "text",
+      "id": "dashboard_title",
+      "label": "Dashboard Title",
+      "default": "邮件收集仪表板"
+    },
+    {
+      "type": "textarea",
+      "id": "dashboard_description",
+      "label": "Dashboard Description",
+      "default": "查看从营销弹窗收集的客户邮件信息"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Email Collection Dashboard"
+    }
+  ]
+}
+{% endschema %}

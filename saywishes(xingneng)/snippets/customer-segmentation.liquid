@@ -1,0 +1,301 @@
+{% comment %}
+  Customer Segmentation Logic
+  自动为客户添加相应标签
+{% endcomment %}
+
+{% assign order_count = customer.orders_count | default: 0 %}
+{% assign total_spent = customer.total_spent | money_without_currency | remove: ',' | times: 1 %}
+
+{% comment %} VIP 等级判断 {% endcomment %}
+{% if total_spent >= 500 %}
+  {% assign vip_level = 'platinum' %}
+{% elsif total_spent >= 200 %}
+  {% assign vip_level = 'gold' %}
+{% elsif total_spent >= 100 %}
+  {% assign vip_level = 'silver' %}
+{% else %}
+  {% assign vip_level = 'bronze' %}
+{% endif %}
+
+{% comment %} 购买行为分析 {% endcomment %}
+{% if order_count >= 5 %}
+  {% assign customer_type = 'loyal' %}
+{% elsif order_count >= 2 %}
+  {% assign customer_type = 'repeat' %}
+{% elsif order_count == 1 %}
+  {% assign customer_type = 'new' %}
+{% else %}
+  {% assign customer_type = 'prospect' %}
+{% endif %}
+
+<script>
+// 增强的客户细分系统
+window.CustomerSegmentation = {
+  // 基础客户数据
+  customerData: {
+    id: '{{ customer.id }}',
+    email: '{{ customer.email }}',
+    vipLevel: '{{ vip_level }}',
+    customerType: '{{ customer_type }}',
+    totalSpent: {{ total_spent }},
+    orderCount: {{ order_count }},
+    tags: {{ customer.tags | json }}
+  },
+  
+  // 行为数据
+  behaviorData: {
+    visitCount: parseInt(localStorage.getItem('visit_count')) || 1,
+    pageViews: parseInt(sessionStorage.getItem('page_views')) || 1,
+    sessionDuration: 0,
+    cartValue: {{ cart.total_price | money_without_currency | remove: ',' }},
+    cartItems: {{ cart.item_count }},
+    lastVisit: localStorage.getItem('last_visit'),
+    referrer: document.referrer,
+    isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  },
+  
+  init: function() {
+    this.updateVisitStats();
+    this.identifySegments();
+    this.applyPersonalization();
+    this.sendAnalytics();
+  },
+  
+  updateVisitStats: function() {
+    const visitCount = this.behaviorData.visitCount + 1;
+    localStorage.setItem('visit_count', visitCount);
+    
+    const pageViews = this.behaviorData.pageViews + 1;
+    sessionStorage.setItem('page_views', pageViews);
+    
+    localStorage.setItem('last_visit', new Date().toISOString());
+  },
+  
+  identifySegments: function() {
+    this.segments = {
+      value: this.getValueSegment(),
+      lifecycle: this.getLifecycleSegment(),
+      behavior: this.getBehaviorSegment(),
+      device: this.behaviorData.isMobile ? 'mobile' : 'desktop'
+    };
+  },
+  
+  getValueSegment: function() {
+    const spent = this.customerData.totalSpent;
+    if (spent >= 500) return 'high_value';
+    if (spent >= 200) return 'medium_value';
+    if (spent > 0) return 'low_value';
+    return 'prospect';
+  },
+  
+  getLifecycleSegment: function() {
+    const orders = this.customerData.orderCount;
+    if (orders === 0) return 'new_visitor';
+    if (orders === 1) return 'first_time_buyer';
+    if (orders >= 5) return 'loyal_customer';
+    return 'repeat_customer';
+  },
+  
+  getBehaviorSegment: function() {
+    const cartItems = this.behaviorData.cartItems;
+    const pageViews = this.behaviorData.pageViews;
+    
+    if (cartItems > 0) return 'cart_abandoner';
+    if (pageViews >= 5) return 'engaged_browser';
+    return 'casual_browser';
+  },
+  
+  applyPersonalization: function() {
+    // 根据细分应用个性化
+    if (this.segments.value === 'high_value') {
+      this.showVIPContent();
+    }
+    
+    if (this.segments.behavior === 'cart_abandoner') {
+      setTimeout(() => this.showCartRecovery(), 300000); // 5分钟后
+    }
+    
+    if (this.segments.lifecycle === 'new_visitor' && this.behaviorData.visitCount === 1) {
+      setTimeout(() => this.showWelcomeOffer(), 30000); // 30秒后
+    }
+  },
+  
+  showVIPContent: function() {
+    const vipBadges = document.querySelectorAll('.vip-badge');
+    vipBadges.forEach(badge => badge.style.display = 'block');
+  },
+  
+  showCartRecovery: function() {
+    if (this.behaviorData.cartItems === 0) return;
+    
+    const notification = document.createElement('div');
+    notification.className = 'cart-recovery-notification';
+    notification.innerHTML = `
+      <div class="notification-content">
+        <span class="close-btn">&times;</span>
+        <h4>Don't forget your items!</h4>
+        <p>Complete your purchase and get free shipping</p>
+        <button onclick="window.location.href='/cart'">View Cart</button>
+      </div>
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+      .cart-recovery-notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: white;
+        border: 2px solid #e74c3c;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        max-width: 300px;
+      }
+      .notification-content .close-btn {
+        float: right;
+        cursor: pointer;
+        font-size: 18px;
+        color: #999;
+      }
+      .notification-content button {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+      }
+    `;
+    
+    document.head.appendChild(style);
+    document.body.appendChild(notification);
+    
+    notification.querySelector('.close-btn').onclick = () => notification.remove();
+    
+    setTimeout(() => notification.remove(), 10000);
+  },
+  
+  showWelcomeOffer: function() {
+    if (localStorage.getItem('welcome_shown')) return;
+    
+    const modal = document.createElement('div');
+    modal.className = 'welcome-modal';
+    modal.innerHTML = `
+      <div class="modal-overlay">
+        <div class="modal-content">
+          <span class="close-modal">&times;</span>
+          <h2>Welcome to Our Store!</h2>
+          <p>Get 10% off your first order</p>
+          <p class="discount-code">Use code: <strong>WELCOME10</strong></p>
+          <button onclick="this.closest('.welcome-modal').remove()">Start Shopping</button>
+        </div>
+      </div>
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+      .welcome-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10000;
+      }
+      .modal-overlay {
+        background: rgba(0,0,0,0.8);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-content {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 400px;
+        position: relative;
+      }
+      .close-modal {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+      }
+      .discount-code {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 15px 0;
+      }
+      .modal-content button {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+    `;
+    
+    document.head.appendChild(style);
+    document.body.appendChild(modal);
+    
+    modal.querySelector('.close-modal').onclick = () => modal.remove();
+    modal.querySelector('.modal-overlay').onclick = (e) => {
+      if (e.target === e.currentTarget) modal.remove();
+    };
+    
+    localStorage.setItem('welcome_shown', 'true');
+  },
+  
+  sendAnalytics: function() {
+    // 发送到Google Analytics
+    if (typeof gtag !== 'undefined') {
+      gtag('config', 'GA_MEASUREMENT_ID', {
+        custom_map: {
+          'custom_parameter_1': 'vip_level',
+          'custom_parameter_2': 'customer_type'
+        }
+      });
+      
+      gtag('event', 'customer_segment', {
+        'value_segment': this.segments.value,
+        'lifecycle_segment': this.segments.lifecycle,
+        'behavior_segment': this.segments.behavior,
+        'device_segment': this.segments.device
+      });
+    }
+    
+    // 发送到Klaviyo
+    if (typeof _learnq !== 'undefined') {
+      _learnq.push(['identify', {
+        'customer_segments': this.segments,
+        'vip_level': this.customerData.vipLevel,
+        'customer_type': this.customerData.customerType
+      }]);
+    }
+  }
+};
+
+// 初始化客户细分系统
+document.addEventListener('DOMContentLoaded', function() {
+  window.CustomerSegmentation.init();
+});
+  
+  gtag('event', 'customer_segment', {
+    'custom_parameter_1': '{{ vip_level }}',
+    'custom_parameter_2': '{{ customer_type }}',
+    'value': {{ total_spent }}
+  });
+}
+</script>

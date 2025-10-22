@@ -1,0 +1,386 @@
+<style>
+  .vip-club-section {
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient({{ section.settings.gradient_direction | default: '135deg' }}, 
+        {{ section.settings.background_color_1 | default: '#ff7fce' }} 0%, 
+        {{ section.settings.background_color_2 | default: '#ff4da6' }} 100%);
+    {% else %}
+      background: {{ section.settings.background_color_1 | default: '#ff7fce' }};
+    {% endif %}
+    padding: 60px 0;
+    text-align: center;
+  }
+  
+  .vip-club-section .page-width {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .vip-club-section h2 {
+    color: {{ section.settings.title_color | default: 'white' }};
+    font-size: {{ section.settings.title_font_size | default: 40 }}px;
+    margin-bottom: 15px;
+    font-weight: {{ section.settings.title_font_weight | default: '700' }};
+  }
+  
+  .vip-club-section p {
+    color: {{ section.settings.description_color | default: 'white' }};
+    font-size: {{ section.settings.description_font_size | default: 19 }}px;
+    margin-bottom: 30px;
+    font-weight: {{ section.settings.description_font_weight | default: 'normal' }};
+    opacity: 0.95;
+  }
+  
+  .vip-input-group {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  
+  .vip-input-group input {
+    flex: 1;
+    padding: 15px 25px;
+    border: none;
+    font-size: 16px;
+    outline: none;
+  }
+  
+  .vip-input-group button {
+    background: {{ section.settings.button_background_color | default: '#333' }};
+    color: {{ section.settings.button_text_color | default: 'white' }};
+    border: none;
+    padding: 15px 30px;
+    font-size: {{ section.settings.button_font_size | default: 16 }}px;
+    font-weight: {{ section.settings.button_font_weight | default: '600' }};
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .vip-input-group button:hover {
+    background: {{ section.settings.button_hover_color | default: '#555' }};
+  }
+  
+  @media (max-width: 768px) {
+    .vip-club-section h2 {
+      font-size: 2rem;
+    }
+    
+    .vip-input-group {
+      flex-direction: column;
+      border-radius: 25px;
+    }
+    
+    .vip-input-group button {
+      border-radius: 0 0 25px 25px;
+    }
+  }
+</style>
+
+<div class="vip-club-section">
+  <div class="page-width">
+    <h2>{{ section.settings.title | default: 'Join Our VIP Club Today! 🎁' }}</h2>
+    <p>{{ section.settings.description | default: 'Join our VIP Club for exclusive offers, free giveaways, and special promotions.' }}</p>
+    
+    <form accept-charset="UTF-8" action="/contact#{{ section.id }}" class="contact-form" method="post">
+      <input name="form_type" type="hidden" value="customer">
+      <input name="utf8" type="hidden" value="✓">
+      <input name="contact[tags]" type="hidden" value="prospect,newsletter,vip">
+      <input name="contact[context]" type="hidden" value="section">
+      
+      <div class="vip-input-group">
+        <input 
+          type="email" 
+          name="contact[email]" 
+          placeholder="{{ section.settings.placeholder | default: 'Enter your email' }}"
+          required
+          autocapitalize="off"
+          autocorrect="off"
+        >
+        <button type="submit">
+          {{ section.settings.button_text | default: 'Subscribe' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "VIP Club Signup",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Join Our VIP Club Today! 🎁"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Join our VIP Club for exclusive offers, free giveaways, and special promotions."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Email Placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "header",
+      "content": "Background Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "default": true,
+      "label": "Enable Gradient Background"
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "Gradient Direction",
+      "options": [
+        {
+          "value": "135deg",
+          "label": "Diagonal (Top-left to Bottom-right)"
+        },
+        {
+          "value": "45deg",
+          "label": "Diagonal (Bottom-left to Top-right)"
+        },
+        {
+          "value": "90deg",
+          "label": "Vertical (Top to Bottom)"
+        },
+        {
+          "value": "180deg",
+          "label": "Vertical (Bottom to Top)"
+        },
+        {
+          "value": "0deg",
+          "label": "Horizontal (Left to Right)"
+        },
+        {
+          "value": "270deg",
+          "label": "Horizontal (Right to Left)"
+        }
+      ],
+      "default": "135deg"
+    },
+    {
+      "type": "color",
+      "id": "background_color_1",
+      "label": "Background Color 1",
+      "default": "#ff7fce"
+    },
+    {
+      "type": "color",
+      "id": "background_color_2",
+      "label": "Background Color 2",
+      "default": "#ff4da6"
+    },
+    {
+      "type": "header",
+      "content": "Title Font Settings"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Title Font Size",
+      "default": 40
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Title Font Weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light (300)"
+        },
+        {
+          "value": "400",
+          "label": "Normal (400)"
+        },
+        {
+          "value": "500",
+          "label": "Medium (500)"
+        },
+        {
+          "value": "600",
+          "label": "Semi Bold (600)"
+        },
+        {
+          "value": "700",
+          "label": "Bold (700)"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold (800)"
+        },
+        {
+          "value": "900",
+          "label": "Black (900)"
+        }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "header",
+      "content": "Description Font Settings"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Description Font Size",
+      "default": 19
+    },
+    {
+      "type": "select",
+      "id": "description_font_weight",
+      "label": "Description Font Weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light (300)"
+        },
+        {
+          "value": "normal",
+          "label": "Normal (400)"
+        },
+        {
+          "value": "500",
+          "label": "Medium (500)"
+        },
+        {
+          "value": "600",
+          "label": "Semi Bold (600)"
+        },
+        {
+          "value": "bold",
+          "label": "Bold (700)"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold (800)"
+        },
+        {
+          "value": "900",
+          "label": "Black (900)"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button Background Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button Hover Color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Font Size",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "Button Font Weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light (300)"
+        },
+        {
+          "value": "normal",
+          "label": "Normal (400)"
+        },
+        {
+          "value": "500",
+          "label": "Medium (500)"
+        },
+        {
+          "value": "600",
+          "label": "Semi Bold (600)"
+        },
+        {
+          "value": "bold",
+          "label": "Bold (700)"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold (800)"
+        },
+        {
+          "value": "900",
+          "label": "Black (900)"
+        }
+      ],
+      "default": "600"
+    }
+  ],
+  "presets": [
+    {
+      "name": "VIP Club Signup"
+    }
+  ]
+}
+{% endschema %}

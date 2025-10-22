@@ -1,0 +1,334 @@
+<style>
+  .why-you-love-service {
+    padding: 60px 20px;
+    background: #f8f9fa;
+  }
+  
+  .why-you-love-service__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 60px;
+    align-items: center;
+  }
+  
+  .why-you-love-service__content {
+    padding-right: 20px;
+  }
+  
+  .why-you-love-service__rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+  }
+  
+  .why-you-love-service__stars {
+    color: #ffd700;
+    font-size: 1.2rem;
+  }
+  
+  .why-you-love-service__rating-text {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+  }
+  
+  .why-you-love-service__title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  
+  .why-you-love-service__subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  .why-you-love-service__features {
+    margin-bottom: 30px;
+  }
+  
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .feature-item__icon {
+    color: #ffd700;
+    font-size: 1.1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  
+  .feature-item__content {
+    flex: 1;
+  }
+  
+  .feature-item__title {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+  }
+  
+  .feature-item__description {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  .why-you-love-service__button {
+    background: linear-gradient(135deg, #e91e63, #f06292);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+  
+  .why-you-love-service__button:hover {
+    transform: translateY(-2px);
+  }
+  
+  .why-you-love-service__image {
+    background: linear-gradient(135deg, #e91e63, #f06292);
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .why-you-love-service__image img {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    .why-you-love-service__container {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    
+    .why-you-love-service__content {
+      text-align: center;
+      padding-right: 0;
+    }
+    
+    .why-you-love-service__title {
+      font-size: 2rem;
+    }
+    
+    .why-you-love-service__rating {
+      justify-content: center;
+    }
+  }
+</style>
+
+<div class="why-you-love-service">
+  <div class="why-you-love-service__container">
+    <div class="why-you-love-service__content">
+      <div class="why-you-love-service__rating">
+        <span class="why-you-love-service__stars">{{ section.settings.rating_stars }}</span>
+        <span class="why-you-love-service__rating-text">{{ section.settings.rating_text }}</span>
+      </div>
+      
+      <h2 class="why-you-love-service__title">{{ section.settings.title }}</h2>
+      <p class="why-you-love-service__subtitle">{{ section.settings.subtitle }}</p>
+      
+      <div class="why-you-love-service__features">
+        {% for block in section.blocks %}
+          {% if block.type == 'feature' %}
+            <div class="feature-item" {{ block.shopify_attributes }}>
+              <div class="feature-item__icon">{{ block.settings.icon }}</div>
+              <div class="feature-item__content">
+                <div class="feature-item__title">{{ block.settings.title }}</div>
+                <div class="feature-item__description">{{ block.settings.description }}</div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      
+      {% if section.settings.button_label != blank %}
+        <a href="{{ section.settings.button_link }}" class="why-you-love-service__button">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+    </div>
+    
+    <div class="why-you-love-service__image">
+      {% if section.settings.image != blank %}
+        <img src="{{ section.settings.image | image_url: width: 600 }}" 
+             alt="{{ section.settings.image.alt | escape }}"
+             width="600"
+             height="400"
+             loading="lazy">
+      {% else %}
+        <div style="width: 100%; height: 300px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #666;">
+          Add your image here
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Why Love Our Service",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "rating_stars",
+      "default": "⭐⭐⭐⭐⭐",
+      "label": "Rating Stars"
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "default": "Rated 4.9/5 by 50,000+ Happy Customers!",
+      "label": "Rating Text"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "default": "Why You'll Love Our Service ❤️",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "default": "YOUR BEST CHOICE!",
+      "label": "Subtitle"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "➜ ORDER NOW",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "default": "⭐",
+          "label": "Icon"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Top Quality:",
+          "label": "Feature Title"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "default": "Excellence in Every Video!",
+          "label": "Feature Description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Why Love Our Service",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Top Quality:",
+            "description": "Excellence in Every Video!"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "100% Satisfaction:",
+            "description": "Your happiness is our priority."
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Easy Ordering:",
+            "description": "Simple and quick process."
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Perfect for Any Occasion:",
+            "description": "Ideal for birthdays, anniversaries, and more."
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Unique and Personal:",
+            "description": "One-of-a-kind video just for you."
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Fast Delivery:",
+            "description": "Receive your order within 1-2 days."
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Top-Rated:",
+            "description": "4.9/5 on Trustpilot."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

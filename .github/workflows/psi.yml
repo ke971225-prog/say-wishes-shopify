@@ -1,0 +1,72 @@
+name: PSI Fetch
+
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: 'Space separated URLs (override pages.json)'
+        required: false
+        default: ''
+      locale:
+        description: 'Locale for PSI (zh_CN, zh_TW, en)'
+        required: false
+        default: 'zh_CN'
+      strategy:
+        description: 'PSI strategy (mobile, desktop, both)'
+        required: false
+        default: 'both'
+  schedule:
+    - cron: '0 3 * * *'  # 每天 03:00 UTC 运行
+
+jobs:
+  run-psi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Ensure deliverables directory
+        run: |
+          mkdir -p "交付物"
+
+      - name: Resolve URLs from pages.json
+        id: urls
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.inputs.urls }}" ]; then
+            echo "urls=${{ github.event.inputs.urls }}" >> $GITHUB_OUTPUT
+          else
+            if [ -f "交付物/pages.json" ]; then
+              URLS=$(node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('交付物/pages.json','utf8'));console.log((j.urls||[]).join(' '))")
+              echo "urls=${URLS}" >> $GITHUB_OUTPUT
+            else
+              echo "urls=https://wishesvideo.com/ https://wishesvideo.com/collections/all" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Run PSI (with API key)
+        if: ${{ secrets.PSI_API_KEY != '' }}
+        run: |
+          node fetch-psi-report.js ${{ steps.urls.outputs.urls }} --strategy "${{ github.event.inputs.strategy || 'both' }}" --locale "${{ github.event.inputs.locale || 'zh_CN' }}" --key "${{ secrets.PSI_API_KEY }}"
+
+      - name: Run PSI (no API key)
+        if: ${{ secrets.PSI_API_KEY == '' }}
+        run: |
+          node fetch-psi-report.js ${{ steps.urls.outputs.urls }} --strategy "${{ github.event.inputs.strategy || 'both' }}" --locale "${{ github.event.inputs.locale || 'zh_CN' }}"
+
+      - name: Upload deliverables
+        uses: actions/upload-artifact@v4
+        with:
+          name: psi-deliverables
+          path: |
+            交付物/性能报告.md
+            交付物/psi-results.json
+            交付物/优化建议.md

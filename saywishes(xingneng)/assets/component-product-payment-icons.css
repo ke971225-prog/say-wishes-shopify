@@ -1,0 +1,241 @@
+/* Product Payment Icons Component - Integrated into custom-product-options block */
+
+.video-product-container .product-payment-icons {
+  background: rgb(var(--color-background));
+  border: 1px solid rgba(var(--color-foreground), 0.08);
+  border-radius: 1.2rem;
+  padding: 1.2rem;
+  margin: 1rem 0;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(var(--color-foreground), 0.05);
+  transition: all 0.3s ease;
+  max-width: 100%;
+}
+
+.video-product-container .product-payment-icons:hover {
+  box-shadow: 0 2px 8px rgba(var(--color-foreground), 0.1);
+}
+
+.video-product-container .payment-icons-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: rgb(var(--color-foreground));
+}
+
+.video-product-container .payment-security-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: rgb(var(--color-base-accent-1));
+  flex-shrink: 0;
+}
+
+.video-product-container .list-payment {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.video-product-container .list-payment__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.7rem;
+  background: rgb(var(--color-background));
+  border: 1px solid rgba(var(--color-foreground), 0.1);
+  border-radius: 0.6rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-product-container .list-payment__item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(var(--color-base-accent-1), 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.video-product-container .list-payment__item:hover {
+  border-color: rgb(var(--color-base-accent-1));
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(var(--color-base-accent-1), 0.15);
+}
+
+.video-product-container .list-payment__item:hover::before {
+  left: 100%;
+}
+
+.video-product-container .list-payment__item .icon {
+  max-width: 36px;
+  max-height: 24px;
+  width: auto;
+  height: auto;
+  filter: drop-shadow(0 1px 2px rgba(var(--color-foreground), 0.1));
+  transition: all 0.3s ease;
+}
+
+.video-product-container .list-payment__item:hover .icon {
+  filter: drop-shadow(0 2px 4px rgba(var(--color-foreground), 0.15));
+}
+
+.video-product-container .payment-security-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+  color: rgba(var(--color-foreground), 0.7);
+  line-height: 1.4;
+}
+
+/* Mobile responsive adjustments */
+@media screen and (max-width: 768px) {
+  .video-product-container .product-payment-icons {
+    padding: 1rem;
+    margin: 0.8rem 0;
+  }
+  
+  .video-product-container .payment-icons-heading {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .video-product-container .list-payment {
+    gap: 0.5rem;
+  }
+  
+  .video-product-container .list-payment__item {
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .video-product-container .list-payment__item .icon {
+    max-width: 32px;
+    max-height: 20px;
+  }
+  
+  .video-product-container .payment-security-note {
+    font-size: 0.8rem;
+    margin-top: 0.6rem;
+  }
+}
+
+/* Tablet responsive adjustments */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .video-product-container .product-payment-icons {
+    padding: 1.1rem;
+  }
+  
+  .video-product-container .list-payment {
+    gap: 0.55rem;
+  }
+  
+  .video-product-container .list-payment__item .icon {
+    max-width: 34px;
+    max-height: 22px;
+  }
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 749px) {
+  .product-payment-icons {
+    margin-top: 1.2rem;
+    padding: 1.2rem;
+    border-radius: 1rem;
+  }
+  
+  .payment-icons-heading {
+    font-size: 1.1rem;
+  }
+  
+  .list-payment {
+    gap: 0.6rem;
+  }
+  
+  .list-payment__item {
+    padding: 0.5rem 0.6rem;
+    border-radius: 0.5rem;
+  }
+  
+  .list-payment__item .icon {
+    max-width: 36px;
+    max-height: 24px;
+  }
+}
+
+/* Tablet and Desktop Styles */
+@media screen and (min-width: 750px) {
+  .product-payment-icons {
+    padding: 1.5rem;
+  }
+  
+  .list-payment {
+    gap: 1rem;
+  }
+  
+  .list-payment__item {
+    padding: 0.7rem 1rem;
+  }
+  
+  .list-payment__item .icon {
+    max-width: 44px;
+    max-height: 28px;
+  }
+}
+
+/* Large Desktop Styles */
+@media screen and (min-width: 1200px) {
+  .product-payment-icons {
+    padding: 1.8rem;
+  }
+  
+  .payment-icons-heading {
+    font-size: 1.3rem;
+  }
+  
+  .list-payment {
+    gap: 1.2rem;
+  }
+  
+  .list-payment__item {
+    padding: 0.8rem 1.2rem;
+  }
+  
+  .list-payment__item .icon {
+    max-width: 48px;
+    max-height: 30px;
+  }
+}
+
+/* Animation for when payment icons load */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.product-payment-icons {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.list-payment__item {
+  animation: fadeInUp 0.6s ease-out;
+}

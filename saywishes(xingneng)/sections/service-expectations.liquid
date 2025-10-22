@@ -1,0 +1,280 @@
+{{ 'component-accordion.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .service-expectations {
+    padding: 60px 20px;
+    background: #f8f9fa;
+  }
+  
+  .service-expectations__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .service-expectations__header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+  
+  .service-expectations__title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  
+  .service-expectations__description {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .service-expectations__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+  }
+  
+  .service-expectation {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .service-expectation:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .service-expectation details {
+    border: none;
+  }
+  
+  .service-expectation summary {
+    padding: 25px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(135deg, #e91e63, #f06292);
+    color: white;
+    transition: background 0.3s ease;
+    position: relative;
+  }
+  
+  .service-expectation summary:hover {
+    background: linear-gradient(135deg, #d81b60, #ec407a);
+  }
+  
+  .service-expectation summary::-webkit-details-marker {
+    display: none;
+  }
+  
+  .service-expectation__icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  
+  .service-expectation__title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    flex-grow: 1;
+  }
+  
+  .service-expectation__arrow {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+    fill: white;
+  }
+  
+  .service-expectation details[open] .service-expectation__arrow {
+    transform: rotate(180deg);
+  }
+  
+  .service-expectation__content {
+    padding: 25px;
+    background: white;
+    color: #666;
+    line-height: 1.6;
+    animation: slideDown 0.3s ease;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .service-expectations {
+      padding: 40px 15px;
+    }
+    
+    .service-expectations__title {
+      font-size: 2rem;
+    }
+    
+    .service-expectations__grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .service-expectation summary {
+      padding: 20px;
+    }
+    
+    .service-expectation__content {
+      padding: 20px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="service-expectations">
+  <div class="service-expectations__container">
+    {%- if section.settings.title != blank or section.settings.description != blank -%}
+      <div class="service-expectations__header">
+        {%- if section.settings.title != blank -%}
+          <h2 class="service-expectations__title">{{ section.settings.title }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="service-expectations__description">{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+    
+    <div class="service-expectations__grid">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'service_item' -%}
+          <div class="service-expectation" {{ block.shopify_attributes }}>
+            <details {% if section.settings.open_first_item and forloop.first %}open{% endif %}>
+              <summary>
+                <div class="service-expectation__icon">
+                  {{ block.settings.icon | default: '✓' }}
+                </div>
+                <h3 class="service-expectation__title">{{ block.settings.title }}</h3>
+                <svg class="service-expectation__arrow" viewBox="0 0 24 24">
+                  <path d="M7 10l5 5 5-5z"/>
+                </svg>
+              </summary>
+              <div class="service-expectation__content">
+                {{ block.settings.content }}
+              </div>
+            </details>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Service Expectations",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "What to Expect from Our Service"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Section Description",
+      "default": "We are committed to providing exceptional service that exceeds your expectations."
+    },
+    {
+      "type": "checkbox",
+      "id": "open_first_item",
+      "label": "Open first item by default",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "service_item",
+      "name": "Service Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Service Title"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon (emoji or symbol)",
+          "default": "✓"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>Describe your service expectation here. This content will be revealed when users click on the title.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Service Expectations",
+      "blocks": [
+        {
+          "type": "service_item",
+          "settings": {
+            "title": "Quality Guarantee",
+            "icon": "🏆",
+            "content": "<p>We guarantee the highest quality in all our products and services. Every item is carefully inspected before delivery.</p>"
+          }
+        },
+        {
+          "type": "service_item",
+          "settings": {
+            "title": "Fast Delivery",
+            "icon": "🚚",
+            "content": "<p>Quick and reliable delivery service. Most orders are processed within 24 hours and delivered within 3-5 business days.</p>"
+          }
+        },
+        {
+          "type": "service_item",
+          "settings": {
+            "title": "Customer Support",
+            "icon": "💬",
+            "content": "<p>24/7 customer support available. Our friendly team is always ready to help you with any questions or concerns.</p>"
+          }
+        },
+        {
+          "type": "service_item",
+          "settings": {
+            "title": "Money Back Guarantee",
+            "icon": "💰",
+            "content": "<p>100% satisfaction guaranteed. If you're not completely satisfied with your purchase, we offer a full refund within 30 days.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

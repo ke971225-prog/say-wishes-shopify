@@ -1,0 +1,361 @@
+{{ 'component-cart.css' | asset_url | stylesheet_tag }}
+{{ 'component-totals.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+{{ 'custom-cart-pricing.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  /* Display total inside checkout button */
+  #main-cart-footer .cart__checkout-button .checkout-total { margin-left: 8px; font-weight: 600; }
+  /* Empty cart message styles */
+  #main-cart-footer .empty-cart-message { margin: 12px 0; }
+  #main-cart-footer .empty-cart-title { font-size: 1.6rem; margin: 0 0 6px; }
+  #main-cart-footer .empty-cart-link { color: {{ section.settings.empty_cart_cta_color | default: '#5B3A2F' }}; font-style: italic; }
+  /* Desktop centering for subtotal area */
+  @media screen and (min-width: 750px) {
+    /* Center the whole footer block column */
+    #main-cart-footer .cart__blocks { display: flex; flex-direction: column; align-items: center; }
+
+    /* Limit width and center horizontally for each sub-block */
+    #main-cart-footer .js-contents,
+    #main-cart-footer .totals,
+    #main-cart-footer .tax-note,
+    #main-cart-footer .donation-note,
+    #main-cart-footer .cart__ctas,
+    #main-cart-footer .cart__dynamic-checkout-buttons,
+    #main-cart-footer .cart__payment-icons {
+      width: 100%;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    /* Center inline/flex content */
+    #main-cart-footer .donation-note { justify-content: center; }
+    #main-cart-footer .cart__ctas { display: flex; justify-content: center; }
+    #main-cart-footer .cart__ctas .button { width: 100%; }
+    #main-cart-footer .cart__payment-icons { display: flex; justify-content: center; }
+  }
+{%- endstyle -%}
+
+<div
+  class="gradient color-{{ section.settings.color_scheme }}{% if cart == empty %} is-empty{% endif %}"
+  id="main-cart-footer"
+  data-id="{{ section.id }}"
+>
+  <div class="page-width">
+    <div class="cart__footer isolate section-{{ section.id }}-padding">
+      {%- comment -%} Cart note removed per optimization requirements {%- endcomment -%}
+      {%- if false -%}
+        <cart-note class="cart__note field">
+          <label for="Cart-note">{{ 'sections.cart.note' | t }}</label>
+          <textarea
+            class="text-area field__input"
+            name="note"
+            form="cart"
+            id="Cart-note"
+            placeholder="{{ 'sections.cart.note' | t }}"
+          >{{ cart.note }}</textarea>
+        </cart-note>
+      {%- endif -%}
+
+      <div class="cart__blocks">
+        {% for block in section.blocks %}
+          {%- case block.type -%}
+            {%- when '@app' -%}
+              {% render block %}
+            {%- when 'subtotal' -%}
+              <div class="js-contents" {{ block.shopify_attributes }}>
+                <div>
+                  {%- if cart.cart_level_discount_applications.size > 0 -%}
+                    <ul class="discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">
+                      {%- for discount in cart.cart_level_discount_applications -%}
+                        <li class="discounts__discount discounts__discount--position">
+                          {{- 'icon-discount.svg' | inline_asset_content -}}
+                          {{ discount.title | escape }}
+                          (-{{ discount.total_allocated_amount | money }})
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+                </div>
+
+                {% if cart == empty %}
+                  <div class="empty-cart-message" role="status" aria-live="polite">
+                    <h2 class="empty-cart-title">YOUR CART (0)</h2>
+                    <p class="empty-cart-text">Your cart is empty! <a class="empty-cart-link" href="{{ section.settings.empty_cart_cta_link | default: '/collections/new-arrivals' }}">{{ section.settings.empty_cart_cta_text | default: 'Shop New Arrivals!' }}</a></p>
+                  </div>
+                {% else %}
+                <div class="totals">
+                  <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>
+                  {%- comment -%} Calculate custom total if any items have custom pricing {%- endcomment -%}
+                  {%- assign has_custom_pricing = false -%}
+                  {%- assign custom_total = 0 -%}
+                  {%- for item in cart.items -%}
+                    {%- assign custom_total_price = nil -%}
+                    {%- for property in item.properties -%}
+                      {%- if property.first == 'Total Price' -%}
+                        {%- assign custom_total_price = property.last | remove: '$' | times: 100 -%}
+                        {%- assign has_custom_pricing = true -%}
+                        {%- break -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                    {%- if custom_total_price -%}
+                      {%- assign custom_total = custom_total | plus: custom_total_price -%}
+                    {%- else -%}
+                      {%- assign custom_total = custom_total | plus: item.final_line_price -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                  
+                  {%- if has_custom_pricing -%}
+                    <p class="totals__total-value custom-total-price">{{ custom_total | money_with_currency }}</p>
+                    <small class="custom-pricing-note">{{ 'general.cart.custom_pricing_applied' | t | default: 'Custom pricing applied' }}</small>
+                  {%- else -%}
+                    <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>
+                  {%- endif -%}
+                </div>
+
+                {% comment %} Merge total into checkout button for conversion {% endcomment %}
+                <style>
+                  .cart__checkout-button .checkout-total { margin-left: 8px; font-weight: 600; }
+                </style>
+
+                <small class="tax-note caption-large rte">
+                  {%- if cart.duties_included and cart.taxes_included -%}
+                    {%- if shop.shipping_policy.body == blank -%}
+                      {{ 'sections.cart.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
+                    {%- else -%}
+                      {{
+                        'sections.cart.duties_and_taxes_included_shipping_at_checkout_with_policy_html'
+                        | t: link: shop.shipping_policy.url
+                      }}
+                    {%- endif -%}
+                  {%- elsif cart.duties_included == false and cart.taxes_included -%}
+                    {%- if shop.shipping_policy.body == blank -%}
+                      {{ 'sections.cart.taxes_included_shipping_at_checkout_without_policy' | t }}
+                    {%- else -%}
+                      {{
+                        'sections.cart.taxes_included_shipping_at_checkout_with_policy_html'
+                        | t: link: shop.shipping_policy.url
+                      }}
+                    {%- endif -%}
+                  {%- elsif cart.duties_included and cart.taxes_included == false -%}
+                    {%- if shop.shipping_policy.body == blank -%}
+                      {{ 'sections.cart.duties_included_taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+                    {%- else -%}
+                      {{
+                        'sections.cart.duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_html'
+                        | t: link: shop.shipping_policy.url
+                      }}
+                    {%- endif -%}
+                  {%- elsif cart.duties_included == false and cart.taxes_included == false -%}
+                    {%- if shop.shipping_policy.body == blank -%}
+                      {{ 'sections.cart.taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+                    {%- else -%}
+                      {{
+                        'sections.cart.taxes_at_checkout_shipping_at_checkout_with_policy_html'
+                        | t: link: shop.shipping_policy.url
+                      }}
+                    {%- endif -%}
+                  {%- endif -%}
+                </small>
+                {% endif %}
+              </div>
+            {%- else -%}
+              {% unless cart == empty %}
+              <div class="donation-note" aria-live="polite">
+                <span class="svg-wrapper" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                    <path d="M12 5.5c1.657 0 3 1.343 3 3 0 2.25-3 4.5-3 4.5s-3-2.25-3-4.5c0-1.657 1.343-3 3-3z"/>
+                    <path d="M21 13.5c-.54 0-1.144.116-1.82.35-1.084.378-2.24.546-3.38.517-1.39-.037-2.754 .24-3.968 .813l-3.016 1.42a2.5 2.5 0 0 1-2.21-.103l-1.574-.9a.75.75 0 0 0-1.05.28l-.89 1.54a1.5 1.5 0 0 0 .54 2.02l2.63 1.64c1.35.84 3.02.94 4.46.26l5.39-2.5c1.48-.69 2.86-1.68 3.66-3.08.67-1.17.22-2.357-.53-2.357z"/>
+                  </svg>
+                </span>
+                <span class="donation-text">{{ section.settings.donation_text | default: 'One Purchased = One Donated™' }}</span>
+              </div>
+
+              <div class="cart__ctas" {{ block.shopify_attributes }}>
+                <button
+                  type="submit"
+                  id="checkout"
+                  class="cart__checkout-button button"
+                  name="checkout"
+                  {% if cart == empty %}
+                    disabled
+                  {% endif %}
+                  form="cart"
+                >
+                  {{ 'sections.cart.checkout' | t }}
+                  {%- if has_custom_pricing -%}
+                    <span class="checkout-total">{{ custom_total | money_with_currency }}</span>
+                  {%- else -%}
+                    <span class="checkout-total">{{ cart.total_price | money_with_currency }}</span>
+                  {%- endif -%}
+                </button>
+              </div>
+
+              {%- if additional_checkout_buttons -%}
+                <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
+                  {{ content_for_additional_checkout_buttons }}
+                </div>
+              {%- endif -%}
+
+              <div class="cart__payment-icons" style="margin-top:12px; display:block; width:100%;">
+                {%- render 'payment-icons', show_heading: false, show_note: false, decorative: true -%}
+              </div>
+              {% endunless %}
+          {%- endcase -%}
+        {% endfor %}
+
+        <div id="cart-errors"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% render 'custom-checkout-handler' %}
+
+{% schema %}
+{
+  "name": "t:sections.main-cart-footer.name",
+  "class": "cart__footer-wrapper",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },    
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Checkout button colors"
+    },
+    {
+      "type": "color",
+      "id": "checkout_button_color",
+      "label": "Checkout button background"
+    },
+    {
+      "type": "color",
+      "id": "checkout_button_text_color",
+      "label": "Checkout button text"
+    },
+    {
+      "type": "color",
+      "id": "checkout_button_hover_color",
+      "label": "Checkout button hover background"
+    },
+
+    {
+      "type": "header",
+      "content": "Donation message settings"
+    },
+    {
+      "type": "text",
+      "id": "donation_text",
+      "label": "Donation message",
+      "default": "One Purchased = One Donated™"
+    },
+    {
+      "type": "range",
+      "id": "donation_font_size",
+      "label": "Donation font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "donation_font_weight",
+      "label": "Donation font weight",
+      "default": "600",
+      "options": [
+        {"value":"400","label":"Normal (400)"},
+        {"value":"500","label":"Medium (500)"},
+        {"value":"600","label":"Semibold (600)"},
+        {"value":"700","label":"Bold (700)"}
+      ]
+    },
+    {
+      "type": "color",
+      "id": "donation_color",
+      "label": "Donation color",
+      "default": "#18A03D"
+    },
+    {
+      "type": "header",
+      "content": "Empty cart footer"
+    },
+    {
+      "type": "text",
+      "id": "empty_cart_cta_text",
+      "label": "Empty cart CTA text",
+      "default": "Shop New Arrivals!"
+    },
+    {
+      "type": "url",
+      "id": "empty_cart_cta_link",
+      "label": "Empty cart CTA link"
+    },
+    {
+      "type": "color",
+      "id": "empty_cart_cta_color",
+      "label": "Empty cart CTA color",
+      "default": "#5B3A2F"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "subtotal",
+      "name": "t:sections.main-cart-footer.blocks.subtotal.name",
+      "limit": 1
+    },
+    {
+      "type": "buttons",
+      "name": "t:sections.main-cart-footer.blocks.buttons.name",
+      "limit": 1
+    },
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}

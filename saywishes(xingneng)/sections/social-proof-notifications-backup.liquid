@@ -1,0 +1,535 @@
+<style>
+/* Social Proof Notification Styles */
+.social-proof-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 9999;
+  max-width: 350px;
+}
+
+@media (max-width: 768px) {
+  .social-proof-container {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    max-width: none;
+  }
+}
+
+.social-proof-notification {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .social-proof-notification {
+    padding: 12px;
+    font-size: 13px;
+  }
+  
+  .notification-avatar {
+    width: 35px !important;
+    height: 35px !important;
+    margin-right: 12px !important;
+  }
+  
+  .notification-text {
+    font-size: 13px !important;
+  }
+  
+  .notification-time {
+    font-size: 11px !important;
+  }
+}
+
+.social-proof-notification.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.social-proof-notification.hide {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.notification-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  font-weight: bold;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-text {
+  margin: 0;
+  font-size: 14px;
+}
+
+.notification-time {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: #666;
+}
+
+
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+/* 购买计数器样式 */
+.purchase-counter {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ff6b6b;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  z-index: 9999;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* 紧迫感横幅样式 */
+.urgency-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ffd43b;
+  color: #000;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+  z-index: 9999;
+}
+
+.urgency-banner.show {
+  transform: translateY(0);
+}
+
+.urgency-timer {
+  font-weight: bold;
+}
+</style>
+
+<!-- Social Proof Notification Container -->
+<div class="social-proof-container" id="socialProofContainer" lang="en"></div>
+
+<!-- Purchase Counter -->
+{% if section.settings.show_purchase_counter %}
+<div class="purchase-counter" id="purchaseCounter">
+  🔥 <span id="purchaseCount">{{ section.settings.initial_purchase_count | default: 127 }}</span> people purchased today
+</div>
+{% endif %}
+
+<!-- Urgency Banner -->
+{% if section.settings.show_urgency_banner %}
+<div class="urgency-banner" id="urgencyBanner">
+</div>
+{% endif %}
+
+<script>
+  class SocialProofManager {
+    constructor() {
+      this.notifications = [];
+      this.notificationTimer = null;
+      this.purchaseCount = {{ section.settings.initial_purchase_count | default: 127 }};
+      this.lastNotificationTime = 0;
+      this.notificationInterval = {{ section.settings.notification_interval | default: 15 }} * 1000; // Convert to milliseconds
+      this.isUserInteracting = false;
+      this.interactionTimeout = null;
+      this.isMobile = window.innerWidth <= 768;
+      
+      // Preset notification data
+      this.notificationTemplates = [
+        {
+          name: "John D.",
+          location: "New York",
+          product: "{{ section.settings.product_name_1 | default: 'Best Seller' }}",
+          time: "just now"
+        },
+        {
+          name: "Sarah M.",
+          location: "Los Angeles",
+          product: "{{ section.settings.product_name_2 | default: 'Recommended Item' }}",
+          time: "2 minutes ago"
+        },
+        {
+          name: "Mike R.",
+          location: "Chicago",
+          product: "{{ section.settings.product_name_3 | default: 'Limited Edition' }}",
+          time: "5 minutes ago"
+        },
+        {
+          name: "Emma W.",
+          location: "Miami",
+          product: "{{ section.settings.product_name_4 | default: 'New Arrival' }}",
+          time: "8 minutes ago"
+        },
+        {
+          name: "David L.",
+          location: "Seattle",
+          product: "{{ section.settings.product_name_5 | default: 'Popular Choice' }}",
+          time: "12 minutes ago"
+        }
+      ];
+      
+      this.init();
+    }
+    
+    init() {
+      // 初始化延迟
+      setTimeout(() => {
+        this.startNotifications();
+      }, {{ section.settings.initial_delay | default: 5 }} * 1000);
+      
+      // 初始化紧迫感横幅
+      if ({{ section.settings.show_urgency_banner | default: false }}) {
+        this.initUrgencyBanner();
+      }
+      
+      // 定期更新购买计数
+      setInterval(() => {
+        this.incrementPurchaseCount();
+      }, 30000); // 每30秒更新一次
+    }
+    
+    startNotifications() {
+      if (!{{ section.settings.enable_notifications | default: true }}) return;
+      
+      this.notificationTimer = setInterval(() => {
+        this.showRandomNotification();
+      }, this.notificationInterval);
+      
+      // 立即显示第一个通知
+      this.showRandomNotification();
+    }
+    
+    showRandomNotification() {
+      const now = Date.now();
+      
+      // 防止通知过于频繁
+      if (now - this.lastNotificationTime < this.notificationInterval * 0.8) {
+        return;
+      }
+      
+      this.lastNotificationTime = now;
+      
+      const template = this.notificationTemplates[Math.floor(Math.random() * this.notificationTemplates.length)];
+      const notification = this.createNotification(template);
+      
+      this.displayNotification(notification);
+    }
+    
+    createNotification(template) {
+      const notification = document.createElement('div');
+      notification.className = 'social-proof-notification';
+      
+      // 生成头像字母
+      const avatar = template.name.charAt(0).toUpperCase();
+      
+      notification.innerHTML = `
+        <div class="notification-avatar">${avatar}</div>
+        <div class="notification-content">
+          <p class="notification-text" lang="en">
+            <strong>${template.name}</strong> from ${template.location} just purchased <strong>${template.product || 'this item'}</strong>
+          </p>
+          <p class="notification-time">${template.time}</p>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
+      `;
+      
+      return notification;
+    }
+    
+    displayNotification(notification) {
+      const container = document.getElementById('socialProofContainer');
+      container.appendChild(notification);
+      
+      // 触发显示动画
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 100);
+      
+      // 添加点击隐藏功能
+      notification.addEventListener('click', () => {
+        this.hideNotification(notification);
+      });
+      
+      // 移动端显示时间更短
+      const duration = this.isMobile ? 
+        {{ section.settings.notification_duration | default: 8 }} * 0.6 : 
+        {{ section.settings.notification_duration | default: 8 }};
+      
+      // Auto-hide after duration
+      setTimeout(() => {
+        this.hideNotification(notification);
+      }, duration * 1000);
+      
+      // 发送分析事件
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'social_proof_notification', {
+          'event_category': 'engagement',
+          'event_label': 'notification_displayed'
+        });
+      }
+    }
+    
+    hideNotification(notification) {
+      notification.classList.add('hide');
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.parentElement.removeChild(notification);
+        }
+      }, 400);
+    }
+    
+    incrementPurchaseCount() {
+      this.purchaseCount += Math.floor(Math.random() * 3) + 1; // 随机增加1-3
+      this.updatePurchaseCounter();
+    }
+    
+    updatePurchaseCounter() {
+      const counter = document.getElementById('purchaseCount');
+      if (counter) {
+        counter.textContent = this.purchaseCount;
+        
+        // 添加闪烁效果
+        counter.parentElement.style.animation = 'none';
+        setTimeout(() => {
+          counter.parentElement.style.animation = 'pulse 2s infinite';
+        }, 100);
+      }
+    }
+    
+    initUrgencyBanner() {
+      const banner = document.getElementById('urgencyBanner');
+      const timer = document.getElementById('urgencyTimer');
+      
+      if (!banner || !timer) return;
+      
+      // 显示横幅
+      setTimeout(() => {
+        banner.classList.add('show');
+      }, {{ section.settings.urgency_delay | default: 10 }} * 1000);
+      
+      // Countdown logic
+      let timeLeft = {{ section.settings.urgency_hours | default: 24 }} * 3600; // Convert to seconds
+      
+      const updateTimer = () => {
+        const hours = Math.floor(timeLeft / 3600);
+        const minutes = Math.floor((timeLeft % 3600) / 60);
+        const seconds = timeLeft % 60;
+        
+        timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft > 0) {
+          timeLeft--;
+        } else {
+          // Time's up, reset timer
+          timeLeft = {{ section.settings.urgency_hours | default: 24 }} * 3600;
+        }
+      };
+      
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    }
+    
+    pauseNotifications() {
+      if (this.notificationTimer) {
+        clearInterval(this.notificationTimer);
+      }
+    }
+    
+    resumeNotifications() {
+      if ({{ section.settings.enable_notifications | default: true }}) {
+        this.startNotifications();
+      }
+    }
+  }
+  
+  // Initialize social proof manager
+  document.addEventListener('DOMContentLoaded', function() {
+    if ({{ section.settings.enable_social_proof | default: true }}) {
+      new SocialProofManager();
+    }
+  });
+  
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', function() {
+    if (window.socialProofManager) {
+      window.socialProofManager.pauseNotifications();
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Social Proof",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Basic Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_social_proof",
+      "label": "Enable Social Proof",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_notifications",
+      "label": "Enable Purchase Notifications",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "initial_delay",
+      "label": "Initial Delay (seconds)",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "notification_interval",
+      "label": "Notification Interval (seconds)",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "notification_duration",
+      "label": "Notification Duration (seconds)",
+      "min": 3,
+      "max": 15,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Purchase Counter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_purchase_counter",
+      "label": "Show Purchase Counter",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "initial_purchase_count",
+      "label": "Initial Purchase Count",
+      "default": 127
+    },
+    {
+      "type": "header",
+      "content": "Urgency Banner"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_urgency_banner",
+      "label": "Show Urgency Banner",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "urgency_text",
+      "label": "Urgency Text",
+      "default": "Limited Time Offer"
+    },
+    {
+      "type": "range",
+      "id": "urgency_delay",
+      "label": "Banner Delay (seconds)",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "urgency_hours",
+      "label": "Countdown Hours",
+      "min": 1,
+      "max": 48,
+      "step": 1,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Product Name Settings"
+    },
+    {
+      "type": "text",
+      "id": "product_name_1",
+      "label": "Product Name 1",
+      "default": "Best Seller"
+    },
+    {
+      "type": "text",
+      "id": "product_name_2",
+      "label": "Product Name 2",
+      "default": "Recommended Item"
+    },
+    {
+      "type": "text",
+      "id": "product_name_3",
+      "label": "Product Name 3",
+      "default": "Limited Edition"
+    },
+    {
+      "type": "text",
+      "id": "product_name_4",
+      "label": "Product Name 4",
+      "default": "New Arrival"
+    },
+    {
+      "type": "text",
+      "id": "product_name_5",
+      "label": "Product Name 5",
+      "default": "Popular Choice"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social Proof Notifications"
+    }
+  ]
+}
+{% endschema %}

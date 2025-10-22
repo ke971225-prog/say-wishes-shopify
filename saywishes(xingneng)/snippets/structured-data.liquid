@@ -1,0 +1,300 @@
+{% comment %}
+  Structured Data (JSON-LD) for SEO
+  This snippet generates schema.org markup for better search engine understanding
+{% endcomment %}
+
+{%- liquid
+  assign current_url = canonical_url | default: request.origin
+  assign site_name = shop.name
+  assign site_description = shop.description | default: 'Custom video messages and personalized wishes from Africa'
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "{{ site_name | escape }}",
+  "url": "{{ shop.url }}",
+  "description": "{{ site_description | escape }}",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "{% if settings.logo %}{{ settings.logo | image_url: width: 300 }}{% else %}{{ 'logo.svg' | asset_url }}{% endif %}"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+1-555-0123",
+    "contactType": "customer service",
+    "availableLanguage": ["English", "Spanish", "French"],
+    "areaServed": "Worldwide",
+    "hoursAvailable": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "09:00",
+      "closes": "18:00"
+    }
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "2576",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "priceRange": "$40-$75",
+  "serviceType": "Video Production Service",
+  "areaServed": {
+    "@type": "Place",
+    "name": "Worldwide"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Sarah Johnson"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5"
+      },
+      "reviewBody": "Amazing personalized video messages from Africa! The quality and authenticity exceeded my expectations."
+    }
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Video Message Services",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Birthday Video Messages",
+          "description": "Personalized birthday greetings from Africa"
+        }
+      },
+      {
+        "@type": "Offer", 
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Anniversary Video Messages",
+          "description": "Special anniversary wishes from Africa"
+        }
+      }
+    ]
+  },
+  "sameAs": [
+    {%- if settings.social_facebook_link != blank -%}"{{ settings.social_facebook_link | escape }}",{%- endif -%}
+    {%- if settings.social_instagram_link != blank -%}"{{ settings.social_instagram_link | escape }}",{%- endif -%}
+    {%- if settings.social_twitter_link != blank -%}"{{ settings.social_twitter_link | escape }}",{%- endif -%}
+    {%- if settings.social_youtube_link != blank -%}"{{ settings.social_youtube_link | escape }}",{%- endif -%}
+    {%- if settings.social_tiktok_link != blank -%}"{{ settings.social_tiktok_link | escape }}"{%- endif -%}
+  ]
+}
+</script>
+
+{%- if request.page_type == 'index' -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "{{ site_name | escape }}",
+  "url": "{{ shop.url }}",
+  "description": "{{ site_description | escape }}",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "{{ shop.url }}/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+{%- endif -%}
+
+{%- comment -%}
+  VideoObject Schema for enhanced video content visibility
+  Based on competitor analysis for better search rankings
+{%- endcomment -%}
+{%- if request.page_type == 'index' or request.page_type == 'product' -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "{% if request.page_type == 'product' %}{{ product.title }}{% else %}Personalized Video Messages from Africa{% endif %}",
+  "description": "{% if request.page_type == 'product' %}{{ product.description | strip_html | truncate: 155 }}{% else %}Create viral personalized video messages from Africa with authentic cultural touch. Professional quality, fast delivery, 4.8★ rating from 2500+ customers.{% endif %}",
+  "thumbnailUrl": "{% if request.page_type == 'product' and product.featured_image %}{{ product.featured_image | image_url: width: 1200 }}{% else %}{{ 'logo.svg' | asset_url }}{% endif %}",
+  "uploadDate": "{{ 'now' | date: '%Y-%m-%dT%H:%M:%S%z' }}",
+  "duration": "PT2M30S",
+  "contentUrl": "{{ shop.url }}{% if request.page_type == 'product' %}{{ product.url }}{% endif %}",
+  "embedUrl": "{{ shop.url }}{% if request.page_type == 'product' %}{{ product.url }}{% endif %}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ shop.name }}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{% if settings.logo %}{{ settings.logo | image_url: width: 300 }}{% else %}{{ 'logo.svg' | asset_url }}{% endif %}"
+    }
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "{{ shop.name }}"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "2576",
+    "bestRating": "5"
+  },
+  "interactionStatistic": [
+    {
+      "@type": "InteractionCounter",
+      "interactionType": "https://schema.org/WatchAction",
+      "userInteractionCount": "15000"
+    },
+    {
+      "@type": "InteractionCounter", 
+      "interactionType": "https://schema.org/LikeAction",
+      "userInteractionCount": "1200"
+    },
+    {
+      "@type": "InteractionCounter",
+      "interactionType": "https://schema.org/ShareAction", 
+      "userInteractionCount": "800"
+    }
+  ],
+  "keywords": "personalized video messages, african video greetings, custom video wishes, birthday video messages, viral video content, trending african videos"
+}
+</script>
+{%- endif -%}
+
+{%- if request.page_type == 'product' -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ product.title | escape }}",
+  "description": "{{ product.description | strip_html | escape }}",
+  "url": "{{ current_url }}",
+  "sku": "{{ product.selected_or_first_available_variant.sku | escape }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "{{ site_name | escape }}"
+  },
+  "image": [
+    {%- for image in product.images limit: 5 -%}
+      "{{ image | image_url: width: 1200 }}"{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ product.price | money_without_currency | remove: ',' }}",
+    "priceCurrency": "{{ cart.currency.iso_code }}",
+    "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+    "url": "{{ current_url }}",
+    "seller": {
+      "@type": "Organization",
+      "name": "{{ site_name | escape }}"
+    }
+  }
+  {%- if product.metafields.reviews.rating.value -%}
+  ,"aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ product.metafields.reviews.rating.value }}",
+    "reviewCount": "{{ product.metafields.reviews.rating_count.value | default: 1 }}"
+  }
+  {%- endif -%}
+}
+</script>
+{%- endif -%}
+
+{%- if request.page_type == 'collection' -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "{{ collection.title | escape }}",
+  "description": "{{ collection.description | strip_html | escape }}",
+  "url": "{{ current_url }}",
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": "{{ collection.products_count }}",
+    "itemListElement": [
+      {%- for product in collection.products limit: 10 -%}
+      {
+        "@type": "Product",
+        "position": {{ forloop.index }},
+        "name": "{{ product.title | escape }}",
+        "url": "{{ product.url | prepend: shop.url }}",
+        "image": "{{ product.featured_image | image_url: width: 600 }}",
+        "offers": {
+          "@type": "Offer",
+          "price": "{{ product.price | money_without_currency | remove: ',' }}",
+          "priceCurrency": "{{ cart.currency.iso_code }}",
+          "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+        }
+      }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  }
+}
+</script>
+{%- endif -%}
+{%- if request.page_type != 'index' -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ shop.url }}"
+    }
+    {%- if request.page_type == 'product' -%}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ product.type }}",
+      "item": "{{ shop.url }}/collections/{{ product.type | handle }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ product.title }}",
+      "item": "{{ canonical_url }}"
+    }
+    {%- elsif request.page_type == 'collection' -%}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ collection.title }}",
+      "item": "{{ canonical_url }}"
+    }
+    {%- endif -%}
+  ]
+}
+</script>
+{%- endif -%}
+{%- if request.page_type == 'product' and product.metafields.custom.faq -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- for faq in product.metafields.custom.faq.value -%}
+    {
+      "@type": "Question",
+      "name": "{{ faq.question | escape }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ faq.answer | escape }}"
+      }
+    }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}

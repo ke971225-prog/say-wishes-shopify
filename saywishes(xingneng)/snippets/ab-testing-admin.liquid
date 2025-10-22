@@ -1,0 +1,283 @@
+{% comment %}
+  SayWishes A/B Testing Admin Interface Snippet
+  专为 wishesvideo.com 定制的 A/B 测试管理界面
+  
+  使用方法:
+  在需要显示 A/B 测试管理界面的地方添加:
+  {% render 'ab-testing-admin' %}
+  
+  性能优化:
+  - 只有在启用 A/B 测试时才显示管理界面
+  - 仅在主题编辑器中可见，不影响前端性能
+{% endcomment %}
+
+{% comment %} 仅在启用 A/B 测试且在主题编辑器中显示管理界面 {% endcomment %}
+{% if settings.ab_test_enabled and request.design_mode %}
+<div class="ab-testing-admin-panel" style="
+  background: #f8f9fa;
+  border: 2px solid #007cba;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+">
+  <div style="display: flex; align-items: center; margin-bottom: 15px;">
+    <div style="
+      width: 24px;
+      height: 24px;
+      background: #007cba;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    ">A/B</div>
+    <h3 style="margin: 0; color: #007cba; font-size: 18px;">SayWishes A/B 测试管理</h3>
+  </div>
+  
+  <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+    <h4 style="margin: 0 0 10px 0; color: #333; font-size: 16px;">📊 测试状态</h4>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+      <div style="padding: 10px; background: #e8f5e8; border-radius: 4px; border-left: 4px solid #28a745;">
+        <div style="font-weight: bold; color: #155724;">版本 A - 情感营销</div>
+        <div style="font-size: 14px; color: #155724; margin-top: 5px;">
+          强调个性化和情感连接<br>
+          包含限时优惠横幅
+        </div>
+      </div>
+      <div style="padding: 10px; background: #e3f2fd; border-radius: 4px; border-left: 4px solid #2196f3;">
+        <div style="font-weight: bold; color: #0d47a1;">版本 B - 理性营销</div>
+        <div style="font-size: 14px; color: #0d47a1; margin-top: 5px;">
+          强调专业服务和品质保证<br>
+          包含专业服务横幅
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+    <h4 style="margin: 0 0 10px 0; color: #333; font-size: 16px;">⚙️ 测试配置</h4>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+      <div><strong>测试名称:</strong> saywishes_hero_ab_test</div>
+      <div><strong>流量分配:</strong> 50% / 50%</div>
+      <div><strong>测试持续时间:</strong> {{ settings.ab_test_duration | default: 24 }} 小时</div>
+      <div><strong>调试模式:</strong> {{ settings.ab_test_debug | default: false }}</div>
+    </div>
+  </div>
+  
+  <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+    <h4 style="margin: 0 0 10px 0; color: #333; font-size: 16px;">📈 跟踪事件</h4>
+    <div style="font-size: 14px; line-height: 1.6;">
+      <div style="margin-bottom: 8px;">
+        <strong>页面事件:</strong> 页面加载、首页访问、产品页访问
+      </div>
+      <div style="margin-bottom: 8px;">
+        <strong>转化事件:</strong> 添加到购物车、开始结账、表单提交
+      </div>
+      <div style="margin-bottom: 8px;">
+        <strong>交互事件:</strong> 按钮点击、区域可见性
+      </div>
+    </div>
+  </div>
+  
+  <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+    <h4 style="margin: 0 0 10px 0; color: #333; font-size: 16px;">🔧 开发工具</h4>
+    <div style="font-size: 14px; line-height: 1.6;">
+      <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace;">
+        <div><strong>控制台命令:</strong></div>
+        <div style="margin: 5px 0;">abTestDebug.getVersion() - 获取当前版本</div>
+        <div style="margin: 5px 0;">abTestDebug.setVersion('A') - 强制设置版本 A</div>
+        <div style="margin: 5px 0;">abTestDebug.setVersion('B') - 强制设置版本 B</div>
+        <div style="margin: 5px 0;">abTestDebug.reset() - 重置测试</div>
+        <div style="margin: 5px 0;">abTestDebug.showInfo() - 显示测试信息</div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="background: #fff3cd; padding: 15px; border-radius: 6px; border-left: 4px solid #ffc107;">
+    <h4 style="margin: 0 0 10px 0; color: #856404; font-size: 16px;">⚠️ 重要提示</h4>
+    <div style="font-size: 14px; color: #856404; line-height: 1.6;">
+      <div style="margin-bottom: 8px;">
+        • 此管理面板仅在主题编辑器中可见，访客无法看到
+      </div>
+      <div style="margin-bottom: 8px;">
+        • A/B 测试会自动为每个访客分配版本并保存 24 小时
+      </div>
+      <div style="margin-bottom: 8px;">
+        • 所有测试数据会发送到 Google Analytics 和 Facebook Pixel
+      </div>
+      <div style="margin-bottom: 8px;">
+        • 在生产环境中请关闭调试模式以提高性能
+      </div>
+    </div>
+  </div>
+  
+  <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+    <div style="font-size: 12px; color: #6c757d;">
+      SayWishes A/B Testing System v1.0 | 专为 wishesvideo.com 定制
+    </div>
+  </div>
+</div>
+
+{% comment %} 在主题编辑器中显示当前 A/B 测试版本 {% endcomment %}
+<script>
+  if (window.Shopify && window.Shopify.designMode) {
+    document.addEventListener('DOMContentLoaded', function() {
+      // 创建版本指示器
+      const indicator = document.createElement('div');
+      indicator.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #007cba;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        cursor: pointer;
+      `;
+      
+      // 检查当前版本
+      if (window.sayWishesABTest) {
+        const version = window.sayWishesABTest.getVersion();
+        indicator.textContent = `A/B 测试: 版本 ${version}`;
+        indicator.style.background = version === 'A' ? '#ff6b6b' : '#4ecdc4';
+        
+        // 点击切换版本
+        indicator.addEventListener('click', function() {
+          const newVersion = version === 'A' ? 'B' : 'A';
+          if (window.abTestDebug) {
+            window.abTestDebug.setVersion(newVersion);
+          }
+        });
+      } else {
+        indicator.textContent = 'A/B 测试: 未加载';
+        indicator.style.background = '#dc3545';
+      }
+      
+      document.body.appendChild(indicator);
+    });
+  }
+</script>
+{% endif %}
+
+<script>
+  // A/B Testing Admin Functions
+  function updateAdminPanel() {
+    const currentBucketEl = document.getElementById('current-bucket');
+    const testNameEl = document.getElementById('test-name');
+    const availableBucketsEl = document.getElementById('available-buckets');
+    
+    if (window.ABTest) {
+      const bucket = window.ABTest.getCurrentBucket();
+      currentBucketEl.textContent = bucket.toUpperCase();
+      testNameEl.textContent = window.ABTest.testName;
+      availableBucketsEl.textContent = window.ABTest.buckets.join(', ').toUpperCase();
+    } else {
+      currentBucketEl.textContent = 'Not initialized';
+    }
+  }
+
+  function clearABTestData() {
+    // Clear all A/B test cookies
+    document.cookie = 'ab_test_bucket=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    
+    // Remove data attributes
+    document.documentElement.removeAttribute('data-ab-bucket');
+    document.documentElement.removeAttribute('data-ab-test');
+    
+    // Remove CSS classes
+    document.body.classList.remove('ab-bucket-a', 'ab-bucket-b');
+    
+    alert('A/B test data cleared! Page will reload.');
+    window.location.reload();
+  }
+
+  function toggleABDebug() {
+    const url = new URL(window.location);
+    if (url.searchParams.has('ab_debug')) {
+      url.searchParams.delete('ab_debug');
+    } else {
+      url.searchParams.set('ab_debug', 'true');
+    }
+    window.location.href = url.toString();
+  }
+
+  // Handle bucket selector change
+  document.addEventListener('DOMContentLoaded', function() {
+    const bucketSelector = document.getElementById('bucket-selector');
+    
+    // Set current value
+    const urlParams = new URLSearchParams(window.location.search);
+    const forcedBucket = urlParams.get('ab_bucket');
+    if (forcedBucket) {
+      bucketSelector.value = forcedBucket;
+    }
+    
+    bucketSelector.addEventListener('change', function() {
+      const url = new URL(window.location);
+      if (this.value) {
+        url.searchParams.set('ab_bucket', this.value);
+      } else {
+        url.searchParams.delete('ab_bucket');
+      }
+      window.location.href = url.toString();
+    });
+    
+    // Update panel when A/B test is ready
+    window.addEventListener('ab-test-ready', updateAdminPanel);
+    
+    // Initial update
+    setTimeout(updateAdminPanel, 100);
+  });
+</script>
+
+<style>
+  #ab-testing-admin button:hover {
+    opacity: 0.8;
+  }
+  
+  #ab-testing-admin select {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+</style>
+
+{% comment %} 为生产环境提供简化的状态显示 {% endcomment %}
+{% unless request.design_mode %}
+  {% if settings.ab_test_debug %}
+    <div id="ab-test-debug-info" style="
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      z-index: 9999;
+    ">
+      A/B 测试调试模式
+    </div>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const debugInfo = document.getElementById('ab-test-debug-info');
+        if (debugInfo && window.sayWishesABTest) {
+          const version = window.sayWishesABTest.getVersion();
+          debugInfo.textContent = `A/B 测试: 版本 ${version}`;
+          debugInfo.style.background = version === 'A' ? 'rgba(255,107,107,0.9)' : 'rgba(78,205,196,0.9)';
+        }
+      });
+    </script>
+  {% endif %}
+{% endunless %}

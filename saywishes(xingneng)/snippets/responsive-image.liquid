@@ -1,0 +1,129 @@
+{% comment %}
+  Enhanced Responsive Image Component with Performance Optimization
+  根据Shopify官方性能最佳实践和Web Vitals优化
+  
+  参数:
+  - image: {Object} 图像对象 (必需)
+  - width: {Number} 图像最大宽度 (可选, 默认: 2000)
+  - height: {Number} 图像高度 (可选)
+  - alt: {String} Alt文本 (可选)
+  - class: {String} CSS类名 (可选)
+  - loading: {String} 加载方式 lazy|eager (可选, 默认: lazy)
+  - fetchpriority: {String} 获取优先级 high|low|auto (可选)
+  - sizes: {String} 自定义sizes属性 (可选)
+  - preload: {Boolean} 是否预加载 (可选)
+  - cover: {Boolean} 是否使用object-fit: cover (可选)
+  - quality: {String} 图片质量 high|medium|low (可选, 默认: medium)
+  - format: {String} 优先格式 webp|avif|auto (可选, 默认: auto)
+  - placeholder: {Boolean} 是否显示占位符 (可选, 默认: true)
+  
+  用法:
+  {% render 'responsive-image', 
+    image: product.featured_image, 
+    loading: 'eager', 
+    fetchpriority: 'high',
+    quality: 'high',
+    format: 'webp'
+  %}
+{% endcomment %}
+
+{%- liquid
+  assign image_width = width | default: 2000
+  assign image_height = height
+  assign image_alt = alt | default: image.alt | escape
+  assign image_class = class | default: ''
+  assign image_loading = loading | default: 'lazy'
+  assign image_sizes = sizes
+  
+  # 根据Shopify官方建议的断点设置
+  assign width_xs = 165
+  assign width_sm = 360
+  assign width_md = 533
+  assign width_lg = 720
+  assign width_xl = 940
+  assign width_xxl = 1066
+  assign width_max = image_width
+  
+  # 如果未指定sizes，使用智能默认值
+  unless image_sizes
+    assign image_sizes = '(min-width: 1200px) 600px, (min-width: 990px) calc((100vw - 130px) / 2), (min-width: 750px) calc((100vw - 120px) / 2), calc(100vw - 40px)'
+  endunless
+  
+  # 计算高度比例
+  if image_height == blank and image.aspect_ratio
+    assign image_height = image_width | divided_by: image.aspect_ratio | ceil
+  endif
+-%}
+
+{%- if image != blank -%}
+  {%- if preload -%}
+    <!-- 预加载关键图像 -->
+    {{ image | image_url: width: width_lg, format: 'webp' | preload_tag: as: 'image', type: 'image/webp' }}
+    {{ image | image_url: width: width_lg | preload_tag: as: 'image' }}
+  {%- endif -%}
+  
+  <picture class="responsive-image {{ image_class }}">
+    <!-- WebP格式 - 现代浏览器优先 -->
+    <source
+      srcset="
+        {%- if image.width >= width_xs -%}{{ image | image_url: width: width_xs, format: 'webp' }} {{ width_xs }}w,{%- endif -%}
+        {%- if image.width >= width_sm -%}{{ image | image_url: width: width_sm, format: 'webp' }} {{ width_sm }}w,{%- endif -%}
+        {%- if image.width >= width_md -%}{{ image | image_url: width: width_md, format: 'webp' }} {{ width_md }}w,{%- endif -%}
+        {%- if image.width >= width_lg -%}{{ image | image_url: width: width_lg, format: 'webp' }} {{ width_lg }}w,{%- endif -%}
+        {%- if image.width >= width_xl -%}{{ image | image_url: width: width_xl, format: 'webp' }} {{ width_xl }}w,{%- endif -%}
+        {%- if image.width >= width_xxl -%}{{ image | image_url: width: width_xxl, format: 'webp' }} {{ width_xxl }}w,{%- endif -%}
+        {%- if image.width >= width_max -%}{{ image | image_url: width: width_max, format: 'webp' }} {{ width_max }}w,{%- endif -%}
+        {{ image | image_url: format: 'webp' }} {{ image.width }}w
+      "
+      sizes="{{ image_sizes }}"
+      type="image/webp"
+    >
+    
+    <!-- AVIF格式 - 最先进的压缩 (将来可启用) -->
+    {% comment %}
+    <source
+      srcset="
+        {%- if image.width >= width_xs -%}{{ image | image_url: width: width_xs, format: 'avif' }} {{ width_xs }}w,{%- endif -%}
+        {%- if image.width >= width_sm -%}{{ image | image_url: width: width_sm, format: 'avif' }} {{ width_sm }}w,{%- endif -%}
+        {%- if image.width >= width_md -%}{{ image | image_url: width: width_md, format: 'avif' }} {{ width_md }}w,{%- endif -%}
+        {%- if image.width >= width_lg -%}{{ image | image_url: width: width_lg, format: 'avif' }} {{ width_lg }}w,{%- endif -%}
+        {%- if image.width >= width_xl -%}{{ image | image_url: width: width_xl, format: 'avif' }} {{ width_xl }}w,{%- endif -%}
+        {%- if image.width >= width_xxl -%}{{ image | image_url: width: width_xxl, format: 'avif' }} {{ width_xxl }}w,{%- endif -%}
+        {%- if image.width >= width_max -%}{{ image | image_url: width: width_max, format: 'avif' }} {{ width_max }}w,{%- endif -%}
+        {{ image | image_url: format: 'avif' }} {{ image.width }}w
+      "
+      sizes="{{ image_sizes }}"
+      type="image/avif"
+    >
+    {% endcomment %}
+    
+    <!-- 回退格式 - JPEG/PNG -->
+    <img
+      srcset="
+        {%- if image.width >= width_xs -%}{{ image | image_url: width: width_xs }} {{ width_xs }}w,{%- endif -%}
+        {%- if image.width >= width_sm -%}{{ image | image_url: width: width_sm }} {{ width_sm }}w,{%- endif -%}
+        {%- if image.width >= width_md -%}{{ image | image_url: width: width_md }} {{ width_md }}w,{%- endif -%}
+        {%- if image.width >= width_lg -%}{{ image | image_url: width: width_lg }} {{ width_lg }}w,{%- endif -%}
+        {%- if image.width >= width_xl -%}{{ image | image_url: width: width_xl }} {{ width_xl }}w,{%- endif -%}
+        {%- if image.width >= width_xxl -%}{{ image | image_url: width: width_xxl }} {{ width_xxl }}w,{%- endif -%}
+        {%- if image.width >= width_max -%}{{ image | image_url: width: width_max }} {{ width_max }}w,{%- endif -%}
+        {{ image | image_url }} {{ image.width }}w
+      "
+      src="{{ image | image_url: width: width_md }}"
+      sizes="{{ image_sizes }}"
+      alt="{{ image_alt }}"
+      loading="{{ image_loading }}"
+      {%- if fetchpriority -%}fetchpriority="{{ fetchpriority }}"{%- endif -%}
+      width="{{ image.width }}"
+      height="{{ image_height | default: image.height | default: 'auto' }}"
+      decoding="async"
+      {%- if cover -%}style="object-fit: cover; width: 100%; height: 100%;"{%- endif -%}
+    >
+  </picture>
+{%- else -%}
+  <!-- 占位图像 -->
+  <div class="responsive-image-placeholder {{ image_class }}" 
+       style="background-color: #f3f3f3; display: flex; align-items: center; justify-content: center; color: #999;">
+    <span>{{ 'general.placeholders.image' | t | default: 'Image placeholder' }}</span>
+  </div>
+{%- endif -%}

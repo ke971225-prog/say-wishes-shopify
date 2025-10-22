@@ -1,0 +1,107 @@
+{% comment %}
+  Renders a single review item
+  Accepts:
+  - review: object - Review data object
+  - show_product: boolean - Whether to show product info
+{% endcomment %}
+
+{%- assign show_product_info = show_product | default: false -%}
+
+<div class="review-item">
+  <div class="review-header">
+    <div class="reviewer-info">
+      <span class="reviewer-name">{{ review.name | default: 'Anonymous' }}</span>
+      <div class="review-rating">
+        {%- render 'star-rating', rating: review.rating, size: 'small' -%}
+      </div>
+    </div>
+    <span class="review-date">{{ review.date | default: 'now' | date: '%B %d, %Y' }}</span>
+  </div>
+  
+  {%- if show_product_info and review.product -%}
+    <div class="review-product">
+      <span class="review-product-name">{{ review.product.title }}</span>
+    </div>
+  {%- endif -%}
+  
+  <div class="review-content">
+    <p>{{ review.content | default: review.review }}</p>
+  </div>
+  
+  {%- if review.image -%}
+    <div class="review-image">
+      <img 
+        src="{{ review.image | asset_url }}" 
+        alt="Review image" 
+        width="200" 
+        height="auto" 
+        loading="lazy"
+        style="max-width: 200px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  .review-item {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgb(var(--color-border));
+  }
+  
+  .review-item:last-child {
+    border-bottom: none;
+  }
+  
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+  
+  .reviewer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .reviewer-name {
+    font-weight: 600;
+    color: rgb(var(--color-foreground));
+  }
+  
+  .review-date {
+    font-size: 0.875rem;
+    color: rgba(var(--color-foreground), 0.7);
+  }
+  
+  .review-product {
+    margin-bottom: 0.75rem;
+  }
+  
+  .review-product-name {
+    font-size: 0.875rem;
+    color: rgba(var(--color-foreground), 0.8);
+    font-style: italic;
+  }
+  
+  .review-content p {
+    margin: 0;
+    line-height: 1.6;
+    color: rgb(var(--color-foreground));
+  }
+  
+  .review-image {
+    margin-top: 1rem;
+  }
+  
+  @media screen and (max-width: 749px) {
+    .review-header {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .review-date {
+      align-self: flex-start;
+    }
+  }
+</style>

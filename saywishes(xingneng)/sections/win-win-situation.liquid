@@ -1,0 +1,912 @@
+{{ 'component-image-with-text.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start }} 0%, {{ section.settings.gradient_color_end }} 100%);
+    {% else %}
+      background-color: {{ section.settings.section_background | default: '#f8f8f8' }};
+    {% endif %}
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .win-win-title {
+    text-align: center;
+    font-size: {{ section.settings.main_title_font_size | default: 2.5 }}rem;
+    font-weight: {{ section.settings.main_title_font_weight | default: 'bold' }};
+    margin-bottom: 3rem;
+    color: {{ section.settings.main_title_color | default: '#333' }};
+    text-transform: {{ section.settings.main_title_text_transform | default: 'none' }};
+  }
+
+  .win-win-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .win-win-text {
+    padding: {{ section.settings.text_padding | default: 2 }}rem;
+    background-color: {{ section.settings.text_background | default: 'transparent' }};
+    border-radius: {{ section.settings.text_border_radius | default: 0 }}px;
+  }
+
+  .win-win-text h3 {
+    font-size: {{ section.settings.left_title_font_size | default: 1.8 }}rem;
+    font-weight: {{ section.settings.left_title_font_weight | default: 'bold' }};
+    margin-bottom: 1rem;
+    color: {{ section.settings.left_title_color | default: '#333' }};
+    text-transform: {{ section.settings.left_title_text_transform | default: 'none' }};
+  }
+
+  .win-win-text p {
+    font-size: {{ section.settings.left_text_font_size | default: 1 }}rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: {{ section.settings.left_text_color | default: '#666' }};
+    font-weight: {{ section.settings.left_text_font_weight | default: 'normal' }};
+  }
+
+  .win-win-text .highlight {
+    font-weight: {{ section.settings.highlight_font_weight | default: 'bold' }};
+    color: {{ section.settings.highlight_color | default: '#e91e63' }};
+    font-size: {{ section.settings.highlight_font_size | default: 1 }}rem;
+    text-transform: {{ section.settings.highlight_text_transform | default: 'none' }};
+  }
+
+  .win-win-button {
+    background: {{ section.settings.button_bg_color | default: 'linear-gradient(135deg, #e91e63, #f06292)' }};
+    color: {{ section.settings.button_text_color | default: 'white' }};
+    padding: {{ section.settings.button_padding_vertical | default: 18 }}px {{ section.settings.button_padding_horizontal | default: 40 }}px;
+    border: {{ section.settings.button_border_width | default: 0 }}px solid {{ section.settings.button_border_color | default: 'transparent' }};
+    border-radius: {{ section.settings.button_border_radius | default: 25 }}px;
+    font-size: {{ section.settings.button_font_size | default: 1.1 }}rem;
+    font-weight: {{ section.settings.button_font_weight | default: '600' }};
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-transform: {{ section.settings.button_text_transform | default: 'uppercase' }};
+    letter-spacing: 1px;
+  }
+
+  .win-win-button:hover {
+    transform: translateY(-2px);
+    background: {{ section.settings.button_hover_bg_color | default: 'linear-gradient(135deg, #c2185b, #e91e63)' }};
+    color: {{ section.settings.button_hover_text_color | default: 'white' }};
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+  }
+
+  .button-container {
+    text-align: {{ section.settings.button_alignment | default: 'left' }};
+    margin-top: 1.5rem;
+  }
+
+  .win-win-image {
+    border-radius: {{ section.settings.card_border_radius | default: 20 }}px;
+    overflow: hidden;
+    background: {{ section.settings.card_background | default: 'linear-gradient(135deg, #e91e63, #ff6b9d)' }};
+    padding: {{ section.settings.card_padding | default: 2 }}rem;
+    color: {{ section.settings.card_text_color | default: 'white' }};
+    text-align: center;
+  }
+
+  .win-win-image h4 {
+    font-size: {{ section.settings.card_subtitle_font_size | default: 1.2 }}rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+    font-weight: {{ section.settings.card_subtitle_font_weight | default: 'normal' }};
+    text-transform: {{ section.settings.card_subtitle_text_transform | default: 'none' }};
+  }
+
+  .win-win-image h2 {
+    font-size: {{ section.settings.card_title_font_size | default: 2 }}rem;
+    font-weight: {{ section.settings.card_title_font_weight | default: 'bold' }};
+    margin-bottom: 1rem;
+    text-transform: {{ section.settings.card_title_text_transform | default: 'none' }};
+  }
+
+  .win-win-image p {
+    font-size: {{ section.settings.card_description_font_size | default: 0.9 }}rem;
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+    font-weight: {{ section.settings.card_description_font_weight | default: 'normal' }};
+  }
+
+  .win-win-image img {
+    max-width: 100%;
+    border-radius: {{ section.settings.card_image_border_radius | default: 10 }}px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .win-win-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    
+    .win-win-title {
+      font-size: {{ section.settings.mobile_main_title_font_size | default: 2 }}rem;
+    }
+    
+    .win-win-text h3 {
+      font-size: {{ section.settings.mobile_left_title_font_size | default: 1.5 }}rem;
+    }
+    
+    .win-win-text p {
+      font-size: {{ section.settings.mobile_left_text_font_size | default: 0.9 }}rem;
+    }
+    
+    .win-win-text .highlight {
+      font-size: {{ section.settings.mobile_highlight_font_size | default: 0.9 }}rem;
+    }
+    
+    .win-win-button {
+      padding: {{ section.settings.mobile_button_padding_vertical | default: 15 }}px {{ section.settings.mobile_button_padding_horizontal | default: 30 }}px;
+      font-size: {{ section.settings.mobile_button_font_size | default: 1 }}rem;
+    }
+    
+    .button-container {
+      text-align: {{ section.settings.mobile_button_alignment | default: section.settings.button_alignment | default: 'left' }};
+    }
+    
+    .win-win-image h4 {
+      font-size: {{ section.settings.mobile_card_subtitle_font_size | default: 1 }}rem;
+    }
+    
+    .win-win-image h2 {
+      font-size: {{ section.settings.mobile_card_title_font_size | default: 1.6 }}rem;
+    }
+    
+    .win-win-image p {
+      font-size: {{ section.settings.mobile_card_description_font_size | default: 0.8 }}rem;
+    }
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding">
+  <div class="page-width">
+    <h2 class="win-win-title">{{ section.settings.main_title }}</h2>
+    
+    <div class="win-win-content">
+      <div class="win-win-text">
+        <h3>{{ section.settings.left_title }}</h3>
+        <p>{{ section.settings.left_text_1 }}</p>
+        <p class="highlight">{{ section.settings.left_text_2 }}</p>
+        <p>{{ section.settings.left_text_3 }}</p>
+        <p>{{ section.settings.left_text_4 }}</p>
+        
+        {%- if section.settings.button_label != blank -%}
+          <div class="button-container">
+            <a href="{{ section.settings.button_link | default: '#' }}" class="win-win-button">
+              {{ section.settings.button_label }}
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+      
+      <div class="win-win-image">
+        <h4>{{ section.settings.card_subtitle }}</h4>
+        <h2>{{ section.settings.card_title }}</h2>
+        <p>{{ section.settings.card_description }}</p>
+        {%- if section.settings.card_image != blank -%}
+          {{ section.settings.card_image | image_url: width: 300 | image_tag: loading: 'lazy' }}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "WIN WIN SITUATION",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "区块设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "启用渐变背景",
+      "default": false,
+      "info": "启用此选项使用渐变背景而不是纯色背景"
+    },
+    {
+      "type": "color",
+      "id": "section_background",
+      "label": "区块背景颜色",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "渐变起始颜色",
+      "default": "#8BC34A",
+      "info": "渐变的起始颜色（左上角）"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "渐变结束颜色",
+      "default": "#E91E63",
+      "info": "渐变的结束颜色（右下角）"
+    },
+    {
+      "type": "header",
+      "content": "内容设置"
+    },
+    {
+      "type": "text",
+      "id": "main_title",
+      "label": "主标题",
+      "default": "WIN WIN SITUATION"
+    },
+    {
+      "type": "header",
+      "content": "主标题样式"
+    },
+    {
+      "type": "range",
+      "id": "main_title_font_size",
+      "min": 1.5,
+      "max": 4,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "主标题字体大小",
+      "default": 2.5
+    },
+    {
+      "type": "select",
+      "id": "main_title_font_weight",
+      "label": "主标题字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" },
+        { "value": "700", "label": "粗体" },
+        { "value": "800", "label": "特粗" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "color",
+      "id": "main_title_color",
+      "label": "主标题颜色",
+      "default": "#333333"
+    },
+    {
+      "type": "select",
+      "id": "main_title_text_transform",
+      "label": "主标题文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "左侧内容设置"
+    },
+    {
+      "type": "text",
+      "id": "left_title",
+      "label": "左侧标题",
+      "default": "Bring Smiles to African Children!"
+    },
+    {
+      "type": "textarea",
+      "id": "left_text_1",
+      "label": "左侧文本1",
+      "default": "Order a personalized video message and make a difference. At Wishes From Africa, we donate part of our earnings to support African children."
+    },
+    {
+      "type": "text",
+      "id": "left_text_2",
+      "label": "左侧高亮文本",
+      "default": "A win-win gift!"
+    },
+    {
+      "type": "textarea",
+      "id": "left_text_3",
+      "label": "左侧文本3",
+      "default": "Join our movement, our community, and share the joy that only Africa can bring!"
+    },
+    {
+      "type": "textarea",
+      "id": "left_text_4",
+      "label": "左侧文本4",
+      "default": "A win-win gift!"
+    },
+    {
+      "type": "header",
+      "content": "按钮设置"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "按钮文字",
+      "default": "立即订购"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "按钮链接"
+    },
+    {
+      "type": "color_background",
+      "id": "button_bg_color",
+      "label": "按钮背景颜色",
+      "default": "linear-gradient(135deg, #e91e63, #f06292)"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "按钮文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color_background",
+      "id": "button_hover_bg_color",
+      "label": "按钮悬停背景颜色",
+      "default": "linear-gradient(135deg, #c2185b, #e91e63)"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "按钮悬停文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "按钮边框颜色",
+      "default": "transparent"
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "label": "按钮边框宽度",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "按钮圆角",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "label": "按钮垂直内边距",
+      "min": 10,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "label": "按钮水平内边距",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "按钮文字大小",
+      "min": 0.8,
+      "max": 1.8,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.1
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "按钮文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" },
+        { "value": "700", "label": "粗体" },
+        { "value": "800", "label": "超粗体" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "label": "按钮文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "select",
+      "id": "button_alignment",
+      "label": "按钮位置",
+      "options": [
+        { "value": "left", "label": "左对齐" },
+        { "value": "center", "label": "居中" },
+        { "value": "right", "label": "右对齐" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "左侧文字样式"
+    },
+    {
+      "type": "color",
+      "id": "text_background",
+      "label": "左侧文字区域背景",
+      "default": "transparent"
+    },
+    {
+      "type": "range",
+      "id": "text_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "左侧文字区域圆角",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "text_padding",
+      "min": 1,
+      "max": 4,
+      "step": 0.5,
+      "unit": "rem",
+      "label": "左侧文字区域内边距",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "left_title_font_size",
+      "min": 1.2,
+      "max": 3,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "左侧标题字体大小",
+      "default": 1.8
+    },
+    {
+      "type": "select",
+      "id": "left_title_font_weight",
+      "label": "左侧标题字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "color",
+      "id": "left_title_color",
+      "label": "左侧标题颜色",
+      "default": "#333333"
+    },
+    {
+      "type": "select",
+      "id": "left_title_text_transform",
+      "label": "左侧标题文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "left_text_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "左侧文本字体大小",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "left_text_font_weight",
+      "label": "左侧文本字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "color",
+      "id": "left_text_color",
+      "label": "左侧文本颜色",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "高亮文字样式"
+    },
+    {
+      "type": "range",
+      "id": "highlight_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "高亮文字大小",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "highlight_font_weight",
+      "label": "高亮文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "color",
+      "id": "highlight_color",
+      "label": "高亮文字颜色",
+      "default": "#e91e63"
+    },
+    {
+      "type": "select",
+      "id": "highlight_text_transform",
+      "label": "高亮文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "右侧卡片设置"
+    },
+    {
+      "type": "text",
+      "id": "card_subtitle",
+      "label": "卡片副标题",
+      "default": "The goal of"
+    },
+    {
+      "type": "text",
+      "id": "card_title",
+      "label": "卡片主标题",
+      "default": "Wishes From Africa"
+    },
+    {
+      "type": "textarea",
+      "id": "card_description",
+      "label": "卡片描述",
+      "default": "is to bring a smile to the world"
+    },
+    {
+      "type": "image_picker",
+      "id": "card_image",
+      "label": "卡片图片"
+    },
+    {
+      "type": "header",
+      "content": "卡片样式"
+    },
+    {
+      "type": "color_background",
+      "id": "card_background",
+      "label": "卡片背景",
+      "default": "linear-gradient(135deg, #e91e63, #ff6b9d)"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "卡片文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "卡片圆角",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "min": 1,
+      "max": 4,
+      "step": 0.5,
+      "unit": "rem",
+      "label": "卡片内边距",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "card_subtitle_font_size",
+      "min": 0.8,
+      "max": 1.8,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "卡片副标题字体大小",
+      "default": 1.2
+    },
+    {
+      "type": "select",
+      "id": "card_subtitle_font_weight",
+      "label": "卡片副标题字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "card_subtitle_text_transform",
+      "label": "卡片副标题文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "card_title_font_size",
+      "min": 1.2,
+      "max": 3,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "卡片主标题字体大小",
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "card_title_font_weight",
+      "label": "卡片主标题字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "select",
+      "id": "card_title_text_transform",
+      "label": "卡片主标题文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "card_description_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "卡片描述字体大小",
+      "default": 0.9
+    },
+    {
+      "type": "select",
+      "id": "card_description_font_weight",
+      "label": "卡片描述字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "card_image_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "卡片图片圆角",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "移动端设置"
+    },
+    {
+      "type": "range",
+      "id": "mobile_main_title_font_size",
+      "min": 1.2,
+      "max": 3,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端主标题字体大小",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "mobile_left_title_font_size",
+      "min": 1,
+      "max": 2.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端左侧标题字体大小",
+      "default": 1.5
+    },
+    {
+      "type": "range",
+      "id": "mobile_left_text_font_size",
+      "min": 0.8,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端左侧文本字体大小",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_highlight_font_size",
+      "min": 0.8,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端高亮文字大小",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_font_size",
+      "min": 0.7,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端按钮文字大小",
+      "default": 1.0
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_vertical",
+      "label": "移动端按钮垂直内边距",
+      "min": 8,
+      "max": 25,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_horizontal",
+      "label": "移动端按钮水平内边距",
+      "min": 15,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "select",
+      "id": "mobile_button_alignment",
+      "label": "移动端按钮位置",
+      "options": [
+        { "value": "left", "label": "左对齐" },
+        { "value": "center", "label": "居中" },
+        { "value": "right", "label": "右对齐" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_subtitle_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端卡片副标题字体大小",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_title_font_size",
+      "min": 1.2,
+      "max": 2.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端卡片主标题字体大小",
+      "default": 1.6
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_description_font_size",
+      "min": 0.7,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端卡片描述字体大小",
+      "default": 0.8
+    },
+    {
+      "type": "header",
+      "content": "间距设置"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "顶部间距",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "底部间距",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "WIN WIN SITUATION"
+    }
+  ]
+}
+{% endschema %}

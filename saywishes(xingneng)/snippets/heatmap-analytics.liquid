@@ -1,0 +1,184 @@
+{% comment %}
+  热力图分析工具集成
+  支持Hotjar、Crazy Egg等热力图服务
+{% endcomment %}
+
+{% if settings.heatmap_service == 'hotjar' and settings.hotjar_id != blank %}
+<!-- Hotjar Tracking Code -->
+<script>
+  (function(h,o,t,j,a,r){
+    h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+    h._hjSettings={hjid:{{ settings.hotjar_id }},hjsv:6};
+    a=o.getElementsByTagName('head')[0];
+    r=o.createElement('script');r.async=1;
+    r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+    a.appendChild(r);
+  })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  
+  // 自定义事件跟踪
+  document.addEventListener('DOMContentLoaded', function() {
+    // 产品选项交互跟踪
+    const customOptions = document.querySelectorAll('.custom-option, .product-option');
+    customOptions.forEach(function(option) {
+      option.addEventListener('change', function() {
+        if (typeof hj === 'function') {
+          hj('event', 'custom_option_change');
+        }
+      });
+    });
+    
+    // 视频播放跟踪
+    const videos = document.querySelectorAll('video');
+    videos.forEach(function(video) {
+      video.addEventListener('play', function() {
+        if (typeof hj === 'function') {
+          hj('event', 'video_play');
+        }
+      });
+    });
+    
+    // 购物车操作跟踪
+    const cartButtons = document.querySelectorAll('[data-cart-action]');
+    cartButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        if (typeof hj === 'function') {
+          hj('event', 'cart_interaction');
+        }
+      });
+    });
+    
+    // 表单错误跟踪
+    const forms = document.querySelectorAll('form');
+    forms.forEach(function(form) {
+      form.addEventListener('submit', function(e) {
+        const errors = form.querySelectorAll('.error, .field-error');
+        if (errors.length > 0 && typeof hj === 'function') {
+          hj('event', 'form_error');
+        }
+      });
+    });
+  });
+</script>
+{% endif %}
+
+{% if settings.heatmap_service == 'crazyegg' and settings.crazyegg_id != blank %}
+<!-- Crazy Egg Tracking Code -->
+<script type="text/javascript">
+  setTimeout(function(){
+    var a=document.createElement("script");
+    var b=document.getElementsByTagName("script")[0];
+    a.src=document.location.protocol+"//script.crazyegg.com/pages/scripts/{{ settings.crazyegg_id }}.js?"+Math.floor(new Date().getTime()/3600000);
+    a.async=true;a.type="text/javascript";b.parentNode.insertBefore(a,b)
+  }, 1);
+</script>
+{% endif %}
+
+{% if settings.heatmap_service == 'mouseflow' and settings.mouseflow_id != blank %}
+<!-- Mouseflow Tracking Code -->
+<script type="text/javascript">
+  window._mfq = window._mfq || [];
+  (function() {
+    var mf = document.createElement("script");
+    mf.type = "text/javascript"; mf.defer = true;
+    mf.src = "//cdn.mouseflow.com/projects/{{ settings.mouseflow_id }}.js";
+    document.getElementsByTagName("head")[0].appendChild(mf);
+  })();
+  
+  // 自定义标签
+  document.addEventListener('DOMContentLoaded', function() {
+    // 页面类型标签
+    {% if template contains 'product' %}
+      window._mfq.push(["tag", "product-page"]);
+    {% elsif template contains 'collection' %}
+      window._mfq.push(["tag", "collection-page"]);
+    {% elsif template contains 'cart' %}
+      window._mfq.push(["tag", "cart-page"]);
+    {% elsif template contains 'index' %}
+      window._mfq.push(["tag", "homepage"]);
+    {% endif %}
+    
+    // 设备类型标签
+    if (window.innerWidth <= 768) {
+      window._mfq.push(["tag", "mobile-device"]);
+    } else if (window.innerWidth <= 1024) {
+      window._mfq.push(["tag", "tablet-device"]);
+    } else {
+      window._mfq.push(["tag", "desktop-device"]);
+    }
+    
+    // 用户行为标签
+    const customOptions = document.querySelectorAll('.custom-option');
+    if (customOptions.length > 0) {
+      window._mfq.push(["tag", "has-custom-options"]);
+    }
+  });
+</script>
+{% endif %}
+
+{% comment %} 通用热力图优化脚本 {% endcomment %}
+<script>
+  // 页面性能监控
+  window.addEventListener('load', function() {
+    // 记录页面加载时间
+    const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+    
+    // 如果页面加载时间超过3秒，标记为慢速页面
+    if (loadTime > 3000) {
+      if (typeof hj === 'function') {
+        hj('event', 'slow_page_load');
+      }
+      if (typeof window._mfq !== 'undefined') {
+        window._mfq.push(["tag", "slow-loading"]);
+      }
+    }
+  });
+  
+  // 用户停留时间跟踪
+  let startTime = Date.now();
+  let engagementTracked = false;
+  
+  // 30秒后标记为高参与度用户
+  setTimeout(function() {
+    if (!engagementTracked) {
+      engagementTracked = true;
+      if (typeof hj === 'function') {
+        hj('event', 'high_engagement');
+      }
+      if (typeof window._mfq !== 'undefined') {
+        window._mfq.push(["tag", "engaged-user"]);
+      }
+    }
+  }, 30000);
+  
+  // 页面离开时记录停留时间
+  window.addEventListener('beforeunload', function() {
+    const timeSpent = Math.round((Date.now() - startTime) / 1000);
+    
+    if (timeSpent > 60) { // 超过1分钟
+      if (typeof hj === 'function') {
+        hj('event', 'long_session');
+      }
+    }
+  });
+</script>
+
+{% comment %} 移动端优化 {% endcomment %}
+<script>
+  // 移动端触摸事件优化
+  if ('ontouchstart' in window) {
+    document.addEventListener('DOMContentLoaded', function() {
+      // 触摸延迟优化
+      const clickElements = document.querySelectorAll('button, a, .clickable');
+      clickElements.forEach(function(element) {
+        element.style.touchAction = 'manipulation';
+      });
+      
+      // 移动端特定事件跟踪
+      document.addEventListener('touchstart', function() {
+        if (typeof hj === 'function') {
+          hj('event', 'mobile_interaction');
+        }
+      }, { once: true });
+    });
+  }
+</script>

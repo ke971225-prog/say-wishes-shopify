@@ -1,0 +1,116 @@
+{% comment %}
+  Sitemap Optimization for Better SEO
+  Provides additional sitemap references and optimization suggestions
+{% endcomment %}
+
+<!-- Additional Sitemap References for SEO -->
+<link rel="sitemap" type="application/xml" title="Sitemap" href="{{ shop.url }}/sitemap.xml">
+
+<!-- Sitemap optimization meta tags -->
+{% if request.page_type == 'index' %}
+  <meta name="sitemap" content="{{ shop.url }}/sitemap.xml">
+  <meta name="sitemap-products" content="{{ shop.url }}/sitemap_products_1.xml">
+  <meta name="sitemap-pages" content="{{ shop.url }}/sitemap_pages_1.xml">
+  <meta name="sitemap-collections" content="{{ shop.url }}/sitemap_collections_1.xml">
+  <meta name="sitemap-blogs" content="{{ shop.url }}/sitemap_blogs_1.xml">
+{% endif %}
+
+<!-- 
+SITEMAP OPTIMIZATION RECOMMENDATIONS:
+
+Current sitemap structure:
+- Main sitemap: /sitemap.xml (sitemap index)
+- Products: /sitemap_products_1.xml
+- Pages: /sitemap_pages_1.xml  
+- Collections: /sitemap_collections_1.xml
+- Blogs: /sitemap_blogs_1.xml
+
+ISSUES IDENTIFIED:
+1. Product sitemap returns 404 errors
+2. Some product URLs are not accessible
+3. Need to ensure all valid pages are included
+
+RECOMMENDATIONS:
+1. Verify all product URLs are valid and accessible
+2. Remove or fix broken product pages
+3. Ensure sitemap includes all important pages:
+   - All active products
+   - All collections
+   - Important pages (FAQ, Contact, Policies)
+   - Blog posts
+4. Submit updated sitemap to Google Search Console
+5. Monitor sitemap errors regularly
+
+IMPLEMENTATION STEPS:
+1. Fix broken product pages or remove from sitemap
+2. Verify robots.txt allows sitemap access
+3. Test sitemap URLs for accessibility
+4. Resubmit to search engines
+-->
+
+<!-- JSON-LD for Website Navigation -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "{{ shop.name }}",
+  "url": "{{ shop.url }}",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "{{ shop.url }}/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  },
+  "mainEntity": {
+    "@type": "ItemList",
+    "name": "Main Navigation",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "url": "{{ shop.url }}"
+      },
+      {
+        "@type": "ListItem", 
+        "position": 2,
+        "name": "All Videos",
+        "url": "{{ shop.url }}/collections/all"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "FAQ",
+        "url": "{{ shop.url }}/pages/faq"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "Contact",
+        "url": "{{ shop.url }}/pages/contact"
+      },
+      {
+        "@type": "ListItem",
+        "position": 5,
+        "name": "Reviews",
+        "url": "{{ shop.url }}/pages/reviews"
+      }
+    ]
+  }
+}
+</script>
+
+<!-- Additional meta tags for sitemap optimization -->
+{% if request.page_type == 'index' %}
+  <meta name="google-site-verification" content="your-google-verification-code">
+  <meta name="msvalidate.01" content="your-bing-verification-code">
+{% endif %}
+
+<!-- Preload important pages for better crawling -->
+{% if request.page_type == 'index' %}
+  <link rel="preload" href="{{ routes.collections_url }}/all" as="document">
+  <link rel="prefetch" href="{{ routes.pages_url }}/faq">
+  <link rel="prefetch" href="{{ routes.pages_url }}/contact">
+{% endif %}

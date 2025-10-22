@@ -1,0 +1,176 @@
+<!-- 完整步骤区块代码（仅修改按钮样式，其他完全遵循你提供的逻辑） -->
+<section class="order-steps section-{{ section.id }}-padding">
+  {%- style -%}
+    .order-steps {
+      background: {{ section.settings.background_color | default: '#fbc07b' }};
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .order-steps__container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .order-steps__title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: {{ section.settings.title_color | default: '#000' }};
+    }
+    .order-steps__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .order-steps__item {
+      background: {{ section.settings.step_background | default: '#fff' }};
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .order-steps__icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+    .order-steps__step-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .order-steps__text {
+      font-size: 16px;
+      color: #555;
+    }
+    
+    /* 仅修改按钮样式（颜色和位置） */
+    .order-steps__button {
+      background: #e63946 !important; /* 按钮颜色 */
+      color: #fff !important; /* 文字颜色 */
+      padding: 12px 30px;
+      border-radius: 25px; /* 圆角 */
+      text-decoration: none;
+      font-weight: 600;
+      margin: 20px auto 0; /* 居中+顶部间距 */
+      display: inline-block; /* 确保居中生效 */
+      transition: background 0.3s ease;
+    }
+    .order-steps__button:hover {
+      background: #d32f2f !important; /*  hover颜色 */
+    }
+    
+    @media (max-width: 768px) {
+      .order-steps__grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  {%- endstyle -%}
+
+  <div class="order-steps__container">
+    {%- unless section.settings.title == blank -%}
+      <h2 class="order-steps__title">{{ section.settings.title }}</h2>
+    {%- endunless -%}
+    
+    <div class="order-steps__grid">
+      <div class="order-steps__item">
+        <div class="order-steps__icon">🎁</div>
+        <h3 class="order-steps__step-title">Step 1</h3>
+        <p class="order-steps__text">Add a photo of the person you want to surprise.</p>
+      </div>
+      <div class="order-steps__item">
+        <div class="order-steps__icon">👫</div>
+        <h3 class="order-steps__step-title">Step 2</h3>
+        <p class="order-steps__text">Choose Women or Men team to personalize.</p>
+      </div>
+      <div class="order-steps__item">
+        <div class="order-steps__icon">📝</div>
+        <h3 class="order-steps__step-title">Step 3</h3>
+        <p class="order-steps__text">Write 2-4 short lines for the chalkboard.</p>
+      </div>
+      <div class="order-steps__item">
+        <div class="order-steps__icon">🗣️</div>
+        <h3 class="order-steps__step-title">Step 4</h3>
+        <p class="order-steps__text">Tell us how to pronounce names correctly.</p>
+      </div>
+      <div class="order-steps__item">
+        <div class="order-steps__icon">🎵</div>
+        <h3 class="order-steps__step-title">Step 5</h3>
+        <p class="order-steps__text">Add your favorite song or let us pick one.</p>
+      </div>
+      <div class="order-steps__item">
+        <div class="order-steps__icon">📧</div>
+        <h3 class="order-steps__step-title">Step 6</h3>
+        <p class="order-steps__text">Video delivered by email in 1-2 days.</p>
+      </div>
+    </div>
+    
+    <!-- 按钮逻辑完全复用你提供的代码 -->
+    {%- unless section.settings.button_text == blank -%}
+      <a href="{{ section.settings.button_link }}" class="order-steps__button">
+        {{ section.settings.button_text }}
+      </a>
+    {%- endunless -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Order Steps",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Order in Just 6 Simple Steps! 🤩"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#fbc07b"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "step_background",
+      "label": "Step Background",
+      "default": "#fff"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "ORDER NOW"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+      /* 完全保留你提供的逻辑：不设置default */
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button Color",
+      "default": "#e63946"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#fff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Order Steps"
+    }
+  ]
+}
+{% endschema %}
+    

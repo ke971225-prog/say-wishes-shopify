@@ -1,0 +1,63 @@
+{% comment %}
+  Renders product preview modal
+
+  Accepts:
+  - product: {Object} Product object
+  - variant: {Object} Variant object
+  - color_scheme: {String} sets the color scheme of the modal (optional)
+
+  Usage:
+  {% render 'product-preview-modal', product: product, variant: variant %}
+{% endcomment %}
+
+<product-preview-modal>
+  <div class="product-preview-modal-wrapper">
+    <div
+      id="product-preview-modal"
+      class="product-preview-modal focus-inset{% if color_scheme %} color-{{ color_scheme }} gradient{% endif %}"
+      aria-modal="true"
+      aria-label="{{ 'products.product.preview' | t }}"
+      role="dialog"
+      tabindex="-1"
+    >
+      <div class="product-preview-modal__header">
+        <h2 class="product-preview-modal__heading h3">
+          {{- 'icon-checkmark.svg' | inline_asset_content -}}
+          {{ 'general.cart.item_added' | t }}
+        </h2>
+        <button
+          type="button"
+          class="product-preview-modal__close modal__close-button link link--text focus-inset"
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          <span class="svg-wrapper">
+            {{- 'icon-close.svg' | inline_asset_content -}}
+          </span>
+        </button>
+      </div>
+      
+      <div id="product-preview-content" class="product-preview-modal__content">
+        <!-- 产品预览内容将通过JavaScript动态加载 -->
+      </div>
+      
+      <div id="cart-summary" class="product-preview-modal__summary">
+        <!-- 购物车总计信息将通过JavaScript动态加载 -->
+      </div>
+      
+      <div class="product-preview-modal__actions">
+        <a href="{{ routes.cart_url }}" class="button button--secondary button--full-width" id="view-cart-button">
+          <span id="view-cart-text">{{ 'general.cart.view' | t }}</span>
+          <span id="cart-count-display" class="cart-count" style="display: none;"></span>
+        </a>
+        <form action="{{ routes.cart_url }}" method="post" id="product-preview-checkout-form">
+          <button class="button button--primary button--full-width" name="checkout">
+            {{ 'sections.cart.checkout' | t }}
+          </button>
+        </form>
+        <button type="button" class="link button-label product-preview-continue">
+          {{ 'general.continue_shopping' | t }}
+        </button>
+      </div>
+    </div>
+  </div>
+</product-preview-modal>

@@ -1,0 +1,275 @@
+<div class="newsletter-footer section-{{ section.id }}-padding">
+  <div class="page-width">
+    <div class="newsletter-form">
+      <h2 class="newsletter-form__heading h2">{{ section.settings.newsletter_title }}</h2>
+      {% if section.settings.newsletter_description != blank %}
+        <p class="newsletter-form__subheading">{{ section.settings.newsletter_description }}</p>
+      {% endif %}
+      
+      {% form 'customer', class: 'newsletter-form__form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="newsletter-form__field-wrapper">
+          <div class="field">
+            <input
+              id="NewsletterForm--{{ section.id }}"
+              type="email"
+              name="contact[email]"
+              class="field__input"
+              value="{{ form.email }}"
+              aria-required="true"
+              autocorrect="off"
+              autocapitalize="off"
+              autocomplete="email"
+              {% if form.errors %}
+                autofocus
+                aria-invalid="true"
+                aria-describedby="Newsletter-error--{{ section.id }}"
+              {% elsif form.posted_successfully? %}
+                aria-describedby="Newsletter-success--{{ section.id }}"
+              {% endif %}
+              placeholder="{{ section.settings.email_placeholder }}"
+              required
+            >
+            <label class="field__label" for="NewsletterForm--{{ section.id }}">
+              {{ section.settings.email_placeholder }}
+            </label>
+            <button
+              type="submit"
+              class="newsletter-form__button field__button"
+              name="commit"
+              id="Subscribe"
+              aria-label="{{ section.settings.button_text }}"
+            >
+              {{ section.settings.button_text }}
+            </button>
+          </div>
+          {%- if form.errors -%}
+            <small class="newsletter-form__message form__message" id="Newsletter-error--{{ section.id }}">
+              {{ form.errors.translated_fields.email | capitalize }}
+              {{ form.errors.messages.email }}
+            </small>
+          {%- endif -%}
+        </div>
+        {%- if form.posted_successfully? -%}
+          <h3
+            class="newsletter-form__message newsletter-form__message--success form__message"
+            id="Newsletter-success--{{ section.id }}"
+            tabindex="-1"
+            autofocus
+          >
+            {{ section.settings.success_message }}
+          </h3>
+        {%- endif -%}
+      {% endform %}
+    </div>
+    
+    {% if section.blocks.size > 0 %}
+      <div class="footer-links">
+        <ul class="footer-links__list list-unstyled" role="list">
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'link' %}
+                <li class="footer-links__item">
+                  <a href="{{ block.settings.link_url }}" class="footer-links__link link">
+                    {{ block.settings.link_text }}
+                  </a>
+                </li>
+            {% endcase %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .newsletter-footer {
+    background-color: var(--color-background);
+    padding: 5rem 0;
+  }
+  
+  .newsletter-form {
+    text-align: center;
+    max-width: 50rem;
+    margin: 0 auto;
+  }
+  
+  .newsletter-form__heading {
+    margin-bottom: 1rem;
+  }
+  
+  .newsletter-form__subheading {
+    margin-bottom: 2rem;
+    color: rgba(var(--color-foreground), 0.75);
+  }
+  
+  .newsletter-form__field-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .newsletter-form__form .field {
+    display: flex;
+    position: relative;
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+  
+  .newsletter-form__form .field__input {
+    flex: 1;
+    padding: 1.2rem 1.5rem;
+    border: 0.1rem solid rgba(var(--color-foreground), 0.2);
+    border-radius: 0.4rem 0 0 0.4rem;
+  }
+  
+  .newsletter-form__button {
+    padding: 1.2rem 2rem;
+    background-color: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    border: none;
+    border-radius: 0 0.4rem 0.4rem 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .newsletter-form__button:hover {
+    background-color: rgba(var(--color-button), 0.85);
+  }
+  
+  .footer-links {
+    margin-top: 3rem;
+  }
+  
+  .footer-links__list {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .footer-links__link {
+    color: rgba(var(--color-foreground), 0.75);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .footer-links__link:hover {
+    color: rgb(var(--color-foreground));
+  }
+  
+  @media screen and (max-width: 749px) {
+    .newsletter-form__form .field {
+      flex-direction: column;
+    }
+    
+    .newsletter-form__form .field__input {
+      border-radius: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    
+    .newsletter-form__button {
+      border-radius: 0.4rem;
+    }
+    
+    .footer-links__list {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Newsletter Footer",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Email Subscription Settings"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_title",
+      "label": "Newsletter Title",
+      "default": "Stay in the loop"
+    },
+    {
+      "type": "textarea",
+      "id": "newsletter_description",
+      "label": "Newsletter Description",
+      "default": "Subscribe to our newsletter for updates and special offers"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email Input Placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Submit Button Text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "Thank you for subscribing!"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Quick Link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link Text",
+          "default": "About Us"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter Footer",
+      "blocks": [
+        {
+          "type": "link",
+          "settings": {
+            "link_text": "About Us",
+            "link_url": "/pages/about"
+          }
+        },
+        {
+          "type": "link",
+          "settings": {
+            "link_text": "Contact",
+            "link_url": "/pages/contact"
+          }
+        },
+        {
+          "type": "link",
+          "settings": {
+            "link_text": "Privacy Policy",
+            "link_url": "/pages/privacy-policy"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

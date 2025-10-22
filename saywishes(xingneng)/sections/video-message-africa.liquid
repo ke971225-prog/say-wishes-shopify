@@ -1,0 +1,1044 @@
+<style>
+  .video-message-section {
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start | default: '#8BC34A' }}, {{ section.settings.gradient_color_end | default: '#E91E63' }});
+    {% else %}
+      background: {{ section.settings.background_color | default: '#f8f9fa' }};
+    {% endif %}
+    padding: {{ section.settings.padding_top | default: 60 }}px {{ section.settings.padding_horizontal | default: 20 }}px {{ section.settings.padding_bottom | default: 60 }}px;
+    text-align: {{ section.settings.text_alignment | default: 'center' }};
+    position: relative;
+    overflow: hidden;
+  }
+
+  .video-message-container {
+    max-width: {{ section.settings.container_width | default: 1200 }}px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 背景图层与亮度、遮罩控制 */
+  .video-message-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--bg-desktop);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(var(--bg-brightness, 1));
+    z-index: 0;
+  }
+
+  .video-message-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--bg-overlay-color, transparent);
+    opacity: var(--bg-overlay-opacity, 0);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 768px) {
+    .video-message-section::before {
+      background-image: var(--bg-mobile, var(--bg-desktop));
+    }
+  }
+
+  /* 顶部走马灯 */
+  .top-marquee {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: {{ section.settings.top_marquee_bg | default: 'rgba(0, 0, 0, 0.8)' }};
+    color: {{ section.settings.top_marquee_color | default: 'white' }};
+    padding: 8px 0;
+    font-size: {{ section.settings.marquee_font_size | default: 0.9 }}rem;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .top-marquee-content {
+    display: inline-block;
+    animation: marquee-top {{ section.settings.marquee_speed | default: 20 }}s linear infinite;
+  }
+
+  @keyframes marquee-top {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* 底部走马灯 */
+  .bottom-marquee {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: {{ section.settings.bottom_marquee_bg | default: 'rgba(0, 0, 0, 0.8)' }};
+    color: {{ section.settings.bottom_marquee_color | default: 'white' }};
+    padding: 8px 0;
+    font-size: {{ section.settings.marquee_font_size | default: 0.9 }}rem;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .bottom-marquee-content {
+    display: inline-block;
+    animation: marquee-bottom {{ section.settings.marquee_speed | default: 20 }}s linear infinite;
+  }
+
+  @keyframes marquee-bottom {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* 主要内容区域 */
+  .video-message-content {
+    margin-top: 40px;
+  }
+
+  .video-message-subtitle {
+    font-size: {{ section.settings.subtitle_font_size | default: 0.9 }}rem;
+    color: {{ section.settings.subtitle_color | default: '#666' }};
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: {{ section.settings.subtitle_font_weight | default: 'normal' }};
+  }
+
+  .video-message-title {
+    font-size: {{ section.settings.title_font_size | default: 2.5 }}rem;
+    font-weight: {{ section.settings.title_font_weight | default: 'bold' }};
+    color: {{ section.settings.title_color | default: '#333' }};
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .video-message-title .heart {
+    color: {{ section.settings.heart_color | default: '#e91e63' }};
+  }
+
+  .video-message-description {
+    font-size: {{ section.settings.description_font_size | default: 1.1 }}rem;
+    color: {{ section.settings.description_color | default: '#555' }};
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: {{ section.settings.description_font_weight | default: 'normal' }};
+  }
+
+  .video-message-description .highlight {
+    font-weight: bold;
+    color: {{ section.settings.highlight_color | default: '#333' }};
+  }
+
+  /* 视频/图片区域 */
+  .video-message-media {
+    position: relative;
+    max-width: {{ section.settings.media_max_width | default: 800 }}px;
+    margin: 0 auto 2rem;
+    border-radius: {{ section.settings.media_border_radius | default: 15 }}px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px {{ section.settings.media_shadow_color | default: 'rgba(0, 0, 0, 0.2)' }};
+  }
+
+  .video-message-media img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* 按钮样式 */
+  .video-message-button {
+    background: linear-gradient(135deg, {{ section.settings.button_bg_start | default: '#e91e63' }}, {{ section.settings.button_bg_end | default: '#f06292' }});
+    color: {{ section.settings.button_text_color | default: 'white' }};
+    padding: {{ section.settings.button_padding_vertical | default: 16 }}px {{ section.settings.button_padding_horizontal | default: 30 }}px;
+    border: {{ section.settings.button_border_width | default: 0 }}px solid {{ section.settings.button_border_color | default: 'transparent' }};
+    border-radius: {{ section.settings.button_border_radius | default: 25 }}px;
+    font-weight: {{ section.settings.button_font_weight | default: 'bold' }};
+    font-size: {{ section.settings.button_font_size | default: 1 }}rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    text-transform: {{ section.settings.button_text_transform | default: 'uppercase' }};
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+  }
+
+  .video-message-button:hover {
+    background: linear-gradient(135deg, {{ section.settings.button_hover_bg_start | default: '#c2185b' }}, {{ section.settings.button_hover_bg_end | default: '#e91e63' }});
+    color: {{ section.settings.button_hover_text_color | default: 'white' }};
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px {{ section.settings.button_hover_shadow | default: 'rgba(233, 30, 99, 0.4)' }};
+  }
+
+  /* 评分区域 */
+  .video-message-rating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: {{ section.settings.rating_font_size | default: 0.9 }}rem;
+    color: {{ section.settings.rating_text_color | default: '#666' }};
+  }
+
+  .rating-stars {
+    color: {{ section.settings.rating_stars_color | default: '#ffc107' }};
+    font-size: {{ section.settings.rating_stars_size | default: 1.1 }}rem;
+  }
+
+  /* 底部走马灯 */
+  .bottom-marquee {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: {{ section.settings.bottom_marquee_bg | default: 'rgba(0, 0, 0, 0.8)' }};
+    color: {{ section.settings.bottom_marquee_color | default: 'white' }};
+    padding: 8px 0;
+    font-size: {{ section.settings.marquee_font_size | default: 0.9 }}rem;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .bottom-marquee-content {
+    display: inline-block;
+    animation: marquee-bottom {{ section.settings.marquee_speed | default: 25 }}s linear infinite;
+  }
+
+  @keyframes marquee-bottom {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* 响应式设计 */
+  @media screen and (max-width: 768px) {
+    .video-message-section {
+      padding: {{ section.settings.mobile_padding_top | default: 40 }}px {{ section.settings.mobile_padding_horizontal | default: 15 }}px {{ section.settings.mobile_padding_bottom | default: 40 }}px;
+    }
+
+    .video-message-title {
+      font-size: {{ section.settings.mobile_title_font_size | default: 2 }}rem;
+    }
+
+    .video-message-description {
+      font-size: {{ section.settings.mobile_description_font_size | default: 1 }}rem;
+    }
+
+    .video-message-button {
+      padding: {{ section.settings.mobile_button_padding_vertical | default: 12 }}px {{ section.settings.mobile_button_padding_horizontal | default: 24 }}px;
+      font-size: {{ section.settings.mobile_button_font_size | default: 0.9 }}rem;
+    }
+
+    .top-marquee,
+    .bottom-marquee {
+      font-size: {{ section.settings.mobile_marquee_font_size | default: 0.8 }}rem;
+    }
+  }
+</style>
+
+<div class="video-message-section section-{{ section.id }}-padding" style="{% if section.settings.desktop_bg_image != blank %}--bg-desktop: url('{{ section.settings.desktop_bg_image | image_url: width: 2400 }}');{% endif %}{% if section.settings.mobile_bg_image != blank %} --bg-mobile: url('{{ section.settings.mobile_bg_image | image_url: width: 1400 }}');{% elsif section.settings.desktop_bg_image != blank %} --bg-mobile: url('{{ section.settings.desktop_bg_image | image_url: width: 1400 }}');{% endif %} --bg-brightness: {{ section.settings.bg_brightness | default: 1 }}; --bg-overlay-color: {{ section.settings.bg_overlay_color | default: '#000000' }}; --bg-overlay-opacity: {{ section.settings.bg_overlay_opacity | default: 0 }};">
+  <!-- 顶部走马灯 -->
+  <div class="top-marquee">
+    <div class="top-marquee-content">
+      {{
+        section.settings.top_marquee_text
+        | default: '🎁 Special Offer: Free Shipping Worldwide! 🌍 Order Now and Get 20% Off! 💖'
+      }}
+    </div>
+  </div>
+
+  {% comment %} SEO: 为背景图添加隐藏图片以便搜索引擎索引 {% endcomment %}
+  {% if section.settings.desktop_bg_image != blank %}
+    <img class="visually-hidden-bg-image visually-hidden-bg-image--desktop"
+         src="{{ section.settings.desktop_bg_image | image_url: width: 1200 }}"
+         alt="{{ section.settings.bg_image_alt | default: section.settings.desktop_bg_image.alt | escape }}"
+         title="{{ section.settings.bg_image_title | escape }}"
+         width="{{ section.settings.desktop_bg_image.width }}"
+         height="{{ section.settings.desktop_bg_image.height }}"
+         loading="lazy" decoding="async" />
+  {% endif %}
+  {% if section.settings.mobile_bg_image != blank %}
+    <img class="visually-hidden-bg-image visually-hidden-bg-image--mobile"
+         src="{{ section.settings.mobile_bg_image | image_url: width: 800 }}"
+         alt="{{ section.settings.bg_image_alt | default: section.settings.mobile_bg_image.alt | escape }}"
+         title="{{ section.settings.bg_image_title | escape }}"
+         width="{{ section.settings.mobile_bg_image.width }}"
+         height="{{ section.settings.mobile_bg_image.height }}"
+         loading="lazy" decoding="async" />
+  {% endif %}
+
+  <div class="video-message-container">
+    <div class="video-message-content">
+      {% if section.settings.subtitle != blank %}
+        <p class="video-message-subtitle">{{ section.settings.subtitle }}</p>
+      {% endif %}
+
+      {% if section.settings.title != blank %}
+        {% if request.page_type == 'index' %}
+          <h2 class="video-message-title">
+            {{ section.settings.title | replace: '❤️', '<span class="heart">❤️</span>' }}
+          </h2>
+        {% else %}
+          <h1 class="video-message-title">
+            {{ section.settings.title | replace: '❤️', '<span class="heart">❤️</span>' }}
+          </h1>
+        {% endif %}
+      {% endif %}
+
+      {% if section.settings.description != blank %}
+        <div class="video-message-description">
+          {{
+            section.settings.description
+            | replace: 'joyful video message', '<span class="highlight">joyful video message</span>'
+            | replace: 'unforgettable gift', '<span class="highlight">unforgettable gift</span>'
+          }}
+        </div>
+      {% endif %}
+
+      {% if section.settings.image != blank %}
+        <div class="video-message-media">
+          <picture>
+            <source 
+              srcset="
+                {%- if section.settings.image.width >= 400 -%}{{ section.settings.image | image_url: width: 400, format: 'webp' }} 400w,{%- endif -%}
+                {%- if section.settings.image.width >= 600 -%}{{ section.settings.image | image_url: width: 600, format: 'webp' }} 600w,{%- endif -%}
+                {%- if section.settings.image.width >= 800 -%}{{ section.settings.image | image_url: width: 800, format: 'webp' }} 800w,{%- endif -%}
+                {%- if section.settings.image.width >= 1200 -%}{{ section.settings.image | image_url: width: 1200, format: 'webp' }} 1200w,{%- endif -%}
+                {{ section.settings.image | image_url: format: 'webp' }} {{ section.settings.image.width }}w
+              "
+              sizes="(min-width: 1200px) 800px, (min-width: 750px) calc(100vw - 100px), calc(100vw - 40px)"
+              type="image/webp"
+            >
+            <img
+              srcset="
+                {%- if section.settings.image.width >= 400 -%}{{ section.settings.image | image_url: width: 400 }} 400w,{%- endif -%}
+                {%- if section.settings.image.width >= 600 -%}{{ section.settings.image | image_url: width: 600 }} 600w,{%- endif -%}
+                {%- if section.settings.image.width >= 800 -%}{{ section.settings.image | image_url: width: 800 }} 800w,{%- endif -%}
+                {%- if section.settings.image.width >= 1200 -%}{{ section.settings.image | image_url: width: 1200 }} 1200w,{%- endif -%}
+                {{ section.settings.image | image_url }} {{ section.settings.image.width }}w
+              "
+              src="{{ section.settings.image | image_url: width: 800 }}"
+              sizes="(min-width: 1200px) 800px, (min-width: 750px) calc(100vw - 100px), calc(100vw - 40px)"
+              alt="{{ section.settings.image.alt | escape }}"
+              width="{{ section.settings.image.width }}"
+              height="{{ section.settings.image.height }}"
+              loading="lazy"
+              decoding="async"
+            >
+          </picture>
+        </div>
+      {% endif %}
+
+      {% if section.settings.button_label != blank %}
+        <a href="{{ section.settings.button_link | default: '#' }}" class="video-message-button">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+
+      {% if section.settings.show_rating %}
+        <div class="video-message-rating">
+          <span class="rating-stars">
+            {% for i in (1..section.settings.rating_stars) %}
+              ⭐
+            {% endfor %}
+          </span>
+          <span>{{ section.settings.rating_text }}</span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 底部走马灯 -->
+  <div class="bottom-marquee">
+    <div class="bottom-marquee-content">
+      {{
+        section.settings.bottom_marquee_text
+        | default: '🌟 Personalized Video Messages from Africa 💝 Custom African Video Greetings 🎬 Birthday Video Messages 🚀 Anniversary Video Wishes ⭐ Authentic African Video Messages'
+      }}
+    </div>
+  </div><style>
+  .visually-hidden-bg-image {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    left: -9999px;
+  }
+</style>
+
+</div>
+
+{% schema %}
+{
+  "name": "Video Message from Africa",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "内容设置"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "副标题",
+      "default": "VIDEO MESSAGE FROM AFRICA"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "主标题",
+      "default": "SURPRISE YOUR LOVED ONE WITH A UNIQUE GIFT! ❤️"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "描述文字",
+      "default": "Surprise someone with a joyful video message from Africa, a truly unforgettable gift!"
+    },
+    {
+      "type": "header",
+      "content": "背景图片设置"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_bg_image",
+      "label": "桌面端背景图片"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_bg_image",
+      "label": "移动端背景图片（可选，未设置则回退桌面图）"
+    },
+    {
+      "type": "text",
+      "id": "bg_image_alt",
+      "label": "背景图片 Alt 文本",
+      "default": "Custom African video greeting with personalized photos and messages"
+    },
+    {
+      "type": "text",
+      "id": "bg_image_title",
+      "label": "背景图片标题（Title）",
+      "default": "Personalized African video message creation process"
+    },
+    {
+      "type": "color",
+      "id": "bg_overlay_color",
+      "label": "背景遮罩颜色",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "bg_overlay_opacity",
+      "label": "背景遮罩不透明度",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "bg_brightness",
+      "label": "背景亮度（0.5 较暗，1 正常）",
+      "min": 0.5,
+      "max": 1.2,
+      "step": 0.1,
+      "default": 1
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "图片"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "按钮文字",
+      "default": "➜ ORDER YOUR VIDEO"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "按钮链接"
+    },
+    {
+      "type": "header",
+      "content": "颜色设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "启用渐变背景",
+      "default": false,
+      "info": "启用此选项以使用渐变背景而不是纯色背景"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "背景颜色",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "渐变起始颜色",
+      "default": "#8BC34A",
+      "info": "渐变的起始颜色（左上角）"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "渐变结束颜色",
+      "default": "#E91E63",
+      "info": "渐变的结束颜色（右下角）"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "副标题颜色",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "主标题颜色",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "heart_color",
+      "label": "心形符号颜色",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "描述文字颜色",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "highlight_color",
+      "label": "高亮文字颜色",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "按钮设置"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_start",
+      "label": "按钮背景起始颜色",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_end",
+      "label": "按钮背景结束颜色",
+      "default": "#f06292"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "按钮文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_start",
+      "label": "按钮悬停背景起始颜色",
+      "default": "#c2185b"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_end",
+      "label": "按钮悬停背景结束颜色",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "按钮悬停文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "按钮边框颜色",
+      "default": "transparent"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_shadow",
+      "label": "按钮悬停阴影颜色",
+      "default": "rgba(233, 30, 99, 0.4)"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "按钮文字大小",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "按钮文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" },
+        { "value": "700", "label": "粗体" },
+        { "value": "800", "label": "超粗体" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "label": "按钮垂直内边距",
+      "min": 8,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "label": "按钮水平内边距",
+      "min": 15,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "按钮圆角",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "label": "按钮边框宽度",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "label": "按钮文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "header",
+      "content": "文字大小设置"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size",
+      "label": "副标题文字大小",
+      "min": 0.6,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.9
+    },
+    {
+      "type": "select",
+      "id": "subtitle_font_weight",
+      "label": "副标题文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "主标题文字大小",
+      "min": 1.5,
+      "max": 4,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 2.5
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "主标题文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" },
+        { "value": "700", "label": "粗体" },
+        { "value": "800", "label": "超粗体" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "label": "描述文字大小",
+      "min": 0.8,
+      "max": 1.8,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.1
+    },
+    {
+      "type": "select",
+      "id": "description_font_weight",
+      "label": "描述文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "500", "label": "中等" },
+        { "value": "600", "label": "半粗体" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "header",
+      "content": "布局设置"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "文字对齐",
+      "options": [
+        { "value": "left", "label": "左对齐" },
+        { "value": "center", "label": "居中" },
+        { "value": "right", "label": "右对齐" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "label": "容器最大宽度",
+      "min": 800,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "顶部内边距",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "底部内边距",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "水平内边距",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "媒体设置"
+    },
+    {
+      "type": "range",
+      "id": "media_max_width",
+      "label": "媒体最大宽度",
+      "min": 400,
+      "max": 1000,
+      "step": 50,
+      "unit": "px",
+      "default": 800
+    },
+    {
+      "type": "range",
+      "id": "media_border_radius",
+      "label": "媒体圆角",
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "media_shadow_color",
+      "label": "媒体阴影颜色",
+      "default": "rgba(0, 0, 0, 0.2)"
+    },
+    {
+      "type": "header",
+      "content": "评分设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "显示评分",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "rating_stars",
+      "label": "评分星数",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "label": "评分文字",
+      "default": "Rated 4.9/5 by 50,000+ Happy Customers!"
+    },
+    {
+      "type": "color",
+      "id": "rating_text_color",
+      "label": "评分文字颜色",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "rating_stars_color",
+      "label": "评分星星颜色",
+      "default": "#ffc107"
+    },
+    {
+      "type": "range",
+      "id": "rating_font_size",
+      "label": "评分文字大小",
+      "min": 0.7,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "rating_stars_size",
+      "label": "评分星星大小",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.1
+    },
+    {
+      "type": "header",
+      "content": "走马灯设置"
+    },
+    {
+      "type": "text",
+      "id": "top_marquee_text",
+      "label": "顶部走马灯文字",
+      "default": "🎁 Special Offer: Free Shipping Worldwide! 🌍 Order Now and Get 20% Off! 💖"
+    },
+    {
+      "type": "color",
+      "id": "top_marquee_bg",
+      "label": "顶部走马灯背景色",
+      "default": "rgba(0, 0, 0, 0.8)"
+    },
+    {
+      "type": "color",
+      "id": "top_marquee_color",
+      "label": "顶部走马灯文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "bottom_marquee_text",
+      "label": "底部走马灯文字",
+      "default": "🌟 Join 50,000+ Happy Customers! 💝 Authentic African Video Messages 🎬 Fast Delivery Worldwide 🚀"
+    },
+    {
+      "type": "color",
+      "id": "bottom_marquee_bg",
+      "label": "底部走马灯背景色",
+      "default": "rgba(0, 0, 0, 0.8)"
+    },
+    {
+      "type": "color",
+      "id": "bottom_marquee_color",
+      "label": "底部走马灯文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "marquee_font_size",
+      "label": "走马灯文字大小",
+      "min": 0.6,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "label": "走马灯速度（秒）",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "s",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "移动端设置"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "移动端顶部内边距",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "移动端底部内边距",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_horizontal",
+      "label": "移动端水平内边距",
+      "min": 10,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_font_size",
+      "label": "移动端主标题文字大小",
+      "min": 1.2,
+      "max": 3,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_font_size",
+      "label": "移动端描述文字大小",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_font_size",
+      "label": "移动端按钮文字大小",
+      "min": 0.7,
+      "max": 1.3,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_vertical",
+      "label": "移动端按钮垂直内边距",
+      "min": 8,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_horizontal",
+      "label": "移动端按钮水平内边距",
+      "min": 15,
+      "max": 35,
+      "step": 5,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "mobile_marquee_font_size",
+      "label": "移动端走马灯文字大小",
+      "min": 0.6,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.8
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video Message from Africa"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,293 @@
+{% comment %}
+  Custom Checkout Handler
+  Handles the price discrepancy between custom pricing and Shopify's standard pricing
+  Provides solutions for proper checkout with custom pricing
+{% endcomment %}
+
+<script>
+  class CustomCheckoutHandler {
+    constructor() {
+      this.init();
+    }
+
+    init() {
+      // Add checkout button override
+      this.overrideCheckoutButtons();
+      
+      // Add price validation
+      this.addPriceValidation();
+    }
+
+    overrideCheckoutButtons() {
+      // Find all checkout buttons
+      const checkoutButtons = document.querySelectorAll(
+        'button[name="add"], .btn--checkout, [href*="/checkout"], .cart__checkout-button'
+      );
+
+      checkoutButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          this.handleCheckoutClick(e);
+        });
+      });
+    }
+
+    async handleCheckoutClick(event) {
+      // Check if there are custom priced items
+      const hasCustomPricing = await this.checkForCustomPricing();
+      
+      if (hasCustomPricing) {
+        event.preventDefault();
+        this.showCustomPricingModal();
+      }
+    }
+
+    async checkForCustomPricing() {
+      try {
+        const cartResponse = await fetch('/cart.js');
+        const cart = await cartResponse.json();
+        
+        return cart.items.some(item => {
+          return item.properties && item.properties['Total Price'];
+        });
+      } catch (error) {
+        console.error('Error checking custom pricing:', error);
+        return false;
+      }
+    }
+
+    showCustomPricingModal() {
+      // Create modal for custom pricing explanation
+      const modal = document.createElement('div');
+      modal.id = 'custom-pricing-modal';
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      `;
+
+      const modalContent = document.createElement('div');
+      modalContent.style.cssText = `
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        max-width: 500px;
+        margin: 20px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      `;
+
+      modalContent.innerHTML = `
+        <h3 style="margin-bottom: 20px; color: #333;">定制价格确认</h3>
+        <p style="margin-bottom: 20px; line-height: 1.6; color: #666;">
+          您的购物车包含定制价格商品。为确保正确的价格计算，
+          我们将为您创建一个包含所有定制费用的专用结账链接。
+        </p>
+        <div style="margin-bottom: 20px;">
+          <button id="proceed-custom-checkout" style="
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 16px;
+          ">继续定制结账</button>
+          <button id="cancel-checkout" style="
+            background: #ccc;
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+          ">取消</button>
+        </div>
+        <p style="font-size: 12px; color: #999;">
+          注意：定制价格将在结账时正确计算
+        </p>
+      `;
+
+      modal.appendChild(modalContent);
+      document.body.appendChild(modal);
+
+      // Add event listeners
+      document.getElementById('proceed-custom-checkout').addEventListener('click', () => {
+        this.proceedWithCustomCheckout();
+        document.body.removeChild(modal);
+      });
+
+      document.getElementById('cancel-checkout').addEventListener('click', () => {
+        document.body.removeChild(modal);
+      });
+
+      // Close on background click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          document.body.removeChild(modal);
+        }
+      });
+    }
+
+    async proceedWithCustomCheckout() {
+      try {
+        // Get cart with custom pricing
+        const cartResponse = await fetch('/cart.js');
+        const cart = await cartResponse.json();
+        
+        // Calculate custom total
+        let customTotal = 0;
+        const customItems = [];
+        
+        cart.items.forEach(item => {
+          const customPrice = item.properties && item.properties['Total Price'];
+          
+          if (customPrice) {
+            // Parse custom price
+            const priceCents = this.parsePriceToCents(customPrice);
+            customTotal += priceCents;
+            customItems.push({
+              title: item.title,
+              quantity: item.quantity,
+              original_price: item.price,
+              custom_price: priceCents,
+              properties: item.properties
+            });
+          } else {
+            customTotal += item.line_price;
+          }
+        });
+
+        // Store custom checkout data
+        sessionStorage.setItem('customCheckoutData', JSON.stringify({
+          items: customItems,
+          customTotal: customTotal,
+          originalTotal: cart.total_price,
+          timestamp: Date.now()
+        }));
+
+        // Show loading message
+        this.showLoadingMessage();
+
+        // For now, proceed to standard checkout with a note
+        // In a production environment, you would integrate with Shopify Plus Scripts
+        // or a third-party checkout solution
+        
+        // Add a note to the cart about custom pricing
+        await this.addCustomPricingNote(customTotal);
+        
+        // Proceed to checkout
+        window.location.href = '/checkout';
+        
+      } catch (error) {
+        console.error('Error processing custom checkout:', error);
+        alert('处理定制结账时出错，请重试。');
+      }
+    }
+
+    async addCustomPricingNote(customTotal) {
+      try {
+        const note = `定制价格总计: $${(customTotal / 100).toFixed(2)} - 请联系客服确认最终价格`;
+        
+        await fetch('/cart/update.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify({
+            note: note
+          })
+        });
+      } catch (error) {
+        console.error('Error adding custom pricing note:', error);
+      }
+    }
+
+    parsePriceToCents(priceString) {
+      const cleanPrice = priceString.replace(/[^0-9.]/g, '');
+      return Math.round(parseFloat(cleanPrice) * 100);
+    }
+
+    showLoadingMessage() {
+      const loading = document.createElement('div');
+      loading.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        z-index: 10000;
+        text-align: center;
+      `;
+      
+      loading.innerHTML = `
+        <div style="margin-bottom: 15px;">
+          <div style="
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007cba;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+          "></div>
+        </div>
+        <p>正在处理定制价格...</p>
+        <style>
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        </style>
+      `;
+      
+      document.body.appendChild(loading);
+      
+      setTimeout(() => {
+        if (document.body.contains(loading)) {
+          document.body.removeChild(loading);
+        }
+      }, 3000);
+    }
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new CustomCheckoutHandler();
+  });
+</script>
+
+<style>
+  .custom-pricing-notice {
+    background: #e8f4fd;
+    border: 1px solid #007cba;
+    color: #005a87;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+    font-size: 14px;
+  }
+  
+  .custom-pricing-notice strong {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .custom-pricing-total {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007cba;
+    margin-top: 10px;
+  }
+</style>

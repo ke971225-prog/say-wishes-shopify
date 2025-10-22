@@ -1,0 +1,151 @@
+<!-- Judge.me 评论展示区域 -->
+<div class="judgeme-reviews-section" id="{{ section.id }}">
+  <div class="reviews-container">
+    <!-- Judge.me 评论统计小部件 -->
+    <div class="reviews-header">
+      <div class="reviews-summary">
+        <!-- Judge.me 会自动注入评分概览 -->
+        <div id="judgeme_product_reviews_tab_{{ product.id }}" class="jdgm-widget jdgm-review-widget" data-id="{{ product.id }}"></div>
+      </div>
+      
+      <!-- Judge.me 写评论按钮 -->
+      <div class="write-review-section">
+        <a href="#" class="jdgm-rev-widg__write-rev-btn" data-product-id="{{ product.id }}">
+          {{ section.settings.write_review_text | default: 'Write a review' }}
+        </a>
+      </div>
+    </div>
+    
+    <!-- Judge.me 评论列表 -->
+    <div class="reviews-grid">
+      <div id="judgeme_product_reviews_{{ product.id }}" class="jdgm-widget jdgm-review-widget" data-id="{{ product.id }}"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Judge.me 评论表单弹窗 -->
+<div id="judgeme_review_form_{{ product.id }}" class="jdgm-widget jdgm-review-widget" data-id="{{ product.id }}"></div>
+
+<style>
+  .judgeme-reviews-section {
+    background: #f5f5f5;
+    padding: 40px 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .reviews-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  /* 自定义Judge.me样式 */
+  .jdgm-rev-widg__write-rev-btn {
+    background: white;
+    border: 2px solid #ff6b35;
+    color: #ff6b35;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .jdgm-rev-widg__write-rev-btn:hover {
+    background: #ff6b35;
+    color: white;
+  }
+  
+  /* 评论网格样式 */
+  .jdgm-rev-widg {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .jdgm-rev {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .jdgm-rev:hover {
+    transform: translateY(-2px);
+  }
+
+  /* 新增：Judge.me 星星与文本颜色支持主题设置（默认金黄色 #FFD700） */
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget {
+    --jdgm-star-color: {{ section.settings.jdgm_star_color | default: '#FFD700' }};
+    --jdgm-text-color: {{ section.settings.jdgm_text_color | default: '#FFD700' }};
+  }
+  
+  /* 文本颜色使用主题设置 */
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget,
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget .jdgm-rev,
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget .jdgm-rev__title,
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget .jdgm-rev__body,
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget .jdgm-rev__author,
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget .jdgm-rev__timestamp {
+    color: var(--jdgm-text-color) !important;
+  }
+  
+  /* 星星颜色使用主题设置（兼容多种星星实现方式） */
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget .jdgm-star,
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget .jdgm-star .jdgm-star__icon,
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget .jdgm-star-rating .jdgm-star,
+  .judgeme-reviews-section .jdgm-widget.jdgm-review-widget .jdgm-all-reviews__rating .jdgm-star {
+    color: var(--jdgm-star-color) !important;
+    fill: var(--jdgm-star-color) !important;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Judge.me Reviews",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Customer Reviews"
+    },
+    {
+      "type": "text",
+      "id": "write_review_text",
+      "label": "Write Review Button Text",
+      "default": "Write a review"
+    },
+    {
+      "type": "color",
+      "id": "jdgm_star_color",
+      "label": "Judge.me 星星颜色",
+      "default": "#FFD700"
+    },
+    {
+      "type": "color",
+      "id": "jdgm_text_color",
+      "label": "Judge.me 文字颜色",
+      "default": "#FFD700"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Judge.me Reviews"
+    }
+  ]
+}
+{% endschema %}

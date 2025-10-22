@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Our VIP Club!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #ff7fce 0%, #ff4da6 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: #ff4da6;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .benefits {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .benefit-icon {
+            background: #ff7fce;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Welcome to Our VIP Club!</h1>
+        <p>Thank you for joining our exclusive community!</p>
+    </div>
+    
+    <div class="content">
+        <h2>Hi {{ customer.first_name | default: 'VIP Member' }}!</h2>
+        
+        <p>We're thrilled to have you as part of our VIP Club! You're now part of an exclusive community that gets access to:</p>
+        
+        <div class="benefits">
+            <div class="benefit-item">
+                <div class="benefit-icon">🎁</div>
+                <div>Exclusive offers and early access to sales</div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">🚚</div>
+                <div>Free shipping on all orders</div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">💎</div>
+                <div>VIP-only products and collections</div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">🎊</div>
+                <div>Special birthday surprises</div>
+            </div>
+        </div>
+        
+        <p>As a welcome gift, here's a special 15% discount code just for you:</p>
+        
+        <div style="text-align: center; background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+            <h3 style="color: #ff4da6; font-size: 24px; margin: 0;">VIP15WELCOME</h3>
+            <p style="margin: 5px 0;">Use this code at checkout</p>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="{{ shop.url }}/collections/all" class="cta-button">Start Shopping Now</a>
+        </div>
+        
+        <p>Keep an eye on your inbox for exclusive deals, new arrivals, and VIP-only content!</p>
+        
+        <p>Welcome to the family! 💕</p>
+        
+        <p>Best regards,<br>
+        The {{ shop.name }} Team</p>
+    </div>
+</body>
+</html>

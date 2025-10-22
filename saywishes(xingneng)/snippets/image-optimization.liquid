@@ -1,0 +1,335 @@
+<!-- Enhanced Image Optimization for Performance -->
+<style>
+  /* Image loading optimization */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Lazy loading placeholder */
+  .lazy-image {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    min-height: 200px;
+    display: block;
+  }
+  
+  @keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  
+  .lazy-image.loaded {
+    animation: none;
+    background: none;
+  }
+  
+  /* Responsive image containers */
+  .image-container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .image-container img {
+    transition: opacity 0.3s ease;
+  }
+  
+  .image-container img[data-loading="true"] {
+    opacity: 0;
+  }
+  
+  .image-container img[data-loading="false"] {
+    opacity: 1;
+  }
+  
+  /* Slow connection optimizations */
+  .slow-connection img {
+    filter: blur(5px);
+    transition: filter 0.3s ease;
+  }
+  
+  .slow-connection img.loaded {
+    filter: none;
+  }
+</style>
+
+<script>
+  (function() {
+    'use strict';
+    
+    const imageOptimizer = {
+      // Configuration
+      config: {
+        rootMargin: '50px',
+        threshold: 0.1,
+        quality: {
+          high: 85,
+          medium: 70,
+          low: 50
+        },
+        formats: ['webp', 'avif', 'jpg'],
+        sizes: [320, 640, 768, 1024, 1200, 1600]
+      },
+      
+      // Detect connection speed
+      getConnectionSpeed: function() {
+        if ('connection' in navigator) {
+          const connection = navigator.connection;
+          if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
+            return 'slow';
+          } else if (connection.effectiveType === '3g') {
+            return 'medium';
+          }
+        }
+        return 'fast';
+      },
+      
+      // Generate optimized image URL
+      generateOptimizedUrl: function(originalUrl, width, quality, format) {
+        if (!originalUrl) return '';
+        
+        // For Shopify images
+        if (originalUrl.includes('shopify.com') || originalUrl.includes('shopifycdn.com')) {
+          let url = originalUrl;
+          
+          // Remove existing parameters
+          url = url.split('?')[0];
+          
+          // Add optimization parameters
+          const params = [];
+          if (width) params.push(`width=${width}`);
+          if (quality) params.push(`quality=${quality}`);
+          if (format && format !== 'jpg') params.push(`format=${format}`);
+          
+          return params.length > 0 ? `${url}?${params.join('&')}` : url;
+        }
+        
+        return originalUrl;
+      },
+      
+      // Create responsive image sources
+      createResponsiveSources: function(originalUrl, alt = '') {
+        const connectionSpeed = this.getConnectionSpeed();
+        const quality = this.config.quality[connectionSpeed] || this.config.quality.medium;
+        
+        let sources = '';
+        
+        // Generate WebP sources
+        if (this.supportsWebP()) {
+          sources += '<source type="image/webp" srcset="';
+          const webpSrcset = this.config.sizes.map(size => {
+            const url = this.generateOptimizedUrl(originalUrl, size, quality, 'webp');
+            return `${url} ${size}w`;
+          }).join(', ');
+          sources += webpSrcset + '" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw">';
+        }
+        
+        // Generate AVIF sources (if supported)
+        if (this.supportsAVIF()) {
+          sources += '<source type="image/avif" srcset="';
+          const avifSrcset = this.config.sizes.map(size => {
+            const url = this.generateOptimizedUrl(originalUrl, size, quality, 'avif');
+            return `${url} ${size}w`;
+          }).join(', ');
+          sources += avifSrcset + '" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw">';
+        }
+        
+        return sources;
+      },
+      
+      // Check WebP support
+      supportsWebP: function() {
+        if (this._webpSupport !== undefined) return this._webpSupport;
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        this._webpSupport = canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+        return this._webpSupport;
+      },
+      
+      // Check AVIF support
+      supportsAVIF: function() {
+        if (this._avifSupport !== undefined) return this._avifSupport;
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        this._avifSupport = canvas.toDataURL('image/avif').indexOf('data:image/avif') === 0;
+        return this._avifSupport;
+      },
+      
+      // Lazy load images
+      setupLazyLoading: function() {
+        if ('IntersectionObserver' in window) {
+          const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                const img = entry.target;
+                this.loadImage(img);
+                observer.unobserve(img);
+              }
+            });
+          }, {
+            rootMargin: this.config.rootMargin,
+            threshold: this.config.threshold
+          });
+          
+          // Observe all lazy images
+          document.querySelectorAll('img[data-src], img[loading="lazy"]').forEach(img => {
+            imageObserver.observe(img);
+          });
+        } else {
+          // Fallback for browsers without IntersectionObserver
+          this.fallbackLazyLoading();
+        }
+      },
+      
+      // Load individual image
+      loadImage: function(img) {
+        const src = img.dataset.src || img.src;
+        if (!src) return;
+        
+        img.setAttribute('data-loading', 'true');
+        
+        // Create new image for preloading
+        const newImg = new Image();
+        
+        newImg.onload = () => {
+          img.src = src;
+          img.setAttribute('data-loading', 'false');
+          img.classList.add('loaded');
+          
+          // Remove data-src to prevent reloading
+          if (img.dataset.src) {
+            delete img.dataset.src;
+          }
+        };
+        
+        newImg.onerror = () => {
+          img.setAttribute('data-loading', 'false');
+          console.warn('Failed to load image:', src);
+        };
+        
+        newImg.src = src;
+      },
+      
+      // Fallback lazy loading
+      fallbackLazyLoading: function() {
+        let lazyImages = document.querySelectorAll('img[data-src]');
+        
+        function loadImagesInViewport() {
+          lazyImages.forEach(img => {
+            if (this.isInViewport(img)) {
+              this.loadImage(img);
+            }
+          });
+        }
+        
+        // Load images on scroll and resize
+        window.addEventListener('scroll', loadImagesInViewport.bind(this));
+        window.addEventListener('resize', loadImagesInViewport.bind(this));
+        
+        // Initial load
+        loadImagesInViewport.call(this);
+      },
+      
+      // Check if element is in viewport
+      isInViewport: function(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+      },
+      
+      // Optimize existing images
+      optimizeExistingImages: function() {
+        const images = document.querySelectorAll('img:not([data-optimized])');
+        
+        images.forEach(img => {
+          const originalSrc = img.src;
+          if (!originalSrc) return;
+          
+          const connectionSpeed = this.getConnectionSpeed();
+          const quality = this.config.quality[connectionSpeed];
+          
+          // Get image dimensions
+          const width = img.offsetWidth || img.naturalWidth;
+          
+          if (width > 0) {
+            const optimizedSrc = this.generateOptimizedUrl(originalSrc, width, quality);
+            if (optimizedSrc !== originalSrc) {
+              img.src = optimizedSrc;
+            }
+          }
+          
+          img.setAttribute('data-optimized', 'true');
+        });
+      },
+      
+      // Initialize image optimization
+      init: function() {
+        // Setup lazy loading
+        this.setupLazyLoading();
+        
+        // Optimize existing images
+        this.optimizeExistingImages();
+        
+        // Re-optimize on window resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            this.optimizeExistingImages();
+          }, 250);
+        });
+        
+        // Monitor for new images added dynamically
+        if ('MutationObserver' in window) {
+          const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+              mutation.addedNodes.forEach(node => {
+                if (node.nodeType === 1) { // Element node
+                  const images = node.tagName === 'IMG' ? [node] : node.querySelectorAll('img');
+                  images.forEach(img => {
+                    if (!img.hasAttribute('data-optimized')) {
+                      this.setupLazyLoading();
+                      this.optimizeExistingImages();
+                    }
+                  });
+                }
+              });
+            });
+          });
+          
+          observer.observe(document.body, {
+            childList: true,
+            subtree: true
+          });
+        }
+      }
+    };
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        imageOptimizer.init();
+      });
+    } else {
+      imageOptimizer.init();
+    }
+    
+    // Expose for external use
+    window.imageOptimizer = imageOptimizer;
+  })();
+</script>
+
+<!-- Helper function for generating responsive images in Liquid -->
+{% comment %}
+  Usage in templates:
+  {% render 'responsive-image', image: product.featured_image, alt: product.title, class: 'product-image' %}
+{% endcomment %}

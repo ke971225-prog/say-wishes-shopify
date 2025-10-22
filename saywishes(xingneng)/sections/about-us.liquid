@@ -1,0 +1,929 @@
+{{ 'component-image-with-text.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start }} 0%, {{ section.settings.gradient_color_end }} 100%);
+    {% else %}
+      background-color: {{ section.settings.section_background_color }};
+    {% endif %}
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .section-{{ section.id }} .title {
+    text-align: center;
+    font-size: {{ section.settings.heading_font_size }}px;
+    font-weight: {{ section.settings.heading_font_weight }};
+    color: {{ section.settings.heading_color }};
+    text-transform: {{ section.settings.heading_text_transform }};
+    margin-bottom: {{ section.settings.heading_margin_bottom }}px;
+  }
+
+  .about-us {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  @media screen and (max-width: 749px) {
+    .about-us {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    .section-{{ section.id }} .title {
+      font-size: {{ section.settings.heading_font_size_mobile }}px;
+    }
+  }
+
+  .about-us-image {
+    background: {{ section.settings.image_container_background }};
+    border-radius: {{ section.settings.image_container_border_radius }}px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+    padding: {{ section.settings.image_container_padding }}px;
+  }
+
+  .about-us-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: {{ section.settings.image_border_radius }}px;
+  }
+
+  .about-us-content {
+    text-align: center;
+  }
+
+  .about-us-title {
+    font-size: {{ section.settings.content_title_font_size }}px;
+    font-weight: {{ section.settings.content_title_font_weight }};
+    margin-bottom: {{ section.settings.content_title_margin_bottom }}px;
+    color: {{ section.settings.content_title_color }};
+    text-transform: {{ section.settings.content_title_text_transform }};
+  }
+
+  .about-us-text-content {
+    background: {{ section.settings.text_content_background }};
+    padding: {{ section.settings.text_content_padding }}px;
+    border-radius: {{ section.settings.text_content_border_radius }}px;
+    margin-bottom: {{ section.settings.text_content_margin_bottom }}px;
+  }
+
+  .about-us-description {
+    font-size: {{ section.settings.description_font_size }}px;
+    font-weight: {{ section.settings.description_font_weight }};
+    line-height: {{ section.settings.description_line_height }};
+    color: {{ section.settings.description_color }};
+    margin-bottom: {{ section.settings.description_margin_bottom }}px;
+    font-style: {{ section.settings.description_font_style }};
+  }
+
+  /* 按钮容器对齐样式 */
+  .button-container {
+    display: flex;
+    width: 100%;
+  }
+
+  .button-container.align-left {
+    justify-content: flex-start;
+  }
+
+  .button-container.align-center {
+    justify-content: center;
+  }
+
+  .button-container.align-right {
+    justify-content: flex-end;
+  }
+
+  .about-us-button {
+    background: {{ section.settings.button_background_color }};
+    color: {{ section.settings.button_text_color }};
+    padding: {{ section.settings.button_padding_vertical }}px {{ section.settings.button_padding_horizontal }}px;
+    border: {{ section.settings.button_border_width }}px solid {{ section.settings.button_border_color }};
+    border-radius: {{ section.settings.button_border_radius }}px;
+    font-weight: {{ section.settings.button_font_weight }};
+    font-size: {{ section.settings.button_font_size }}px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    text-transform: {{ section.settings.button_text_transform }};
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .about-us-button:hover {
+    background: {{ section.settings.button_hover_background_color }};
+    color: {{ section.settings.button_hover_text_color }};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  @media screen and (max-width: 749px) {
+    .about-us-title {
+      font-size: {{ section.settings.content_title_font_size_mobile }}px;
+    }
+    
+    .about-us-description {
+      font-size: {{ section.settings.description_font_size_mobile }}px;
+    }
+    
+    .about-us-button {
+      font-size: {{ section.settings.button_font_size_mobile }}px;
+      padding: {{ section.settings.button_padding_vertical_mobile }}px {{ section.settings.button_padding_horizontal_mobile }}px;
+    }
+    
+    .about-us-text-content {
+      padding: {{ section.settings.text_content_padding_mobile }}px;
+    }
+
+    /* 移动端按钮对齐 */
+    .button-container {
+      justify-content: center; /* 默认移动端居中 */
+    }
+
+    .button-container.mobile-align-left {
+      justify-content: flex-start;
+    }
+
+    .button-container.mobile-align-center {
+      justify-content: center;
+    }
+
+    .button-container.mobile-align-right {
+      justify-content: flex-end;
+    }
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding gradient color-{{ section.settings.section_color_scheme }}">
+  <div class="page-width">
+    {%- if section.settings.heading != blank -%}
+      <div class="title-wrapper-with-link title-wrapper--self-padded-mobile title-wrapper--no-top-margin">
+        <h2 class="title inline-richtext {{ section.settings.heading_size }}">
+          {{ section.settings.heading }}
+        </h2>
+      </div>
+    {%- endif -%}
+
+    <div class="about-us">
+      <!-- 左侧图片 -->
+      <div class="about-us-image">
+        {%- if section.settings.image != blank -%}
+          <img 
+            src="{{ section.settings.image | image_url: width: 800 }}" 
+            alt="{{ section.settings.image.alt | escape }}"
+            width="800"
+            height="400"
+            loading="lazy"
+          >
+        {%- else -%}
+          <div style="background: #f0f0f0; padding: 4rem; border-radius: 10px; color: #666;">
+            <p>Upload team image here</p>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <!-- 右侧文字内容 -->
+      <div class="about-us-content">
+        {%- if section.settings.content_title != blank -%}
+          <h3 class="about-us-title">{{ section.settings.content_title }}</h3>
+        {%- endif -%}
+        
+        <div class="about-us-text-content">
+          {%- if section.settings.description != blank -%}
+            <div class="about-us-description rte">{{ section.settings.description }}</div>
+          {%- endif -%}
+          
+          {%- if section.settings.button_label != blank -%}
+            <div class="button-container align-{{ section.settings.button_alignment }} mobile-align-{{ section.settings.mobile_button_alignment }}">
+              <a href="{{ section.settings.button_link | default: '#' }}" class="about-us-button">
+                {{ section.settings.button_label }}
+              </a>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "About Us",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "Enable Gradient Background",
+      "default": false,
+      "info": "Enable this to use gradient background instead of solid color"
+    },
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "Gradient Start Color",
+      "default": "#8BC34A",
+      "info": "Starting color for the gradient (top-left)"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "Gradient End Color",
+      "default": "#E91E63",
+      "info": "Ending color for the gradient (bottom-right)"
+    },
+    {
+      "type": "header",
+      "content": "Main Heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "WHO ARE WE?",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Small"
+        },
+        {
+          "value": "h1",
+          "label": "Medium"
+        },
+        {
+          "value": "h0",
+          "label": "Large"
+        }
+      ],
+      "default": "h1",
+      "label": "Heading size"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "min": 16,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading Font Size",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "min": 14,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading Font Size (Mobile)",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi Bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold"
+        }
+      ],
+      "default": "700",
+      "label": "Heading Font Weight"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#333333"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_transform",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ],
+      "default": "uppercase",
+      "label": "Heading Text Transform"
+    },
+    {
+      "type": "range",
+      "id": "heading_margin_bottom",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Heading Bottom Margin",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Image Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Team Image"
+    },
+    {
+      "type": "color",
+      "id": "image_container_background",
+      "label": "Image Container Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "image_container_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Image Container Border Radius",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "image_container_padding",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Image Container Padding",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Image Border Radius",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "content_title",
+      "default": "ABOUT US",
+      "label": "Content Title"
+    },
+    {
+      "type": "range",
+      "id": "content_title_font_size",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Content Title Font Size",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "content_title_font_size_mobile",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Content Title Font Size (Mobile)",
+      "default": 22
+    },
+    {
+      "type": "select",
+      "id": "content_title_font_weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi Bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold"
+        }
+      ],
+      "default": "700",
+      "label": "Content Title Font Weight"
+    },
+    {
+      "type": "color",
+      "id": "content_title_color",
+      "label": "Content Title Color",
+      "default": "#333333"
+    },
+    {
+      "type": "select",
+      "id": "content_title_text_transform",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ],
+      "default": "uppercase",
+      "label": "Content Title Text Transform"
+    },
+    {
+      "type": "range",
+      "id": "content_title_margin_bottom",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Content Title Bottom Margin",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Text Content Box"
+    },
+    {
+      "type": "color",
+      "id": "text_content_background",
+      "label": "Text Content Background",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "range",
+      "id": "text_content_padding",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Text Content Padding",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "text_content_padding_mobile",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Text Content Padding (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "text_content_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Text Content Border Radius",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "text_content_margin_bottom",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Text Content Bottom Margin",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Description"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "default": "Wishes From Africa was founded by a team of passionate entrepreneurs. Amidst the challenges of the pandemic, we realized the importance of personal connections. That's why we're dedicated to bringing the gift of personalized video messages from Africa right to you, no matter the distance.",
+      "label": "Description"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Description Font Size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "description_font_size_mobile",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Description Font Size (Mobile)",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "description_font_weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi Bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400",
+      "label": "Description Font Weight"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description Color",
+      "default": "#555555"
+    },
+    {
+      "type": "select",
+      "id": "description_font_style",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "italic",
+          "label": "Italic"
+        }
+      ],
+      "default": "normal",
+      "label": "Description Font Style"
+    },
+    {
+      "type": "range",
+      "id": "description_line_height",
+      "min": 1.2,
+      "max": 2.0,
+      "step": 0.1,
+      "label": "Description Line Height",
+      "default": 1.6
+    },
+    {
+      "type": "range",
+      "id": "description_margin_bottom",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Description Bottom Margin",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "READ MORE",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "button_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "label": "Button Alignment (Desktop)"
+    },
+    {
+      "type": "select",
+      "id": "mobile_button_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "label": "Button Alignment (Mobile)"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button Background Color",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background_color",
+      "label": "Button Hover Background Color",
+      "default": "#c2185b"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button Hover Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Font Size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_mobile",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Font Size (Mobile)",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi Bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700",
+      "label": "Button Font Weight"
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ],
+      "default": "uppercase",
+      "label": "Button Text Transform"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Vertical Padding",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Horizontal Padding",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical_mobile",
+      "min": 6,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Vertical Padding (Mobile)",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal_mobile",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Horizontal Padding (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Border Radius",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Border Width",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#e91e63"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "color_scheme",
+      "id": "section_color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "About Us"
+    }
+  ]
+}
+{% endschema %}

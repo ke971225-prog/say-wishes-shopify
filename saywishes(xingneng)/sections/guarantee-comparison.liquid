@@ -1,0 +1,1091 @@
+<style>
+  .guarantee-comparison {
+    padding: {{ section.settings.section_padding_top | default: 60 }}px {{ section.settings.section_padding_horizontal | default: 20 }}px {{ section.settings.section_padding_bottom | default: 60 }}px;
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start | default: '#8BC34A' }}, {{ section.settings.gradient_color_end | default: '#E91E63' }});
+    {% else %}
+      background: {{ section.settings.section_background_color | default: '#f8f9fa' }};
+    {% endif %}
+  }
+  
+  .guarantee-comparison__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 60px;
+    align-items: center;
+  }
+  
+  .guarantee-comparison__content {
+    padding-right: 20px;
+  }
+  
+  .guarantee-comparison__title {
+    font-size: {{ section.settings.title_font_size | default: 2.5 }}rem;
+    font-weight: {{ section.settings.title_font_weight | default: 'bold' }};
+    color: {{ section.settings.title_color | default: '#333' }};
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  
+  .guarantee-comparison__subtitle {
+    font-size: {{ section.settings.subtitle_font_size | default: 1.1 }}rem;
+    font-weight: {{ section.settings.subtitle_font_weight | default: 'normal' }};
+    color: {{ section.settings.subtitle_color | default: '#666' }};
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  .guarantee-comparison__guarantee {
+    background: {{ section.settings.guarantee_background | default: 'linear-gradient(135deg, #e91e63, #f06292)' }};
+    border-radius: {{ section.settings.guarantee_border_radius | default: 20 }}px;
+    padding: {{ section.settings.guarantee_padding | default: 40 }}px;
+    text-align: center;
+    color: {{ section.settings.guarantee_text_color | default: 'white' }};
+    margin-bottom: 30px;
+  }
+  
+  .guarantee-comparison__badge {
+    font-size: {{ section.settings.badge_font_size | default: 2 }}rem;
+    font-weight: {{ section.settings.badge_font_weight | default: 'normal' }};
+    margin-bottom: 15px;
+  }
+  
+  .guarantee-comparison__rating {
+    font-size: {{ section.settings.rating_font_size | default: 1.2 }}rem;
+    font-weight: {{ section.settings.rating_font_weight | default: 'normal' }};
+    margin-bottom: 20px;
+    color: {{ section.settings.rating_color | default: '#ffd700' }};
+  }
+  
+  .guarantee-comparison__text {
+    font-size: {{ section.settings.guarantee_text_font_size | default: 1 }}rem;
+    font-weight: {{ section.settings.guarantee_text_font_weight | default: 'normal' }};
+    line-height: 1.6;
+    margin-bottom: 25px;
+    color: {{ section.settings.guarantee_text_color | default: 'rgba(255, 255, 255, 0.9)' }};
+  }
+  
+  .guarantee-comparison__button {
+    background: {{ section.settings.button_background | default: 'linear-gradient(135deg, #e91e63, #f06292)' }};
+    color: {{ section.settings.button_text_color | default: 'white' }};
+    padding: {{ section.settings.button_padding_vertical | default: 15 }}px {{ section.settings.button_padding_horizontal | default: 30 }}px;
+    border: {{ section.settings.button_border_width | default: 0 }}px solid {{ section.settings.button_border_color | default: 'transparent' }};
+    border-radius: {{ section.settings.button_border_radius | default: 25 }}px;
+    font-size: {{ section.settings.button_font_size | default: 1 }}rem;
+    font-weight: {{ section.settings.button_font_weight | default: '600' }};
+    text-transform: {{ section.settings.button_text_transform | default: 'none' }};
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+  
+  .guarantee-comparison__button:hover {
+    transform: translateY(-2px);
+    background: {{ section.settings.button_hover_background | default: 'linear-gradient(135deg, #d81b60, #ec407a)' }};
+    color: {{ section.settings.button_hover_text_color | default: 'white' }};
+  }
+  
+  .guarantee-comparison__table {
+    background: {{ section.settings.table_background | default: 'linear-gradient(135deg, #e91e63, #f06292)' }};
+    border-radius: {{ section.settings.table_border_radius | default: 20 }}px;
+    padding: {{ section.settings.table_padding | default: 40 }}px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .comparison-table {
+    background: {{ section.settings.comparison_table_background | default: 'white' }};
+    border-radius: {{ section.settings.comparison_table_border_radius | default: 15 }}px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .comparison-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    background: {{ section.settings.header_background | default: '#333' }};
+    color: {{ section.settings.header_text_color | default: 'white' }};
+    font-weight: {{ section.settings.header_font_weight | default: '600' }};
+  }
+  
+  .comparison-header > div {
+    padding: 20px 15px;
+    text-align: center;
+    font-size: {{ section.settings.header_font_size | default: 0.9 }}rem;
+  }
+  
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    border-bottom: 1px solid {{ section.settings.row_border_color | default: '#eee' }};
+  }
+  
+  .comparison-row:last-child {
+    border-bottom: none;
+  }
+  
+  .comparison-feature {
+    padding: 15px;
+    background: {{ section.settings.feature_background | default: 'linear-gradient(135deg, #e91e63, #f06292)' }};
+    color: {{ section.settings.feature_text_color | default: 'white' }};
+    font-weight: {{ section.settings.feature_font_weight | default: '600' }};
+    font-size: {{ section.settings.feature_font_size | default: 0.9 }}rem;
+    text-align: center;
+  }
+  
+  .comparison-check {
+    padding: 15px;
+    text-align: center;
+    font-size: {{ section.settings.check_font_size | default: 1.2 }}rem;
+    font-weight: {{ section.settings.check_font_weight | default: 'bold' }};
+  }
+  
+  .comparison-check.yes {
+    color: {{ section.settings.check_yes_color | default: '#4caf50' }};
+  }
+  
+  .comparison-check.no {
+    color: {{ section.settings.check_no_color | default: '#f44336' }};
+  }
+  
+  @media (max-width: 768px) {
+    .guarantee-comparison {
+      padding: {{ section.settings.mobile_section_padding_top | default: 40 }}px {{ section.settings.mobile_section_padding_horizontal | default: 20 }}px {{ section.settings.mobile_section_padding_bottom | default: 40 }}px;
+    }
+    
+    .guarantee-comparison__container {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    
+    .guarantee-comparison__content {
+      text-align: center;
+      padding-right: 0;
+    }
+    
+    .guarantee-comparison__title {
+      font-size: {{ section.settings.mobile_title_font_size | default: 2 }}rem;
+    }
+    
+    .guarantee-comparison__subtitle {
+      font-size: {{ section.settings.mobile_subtitle_font_size | default: 1 }}rem;
+    }
+    
+    .guarantee-comparison__badge {
+      font-size: {{ section.settings.mobile_badge_font_size | default: 1.8 }}rem;
+    }
+    
+    .guarantee-comparison__rating {
+      font-size: {{ section.settings.mobile_rating_font_size | default: 1.1 }}rem;
+    }
+    
+    .guarantee-comparison__text {
+      font-size: {{ section.settings.mobile_guarantee_text_font_size | default: 0.9 }}rem;
+    }
+    
+    .guarantee-comparison__button {
+      font-size: {{ section.settings.mobile_button_font_size | default: 0.9 }}rem;
+      padding: {{ section.settings.mobile_button_padding_vertical | default: 12 }}px {{ section.settings.mobile_button_padding_horizontal | default: 25 }}px;
+    }
+    
+    .comparison-header {
+      grid-template-columns: 1.5fr 1fr 1fr;
+    }
+    
+    .comparison-row {
+      grid-template-columns: 1.5fr 1fr 1fr;
+    }
+    
+    .comparison-feature {
+      font-size: {{ section.settings.mobile_feature_font_size | default: 0.8 }}rem;
+      padding: 12px 8px;
+    }
+    
+    .comparison-check {
+      padding: 12px 8px;
+      font-size: {{ section.settings.mobile_check_font_size | default: 1 }}rem;
+    }
+    
+    .comparison-header > div {
+      font-size: {{ section.settings.mobile_header_font_size | default: 0.8 }}rem;
+    }
+  }
+</style>
+
+<section class="guarantee-comparison">
+  <div class="guarantee-comparison__container">
+    <div class="guarantee-comparison__content">
+      {% if section.settings.heading != blank %}
+        <h2 class="guarantee-comparison__title">{{ section.settings.heading }}</h2>
+      {% endif %}
+      
+      {% if section.settings.subtitle != blank %}
+        <p class="guarantee-comparison__subtitle">{{ section.settings.subtitle }}</p>
+      {% endif %}
+      
+      <div class="guarantee-comparison__guarantee">
+        {% if section.settings.guarantee_badge != blank %}
+          <div class="guarantee-comparison__badge">{{ section.settings.guarantee_badge }}</div>
+        {% endif %}
+        
+        {% if section.settings.guarantee_rating != blank %}
+          <div class="guarantee-comparison__rating">{{ section.settings.guarantee_rating }}</div>
+        {% endif %}
+        
+        {% if section.settings.guarantee_text != blank %}
+          <p class="guarantee-comparison__text">{{ section.settings.guarantee_text }}</p>
+        {% endif %}
+        
+        {% if section.settings.guarantee_button_label != blank and section.settings.guarantee_button_link != blank %}
+          <a href="{{ section.settings.guarantee_button_link }}" class="guarantee-comparison__button">
+            {{ section.settings.guarantee_button_label }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="guarantee-comparison__table">
+      <div class="comparison-table">
+        <div class="comparison-header">
+          <div>FEATURES</div>
+          <div>{{ section.settings.us_label | default: 'US' }}</div>
+          <div>{{ section.settings.others_label | default: 'OTHERS' }}</div>
+        </div>
+        
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'comparison_row' %}
+              <div class="comparison-row">
+                <div class="comparison-feature">{{ block.settings.feature_name }}</div>
+                <div class="comparison-check {% if block.settings.us_value == 'yes' %}yes{% else %}no{% endif %}">
+                  {% if block.settings.us_value == 'yes' %}✓{% else %}✗{% endif %}
+                </div>
+                <div class="comparison-check {% if block.settings.others_value == 'yes' %}yes{% else %}no{% endif %}">
+                  {% if block.settings.others_value == 'yes' %}✓{% else %}✗{% endif %}
+                </div>
+              </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Guarantee Comparison",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "启用渐变背景",
+      "default": false,
+      "info": "启用此选项以使用渐变背景而不是纯色背景"
+    },
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Section Background Color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "渐变起始颜色",
+      "default": "#8BC34A",
+      "info": "渐变的起始颜色（左上角）"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "渐变结束颜色",
+      "default": "#E91E63",
+      "info": "渐变的结束颜色（右下角）"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Section Top Padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Section Bottom Padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_horizontal",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Section Horizontal Padding",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "WHAT MAKES US SPECIAL? 🎉",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "default": "Explore why choosing Wishes from Africa is the right decision!",
+      "label": "Subtitle"
+    },
+    {
+      "type": "header",
+      "content": "Title Styling"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Title Font Size",
+      "default": 2.5
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" }
+      ],
+      "default": "700",
+      "label": "Title Font Weight"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "Subtitle Styling"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size",
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Subtitle Font Size",
+      "default": 1.1
+    },
+    {
+      "type": "select",
+      "id": "subtitle_font_weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400",
+      "label": "Subtitle Font Weight"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Guarantee Box Settings"
+    },
+    {
+      "type": "text",
+      "id": "guarantee_badge",
+      "default": "⭐⭐⭐⭐⭐",
+      "label": "Guarantee Badge"
+    },
+    {
+      "type": "text",
+      "id": "guarantee_rating",
+      "default": "⭐⭐⭐⭐⭐",
+      "label": "Rating Stars"
+    },
+    {
+      "type": "textarea",
+      "id": "guarantee_text",
+      "default": "At Wishes from Africa we offer you an excellent shopping experience because the satisfaction of our customers is very important. Due to the fast delivery, a video message like this is ideal as a last minute gift for your family member, friend or colleague, for example. 🎁",
+      "label": "Guarantee Text"
+    },
+    {
+      "type": "color_background",
+      "id": "guarantee_background",
+      "label": "Guarantee Box Background",
+      "default": "linear-gradient(135deg, #e91e63, #f06292)"
+    },
+    {
+      "type": "color",
+      "id": "guarantee_text_color",
+      "label": "Guarantee Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "guarantee_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Guarantee Box Border Radius",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "guarantee_padding",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Guarantee Box Padding",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Badge Styling"
+    },
+    {
+      "type": "range",
+      "id": "badge_font_size",
+      "min": 1.0,
+      "max": 3.0,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Badge Font Size",
+      "default": 2.0
+    },
+    {
+      "type": "select",
+      "id": "badge_font_weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400",
+      "label": "Badge Font Weight"
+    },
+    {
+      "type": "header",
+      "content": "Rating Styling"
+    },
+    {
+      "type": "range",
+      "id": "rating_font_size",
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Rating Font Size",
+      "default": 1.2
+    },
+    {
+      "type": "select",
+      "id": "rating_font_weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400",
+      "label": "Rating Font Weight"
+    },
+    {
+      "type": "color",
+      "id": "rating_color",
+      "label": "Rating Color",
+      "default": "#ffd700"
+    },
+    {
+      "type": "header",
+      "content": "Guarantee Text Styling"
+    },
+    {
+      "type": "range",
+      "id": "guarantee_text_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Guarantee Text Font Size",
+      "default": 1.0
+    },
+    {
+      "type": "select",
+      "id": "guarantee_text_font_weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400",
+      "label": "Guarantee Text Font Weight"
+    },
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "text",
+      "id": "guarantee_button_label",
+      "default": "➜ ORDER NOW",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "guarantee_button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color_background",
+      "id": "button_background",
+      "label": "Button Background",
+      "default": "linear-gradient(135deg, #e91e63, #f06292)"
+    },
+    {
+      "type": "color_background",
+      "id": "button_hover_background",
+      "label": "Button Hover Background",
+      "default": "linear-gradient(135deg, #d81b60, #ec407a)"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button Hover Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Button Font Size",
+      "default": 1.0
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600",
+      "label": "Button Font Weight"
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none",
+      "label": "Button Text Transform"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Button Border Radius",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Border Width",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "min": 8,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Vertical Padding",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "min": 15,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Button Horizontal Padding",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Comparison Table Settings"
+    },
+    {
+      "type": "text",
+      "id": "us_label",
+      "default": "US",
+      "label": "Us Label"
+    },
+    {
+      "type": "text",
+      "id": "others_label",
+      "default": "OTHERS",
+      "label": "Others Label"
+    },
+    {
+      "type": "color_background",
+      "id": "table_background",
+      "label": "Table Container Background",
+      "default": "linear-gradient(135deg, #e91e63, #f06292)"
+    },
+    {
+      "type": "color",
+      "id": "comparison_table_background",
+      "label": "Comparison Table Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "table_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Table Border Radius",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "comparison_table_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Inner Table Border Radius",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "table_padding",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Table Container Padding",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Table Header Styling"
+    },
+    {
+      "type": "color",
+      "id": "header_background",
+      "label": "Header Background Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Header Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "header_font_size",
+      "min": 0.7,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Header Font Size",
+      "default": 0.9
+    },
+    {
+      "type": "select",
+      "id": "header_font_weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600",
+      "label": "Header Font Weight"
+    },
+    {
+      "type": "header",
+      "content": "Feature Column Styling"
+    },
+    {
+      "type": "color_background",
+      "id": "feature_background",
+      "label": "Feature Background",
+      "default": "linear-gradient(135deg, #e91e63, #f06292)"
+    },
+    {
+      "type": "color",
+      "id": "feature_text_color",
+      "label": "Feature Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "feature_font_size",
+      "min": 0.7,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Feature Font Size",
+      "default": 0.9
+    },
+    {
+      "type": "select",
+      "id": "feature_font_weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600",
+      "label": "Feature Font Weight"
+    },
+    {
+      "type": "header",
+      "content": "Check Mark Styling"
+    },
+    {
+      "type": "range",
+      "id": "check_font_size",
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Check Mark Font Size",
+      "default": 1.2
+    },
+    {
+      "type": "select",
+      "id": "check_font_weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700",
+      "label": "Check Mark Font Weight"
+    },
+    {
+      "type": "color",
+      "id": "check_yes_color",
+      "label": "Yes Check Color",
+      "default": "#4caf50"
+    },
+    {
+      "type": "color",
+      "id": "check_no_color",
+      "label": "No Check Color",
+      "default": "#f44336"
+    },
+    {
+      "type": "color",
+      "id": "row_border_color",
+      "label": "Row Border Color",
+      "default": "#eeeeee"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding_top",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Section Top Padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding_bottom",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Section Bottom Padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding_horizontal",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Section Horizontal Padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_font_size",
+      "min": 1.5,
+      "max": 3.0,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Mobile Title Font Size",
+      "default": 2.0
+    },
+    {
+      "type": "range",
+      "id": "mobile_subtitle_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Mobile Subtitle Font Size",
+      "default": 1.0
+    },
+    {
+      "type": "range",
+      "id": "mobile_badge_font_size",
+      "min": 1.2,
+      "max": 2.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Mobile Badge Font Size",
+      "default": 1.8
+    },
+    {
+      "type": "range",
+      "id": "mobile_rating_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Mobile Rating Font Size",
+      "default": 1.1
+    },
+    {
+      "type": "range",
+      "id": "mobile_guarantee_text_font_size",
+      "min": 0.7,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Mobile Guarantee Text Font Size",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_font_size",
+      "min": 0.7,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Mobile Button Font Size",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_vertical",
+      "min": 8,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile Button Vertical Padding",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_horizontal",
+      "min": 15,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Button Horizontal Padding",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "mobile_header_font_size",
+      "min": 0.6,
+      "max": 1.0,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Mobile Header Font Size",
+      "default": 0.8
+    },
+    {
+      "type": "range",
+      "id": "mobile_feature_font_size",
+      "min": 0.6,
+      "max": 1.0,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Mobile Feature Font Size",
+      "default": 0.8
+    },
+    {
+      "type": "range",
+      "id": "mobile_check_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Mobile Check Font Size",
+      "default": 1.0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "comparison_row",
+      "name": "Comparison Row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "feature_name",
+          "default": "FAST DELIVERY",
+          "label": "Feature Name"
+        },
+        {
+          "type": "select",
+          "id": "us_value",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes (✓)"
+            },
+            {
+              "value": "no",
+              "label": "No (✗)"
+            }
+          ],
+          "default": "yes",
+          "label": "Us Value"
+        },
+        {
+          "type": "select",
+          "id": "others_value",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes (✓)"
+            },
+            {
+              "value": "no",
+              "label": "No (✗)"
+            }
+          ],
+          "default": "no",
+          "label": "Others Value"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Guarantee Comparison",
+      "blocks": [
+        {
+          "type": "comparison_row",
+          "settings": {
+            "feature_name": "FAST DELIVERY",
+            "us_value": "yes",
+            "others_value": "no"
+          }
+        },
+        {
+          "type": "comparison_row",
+          "settings": {
+            "feature_name": "QUALITY GUARANTEE",
+            "us_value": "yes",
+            "others_value": "no"
+          }
+        },
+        {
+          "type": "comparison_row",
+          "settings": {
+            "feature_name": "CUSTOMER SUPPORT",
+            "us_value": "yes",
+            "others_value": "no"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

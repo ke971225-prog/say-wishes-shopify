@@ -1,0 +1,216 @@
+{% comment %}
+  Custom Pricing Checkout Notice
+  Displays important information about custom pricing during checkout
+{% endcomment %}
+
+{% if cart.note contains '定制价格总计' %}
+  <div class="custom-pricing-checkout-notice">
+    <div class="notice-header">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z" fill="#ff6b35"/>
+      </svg>
+      <strong>定制价格订单</strong>
+    </div>
+    
+    <div class="notice-content">
+      <p>此订单包含定制价格商品。请注意以下信息：</p>
+      
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Shopify标准总价：</span>
+          <span class="price">{{ cart.total_price | money }}</span>
+        </div>
+        
+        {% assign custom_total = 0 %}
+        {% for item in cart.items %}
+          {% if item.properties['Total Price'] %}
+            {% assign custom_price_str = item.properties['Total Price'] | remove: '$' | remove: ',' %}
+            {% assign custom_price_cents = custom_price_str | times: 100 %}
+            {% assign custom_total = custom_total | plus: custom_price_cents %}
+          {% else %}
+            {% assign custom_total = custom_total | plus: item.line_price %}
+          {% endif %}
+        {% endfor %}
+        
+        <div class="price-row custom-price-row">
+          <span>定制价格总计：</span>
+          <span class="price custom-price">${{ custom_total | divided_by: 100.0 | round: 2 }}</span>
+        </div>
+        
+        {% assign price_difference = custom_total | minus: cart.total_price %}
+        {% if price_difference != 0 %}
+          <div class="price-row difference-row">
+            <span>价格差异：</span>
+            <span class="price difference {% if price_difference > 0 %}positive{% else %}negative{% endif %}">
+              {% if price_difference > 0 %}+{% endif %}{{ price_difference | money }}
+            </span>
+          </div>
+        {% endif %}
+      </div>
+      
+      <div class="notice-actions">
+        <p class="action-text">
+          <strong>重要：</strong> 由于Shopify平台限制，结账时将按标准价格计费。
+          我们的客服团队将在订单确认后联系您处理价格差异。
+        </p>
+        
+        {% if price_difference > 0 %}
+          <div class="payment-notice">
+            <p>您可能需要额外支付 <strong>{{ price_difference | money }}</strong> 的定制费用。</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<style>
+  .custom-pricing-checkout-notice {
+    background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+    border: 2px solid #ff6b35;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.1);
+  }
+  
+  .notice-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    color: #d84315;
+  }
+  
+  .notice-header svg {
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  
+  .notice-header strong {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .notice-content {
+    color: #5d4037;
+    line-height: 1.6;
+  }
+  
+  .price-breakdown {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 6px;
+    padding: 15px;
+    margin: 15px 0;
+    border: 1px solid rgba(255, 107, 53, 0.2);
+  }
+  
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+  }
+  
+  .price-row:last-child {
+    border-bottom: none;
+  }
+  
+  .custom-price-row {
+    background: rgba(255, 107, 53, 0.1);
+    margin: 0 -10px;
+    padding: 12px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  
+  .difference-row {
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .price {
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .custom-price {
+    color: #ff6b35;
+    font-size: 18px;
+  }
+  
+  .difference.positive {
+    color: #d32f2f;
+  }
+  
+  .difference.negative {
+    color: #388e3c;
+  }
+  
+  .notice-actions {
+    margin-top: 15px;
+  }
+  
+  .action-text {
+    background: rgba(255, 107, 53, 0.1);
+    padding: 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+    border-left: 4px solid #ff6b35;
+  }
+  
+  .payment-notice {
+    background: #ffebee;
+    border: 1px solid #f44336;
+    border-radius: 4px;
+    padding: 12px;
+    margin-top: 10px;
+    color: #c62828;
+    text-align: center;
+  }
+  
+  .payment-notice strong {
+    font-size: 18px;
+  }
+  
+  @media (max-width: 768px) {
+    .custom-pricing-checkout-notice {
+      padding: 15px;
+      margin: 15px 0;
+    }
+    
+    .price-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+    
+    .notice-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }
+</style>
+
+<script>
+  // Add custom pricing data to checkout analytics
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof gtag !== 'undefined') {
+      // Track custom pricing checkout events
+      gtag('event', 'custom_pricing_checkout', {
+        'custom_category': 'ecommerce',
+        'custom_label': 'custom_pricing_order',
+        'value': {{ custom_total | divided_by: 100.0 | round: 2 }}
+      });
+    }
+    
+    // Store custom pricing data for order processing
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('hasCustomPricing', 'true');
+      sessionStorage.setItem('customPricingTotal', '{{ custom_total | divided_by: 100.0 | round: 2 }}');
+      sessionStorage.setItem('standardTotal', '{{ cart.total_price | divided_by: 100.0 | round: 2 }}');
+    }
+  });
+</script>

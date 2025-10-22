@@ -1,0 +1,474 @@
+{% comment %}
+  性能监控工具
+  监控网站性能指标、Core Web Vitals等
+{% endcomment %}
+
+{% if settings.performance_monitoring_enabled %}
+<script>
+  // 性能监控控制器
+  window.PerformanceMonitoring = {
+    metrics: {},
+    thresholds: {
+      lcp: 2500, // Largest Contentful Paint
+      fid: 100,  // First Input Delay
+      cls: 0.1,  // Cumulative Layout Shift
+      fcp: 1800, // First Contentful Paint
+      ttfb: 600  // Time to First Byte
+    },
+    
+    init: function() {
+      this.measureCoreWebVitals();
+      this.measureCustomMetrics();
+      this.setupPerformanceObserver();
+      this.monitorResourceLoading();
+      this.trackUserExperience();
+    },
+    
+    // 测量Core Web Vitals
+    measureCoreWebVitals: function() {
+      // Largest Contentful Paint (LCP)
+      this.measureLCP();
+      
+      // First Input Delay (FID)
+      this.measureFID();
+      
+      // Cumulative Layout Shift (CLS)
+      this.measureCLS();
+      
+      // First Contentful Paint (FCP)
+      this.measureFCP();
+      
+      // Time to First Byte (TTFB)
+      this.measureTTFB();
+    },
+    
+    // 测量LCP
+    measureLCP: function() {
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          const lastEntry = entries[entries.length - 1];
+          
+          this.metrics.lcp = Math.round(lastEntry.startTime);
+          this.reportMetric('lcp', this.metrics.lcp);
+        });
+        
+        observer.observe({ entryTypes: ['largest-contentful-paint'] });
+      }
+    },
+    
+    // 测量FID
+    measureFID: function() {
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          entries.forEach((entry) => {
+            this.metrics.fid = Math.round(entry.processingStart - entry.startTime);
+            this.reportMetric('fid', this.metrics.fid);
+          });
+        });
+        
+        observer.observe({ entryTypes: ['first-input'] });
+      }
+    },
+    
+    // 测量CLS
+    measureCLS: function() {
+      if ('PerformanceObserver' in window) {
+        let clsValue = 0;
+        let sessionValue = 0;
+        let sessionEntries = [];
+        
+        const observer = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          
+          entries.forEach((entry) => {
+            if (!entry.hadRecentInput) {
+              const firstSessionEntry = sessionEntries[0];
+              const lastSessionEntry = sessionEntries[sessionEntries.length - 1];
+              
+              if (sessionValue && entry.startTime - lastSessionEntry.startTime < 1000 &&
+                  entry.startTime - firstSessionEntry.startTime < 5000) {
+                sessionValue += entry.value;
+                sessionEntries.push(entry);
+              } else {
+                sessionValue = entry.value;
+                sessionEntries = [entry];
+              }
+              
+              if (sessionValue > clsValue) {
+                clsValue = sessionValue;
+                this.metrics.cls = Math.round(clsValue * 1000) / 1000;
+                this.reportMetric('cls', this.metrics.cls);
+              }
+            }
+          });
+        });
+        
+        observer.observe({ entryTypes: ['layout-shift'] });
+      }
+    },
+    
+    // 测量FCP
+    measureFCP: function() {
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          entries.forEach((entry) => {
+            if (entry.name === 'first-contentful-paint') {
+              this.metrics.fcp = Math.round(entry.startTime);
+              this.reportMetric('fcp', this.metrics.fcp);
+            }
+          });
+        });
+        
+        observer.observe({ entryTypes: ['paint'] });
+      }
+    },
+    
+    // 测量TTFB
+    measureTTFB: function() {
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          entries.forEach((entry) => {
+            if (entry.entryType === 'navigation') {
+              this.metrics.ttfb = Math.round(entry.responseStart - entry.requestStart);
+              this.reportMetric('ttfb', this.metrics.ttfb);
+            }
+          });
+        });
+        
+        observer.observe({ entryTypes: ['navigation'] });
+      }
+    },
+    
+    // 测量自定义指标
+    measureCustomMetrics: function() {
+      // DOM加载时间
+      window.addEventListener('DOMContentLoaded', () => {
+        this.metrics.domLoaded = performance.now();
+        this.reportMetric('dom_loaded', this.metrics.domLoaded);
+      });
+      
+      // 页面完全加载时间
+      window.addEventListener('load', () => {
+        this.metrics.pageLoaded = performance.now();
+        this.reportMetric('page_loaded', this.metrics.pageLoaded);
+        
+        // 计算总的页面加载时间
+        const navigation = performance.getEntriesByType('navigation')[0];
+        if (navigation) {
+          this.metrics.totalLoadTime = Math.round(navigation.loadEventEnd - navigation.fetchStart);
+          this.reportMetric('total_load_time', this.metrics.totalLoadTime);
+        }
+      });
+      
+      // 测量关键资源加载时间
+      this.measureCriticalResources();
+    },
+    
+    // 测量关键资源
+    measureCriticalResources: function() {
+      window.addEventListener('load', () => {
+        const resources = performance.getEntriesByType('resource');
+        
+        resources.forEach((resource) => {
+          const duration = Math.round(resource.duration);
+          
+          // CSS文件
+          if (resource.name.includes('.css')) {
+            this.reportMetric('css_load_time', duration, { url: resource.name });
+          }
+          
+          // JavaScript文件
+          if (resource.name.includes('.js')) {
+            this.reportMetric('js_load_time', duration, { url: resource.name });
+          }
+          
+          // 图片文件
+          if (resource.name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+            this.reportMetric('image_load_time', duration, { url: resource.name });
+          }
+          
+          // 字体文件
+          if (resource.name.match(/\.(woff|woff2|ttf|otf)$/i)) {
+            this.reportMetric('font_load_time', duration, { url: resource.name });
+          }
+        });
+      });
+    },
+    
+    // 设置性能观察器
+    setupPerformanceObserver: function() {
+      if ('PerformanceObserver' in window) {
+        // 监控长任务
+        const longTaskObserver = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          entries.forEach((entry) => {
+            this.reportMetric('long_task', Math.round(entry.duration), {
+              startTime: Math.round(entry.startTime)
+            });
+          });
+        });
+        
+        try {
+          longTaskObserver.observe({ entryTypes: ['longtask'] });
+        } catch (e) {
+          console.log('Long task observer not supported');
+        }
+      }
+    },
+    
+    // 监控资源加载
+    monitorResourceLoading: function() {
+      // 监控失败的资源
+      window.addEventListener('error', (e) => {
+        if (e.target !== window) {
+          this.reportError('resource_error', {
+            url: e.target.src || e.target.href,
+            type: e.target.tagName,
+            message: e.message
+          });
+        }
+      }, true);
+      
+      // 监控网络状态
+      if ('connection' in navigator) {
+        const connection = navigator.connection;
+        this.reportMetric('network_type', connection.effectiveType);
+        this.reportMetric('network_downlink', connection.downlink);
+        this.reportMetric('network_rtt', connection.rtt);
+      }
+    },
+    
+    // 跟踪用户体验
+    trackUserExperience: function() {
+      // 页面可见性变化
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          this.reportMetric('page_hidden', performance.now());
+        } else {
+          this.reportMetric('page_visible', performance.now());
+        }
+      });
+      
+      // 用户交互延迟
+      ['click', 'keydown', 'touchstart'].forEach(eventType => {
+        document.addEventListener(eventType, (e) => {
+          const startTime = performance.now();
+          
+          requestAnimationFrame(() => {
+            const endTime = performance.now();
+            const delay = Math.round(endTime - startTime);
+            
+            if (delay > 16) { // 超过一帧的时间
+              this.reportMetric('interaction_delay', delay, {
+                eventType: eventType,
+                target: e.target.tagName
+              });
+            }
+          });
+        });
+      });
+      
+      // 滚动性能
+      let scrollStartTime;
+      let scrollTimeout;
+      
+      window.addEventListener('scroll', () => {
+        if (!scrollStartTime) {
+          scrollStartTime = performance.now();
+        }
+        
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          const scrollDuration = performance.now() - scrollStartTime;
+          this.reportMetric('scroll_duration', Math.round(scrollDuration));
+          scrollStartTime = null;
+        }, 100);
+      });
+    },
+    
+    // 报告指标
+    reportMetric: function(name, value, additionalData = {}) {
+      const metricData = {
+        name: name,
+        value: value,
+        timestamp: Date.now(),
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        ...additionalData
+      };
+      
+      // 检查是否超过阈值
+      const threshold = this.thresholds[name];
+      if (threshold && value > threshold) {
+        metricData.exceedsThreshold = true;
+        this.reportPerformanceIssue(name, value, threshold);
+      }
+      
+      // 发送到分析工具
+      this.sendToAnalytics(metricData);
+      
+      // 本地存储（用于调试）
+      if (window.location.search.includes('debug=performance')) {
+        console.log('Performance Metric:', metricData);
+      }
+    },
+    
+    // 报告错误
+    reportError: function(type, errorData) {
+      const errorReport = {
+        type: type,
+        timestamp: Date.now(),
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        ...errorData
+      };
+      
+      this.sendToAnalytics(errorReport);
+      
+      if (window.location.search.includes('debug=performance')) {
+        console.error('Performance Error:', errorReport);
+      }
+    },
+    
+    // 报告性能问题
+    reportPerformanceIssue: function(metric, value, threshold) {
+      const issue = {
+        type: 'performance_issue',
+        metric: metric,
+        value: value,
+        threshold: threshold,
+        severity: this.calculateSeverity(metric, value, threshold),
+        timestamp: Date.now(),
+        url: window.location.href
+      };
+      
+      this.sendToAnalytics(issue);
+      
+      // 如果是严重问题，可以触发警报
+      if (issue.severity === 'critical') {
+        this.triggerAlert(issue);
+      }
+    },
+    
+    // 计算严重程度
+    calculateSeverity: function(metric, value, threshold) {
+      const ratio = value / threshold;
+      
+      if (ratio >= 2) return 'critical';
+      if (ratio >= 1.5) return 'high';
+      if (ratio >= 1.2) return 'medium';
+      return 'low';
+    },
+    
+    // 触发警报
+    triggerAlert: function(issue) {
+      // 可以发送到监控服务或显示用户通知
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'performance_alert', {
+          'metric': issue.metric,
+          'value': issue.value,
+          'severity': issue.severity
+        });
+      }
+    },
+    
+    // 发送到分析工具
+    sendToAnalytics: function(data) {
+      // Google Analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'performance_metric', {
+          'metric_name': data.name || data.type,
+          'metric_value': data.value,
+          'custom_parameter_1': data.url
+        });
+      }
+      
+      // 发送到自定义端点
+      if (window.location.hostname !== 'localhost') {
+        fetch('/api/performance-metrics', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        }).catch(err => {
+          console.log('Failed to send performance data:', err);
+        });
+      }
+    },
+    
+    // 获取性能摘要
+    getPerformanceSummary: function() {
+      return {
+        coreWebVitals: {
+          lcp: this.metrics.lcp,
+          fid: this.metrics.fid,
+          cls: this.metrics.cls
+        },
+        loadingMetrics: {
+          fcp: this.metrics.fcp,
+          ttfb: this.metrics.ttfb,
+          domLoaded: this.metrics.domLoaded,
+          pageLoaded: this.metrics.pageLoaded,
+          totalLoadTime: this.metrics.totalLoadTime
+        },
+        thresholds: this.thresholds,
+        timestamp: Date.now()
+      };
+    }
+  };
+  
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', function() {
+    window.PerformanceMonitoring.init();
+  });
+  
+  // 页面卸载时发送最终报告
+  window.addEventListener('beforeunload', function() {
+    const summary = window.PerformanceMonitoring.getPerformanceSummary();
+    
+    // 使用sendBeacon确保数据发送
+    if (navigator.sendBeacon && window.location.hostname !== 'localhost') {
+      navigator.sendBeacon('/api/performance-summary', JSON.stringify(summary));
+    }
+  });
+</script>
+
+<!-- 性能监控调试面板 -->
+{% if request.host contains 'localhost' or request.host contains 'ngrok' %}
+<div id="performance-debug-panel" style="display: none;">
+  <div style="position: fixed; top: 10px; right: 10px; background: white; border: 1px solid #ccc; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 10000; max-width: 300px;">
+    <h4>Performance Debug</h4>
+    <div id="performance-metrics"></div>
+    <button onclick="document.getElementById('performance-debug-panel').style.display='none'">Close</button>
+  </div>
+</div>
+
+<script>
+  // 调试模式
+  if (window.location.search.includes('debug=performance')) {
+    document.getElementById('performance-debug-panel').style.display = 'block';
+    
+    setInterval(() => {
+      const summary = window.PerformanceMonitoring.getPerformanceSummary();
+      const metricsDiv = document.getElementById('performance-metrics');
+      
+      metricsDiv.innerHTML = `
+        <div><strong>Core Web Vitals:</strong></div>
+        <div>LCP: ${summary.coreWebVitals.lcp || 'N/A'}ms</div>
+        <div>FID: ${summary.coreWebVitals.fid || 'N/A'}ms</div>
+        <div>CLS: ${summary.coreWebVitals.cls || 'N/A'}</div>
+        <div><strong>Loading:</strong></div>
+        <div>FCP: ${summary.loadingMetrics.fcp || 'N/A'}ms</div>
+        <div>TTFB: ${summary.loadingMetrics.ttfb || 'N/A'}ms</div>
+        <div>Total: ${summary.loadingMetrics.totalLoadTime || 'N/A'}ms</div>
+      `;
+    }, 1000);
+  }
+</script>
+{% endif %}
+{% endif %}

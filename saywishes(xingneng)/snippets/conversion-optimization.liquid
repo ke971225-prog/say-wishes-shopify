@@ -1,0 +1,555 @@
+{% comment %}
+  转化优化工具集合
+  包括紧迫感、社会证明、退出意图等优化功能
+{% endcomment %}
+
+{% if settings.conversion_optimization_enabled | default: true %}
+<!-- 转化优化样式 -->
+<style>
+  .urgency-timer {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 15px 0;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+  }
+  
+  .urgency-timer.expired {
+    background: #95a5a6;
+    animation: none;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+  
+  .social-proof-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-width: 300px;
+    z-index: 1000;
+    transform: translateX(-120%);
+    transition: transform 0.3s ease;
+  }
+  
+  .social-proof-notification.show {
+    transform: translateX(0);
+  }
+  
+  .social-proof-notification .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  
+  .social-proof-notification .content {
+    display: inline-block;
+    vertical-align: middle;
+    width: calc(100% - 60px);
+  }
+  
+  .social-proof-notification .name {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .social-proof-notification .action {
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .social-proof-notification .time {
+    font-size: 11px;
+    color: #999;
+  }
+  
+  /* Exit Intent Popup Styles */
+  .exit-intent-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 10000;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 10vh;
+  }
+  
+  .exit-intent-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 650px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+  }
+  /* Brand wordmark */
+  .brand-wordmark {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+    color: #1a1a1a;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .brand-wordmark.script { font-family: 'Pacifico', cursive; font-size: 30px; }
+  .brand-wordmark.sans { font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif; font-size: 26px; font-weight: 700; }
+  /* CTA styles */
+  .cta-group { display: flex; gap: 12px; justify-content: center; margin-top: 10px; }
+  .cta-primary {
+    /* 移除硬编码颜色，使用内联样式控制 */
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .cta-secondary {
+    /* 移除硬编码颜色，使用内联样式控制 */
+    padding: 12px 24px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .exit-intent-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+  }
+  
+  .stock-indicator {
+    background: #f39c12;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin: 10px 0;
+  }
+  
+  .stock-indicator.low {
+    background: #e74c3c;
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.7; }
+  }
+  
+  .trust-badges {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  
+  .trust-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #27ae60;
+  }
+  .donation-note { font-size: 12px; color: #666; margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+  .donation-note .icon { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; line-height: 0; }
+  .donation-note { font-size: 12px; color: #666; margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+  .donation-note .icon { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; line-height: 0; }
+  /* 折扣码弹窗样式 */
+  .discount-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 10001; }
+  .discount-modal { background: #fff; border-radius: 12px; max-width: 460px; width: 92%; padding: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.35); position: relative; }
+  .discount-modal-close { position: absolute; right: 12px; top: 10px; font-size: 22px; color: #999; cursor: pointer; }
+  .discount-code-box { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 12px; }
+  .discount-code { font-weight: 700; font-size: 20px; letter-spacing: 1px; padding: 8px 12px; border-radius: 8px; background: #f7f8f9; color: #1a1a1a; }
+  .copy-btn { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; background: #fafafa; }
+</style>
+
+<script>
+  // 转化优化主控制器
+  window.ConversionOptimizer = {
+    settings: {
+      urgencyTimer: {{ settings.urgency_timer_enabled | default: false }},
+      socialProof: {{ settings.social_proof_enabled | default: false }},
+      exitIntent: {{ settings.exit_intent_enabled | default: settings.enable_exit_intent | default: true }},
+      stockIndicator: {{ settings.stock_indicator_enabled | default: false }}
+    },
+    
+    init: function() {
+      if (this.settings.urgencyTimer) this.initUrgencyTimer();
+      if (this.settings.socialProof) this.initSocialProof();
+      if (this.settings.exitIntent) this.initExitIntent();
+      if (this.settings.stockIndicator) this.initStockIndicator();
+      this.initTrustBadges();
+    },
+    
+    // 紧迫感倒计时
+    initUrgencyTimer: function() {
+      const timerElements = document.querySelectorAll('.urgency-timer');
+      
+      timerElements.forEach(timer => {
+        const duration = parseInt(timer.getAttribute('data-duration')) || 1800; // 默认30分钟
+        const endTime = Date.now() + (duration * 1000);
+        
+        const updateTimer = () => {
+          const remaining = Math.max(0, endTime - Date.now());
+          
+          if (remaining === 0) {
+            timer.textContent = 'Offer Expired';
+            timer.classList.add('expired');
+            return;
+          }
+          
+          const minutes = Math.floor(remaining / 60000);
+          const seconds = Math.floor((remaining % 60000) / 1000);
+          
+          timer.textContent = `⏰ Limited Time: ${minutes}:${seconds.toString().padStart(2, '0')} remaining!`;
+        };
+        
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+        
+        // 清理定时器
+        timer.addEventListener('remove', () => clearInterval(interval));
+      });
+    },
+    
+    // 社会证明通知
+    initSocialProof: function() {
+      const notifications = [
+        { name: 'Sarah M.', action: 'ordered a Birthday Video', time: '2 minutes ago' },
+        { name: 'John D.', action: 'purchased Anniversary Message', time: '5 minutes ago' },
+        { name: 'Maria L.', action: 'bought Custom Video Greeting', time: '8 minutes ago' },
+        { name: 'Ahmed K.', action: 'ordered Wedding Wishes', time: '12 minutes ago' },
+        { name: 'Lisa W.', action: 'purchased Graduation Video', time: '15 minutes ago' }
+      ];
+      
+      let currentIndex = 0;
+      
+      const showNotification = () => {
+        // 移除现有通知
+        const existing = document.querySelector('.social-proof-notification');
+        if (existing) existing.remove();
+        
+        const notification = notifications[currentIndex];
+        const element = document.createElement('div');
+        element.className = 'social-proof-notification';
+        element.innerHTML = `
+          <div class="avatar"></div>
+          <div class="content">
+            <div class="name">${notification.name}</div>
+            <div class="action">${notification.action}</div>
+            <div class="time">${notification.time}</div>
+          </div>
+        `;
+        
+        document.body.appendChild(element);
+        
+        // 显示动画
+        setTimeout(() => element.classList.add('show'), 100);
+        
+        // 隐藏动画
+        setTimeout(() => {
+          element.classList.remove('show');
+          setTimeout(() => element.remove(), 300);
+        }, 4000);
+        
+        currentIndex = (currentIndex + 1) % notifications.length;
+      };
+      
+      // 首次显示延迟
+      setTimeout(showNotification, 3000);
+      
+      // 定期显示
+      setInterval(showNotification, 15000);
+    },
+    
+    // 退出意图检测
+    initExitIntent: function() {
+      let exitIntentShown = false;
+      // Gating: only show once per session, with 24h cooldown, and after minimum time on page
+      const SESSION_KEY = 'exit_intent_shown';
+      const LAST_SHOWN_AT_KEY = 'exit_intent_last_shown_at';
+      const COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24h cooldown
+      const lastShownAt = parseInt(localStorage.getItem(LAST_SHOWN_AT_KEY) || '0', 10);
+      const withinCooldown = (Date.now() - lastShownAt) < COOLDOWN_MS;
+      const MIN_SECONDS_ON_PAGE_DESKTOP = 25; // desktop dwell threshold
+      const MIN_SECONDS_ON_PAGE_MOBILE = 12; // mobile general gating remains gentle
+      const MIN_SCROLL_DEPTH = 0.70; // mobile deep scroll threshold (70%)
+      const INACTIVITY_MS_MOBILE = 25000; // 25s inactivity for mobile
+      const hasShownThisSession = sessionStorage.getItem(SESSION_KEY) === 'true';
+      const isDesktop = !window.matchMedia('(max-width: 768px)').matches;
+      // 动态计算最小停留时间（原先为一次性判断，导致后续等待也不触发）
+      const minTimeReached = () => ((performance && typeof performance.now === 'function') ? (performance.now() >= (isDesktop ? MIN_SECONDS_ON_PAGE_DESKTOP * 1000 : MIN_SECONDS_ON_PAGE_MOBILE * 1000)) : true);
+      const IS_CHECKOUT_LIQUID = {% if template contains 'cart' or template contains 'checkout' or template contains 'order' or template == 'gift_card' or template contains 'login' or template contains 'customers' %}true{% else %}false{% endif %};
+      const isCheckoutRelated = IS_CHECKOUT_LIQUID || /\/(checkout|cart|orders|order|thank_you|payment)/i.test((window.location && window.location.pathname) || '');
+      const anotherPopupOpen = !!document.querySelector('.spin-wheel-popup[style*="display: flex"], .spin-wheel-overlay.show');
+      const canShowExitIntent = () => !exitIntentShown && !hasShownThisSession && !withinCooldown && minTimeReached() && !anotherPopupOpen && !isCheckoutRelated;
+      
+      const showExitIntent = () => {
+        if (!canShowExitIntent()) return;
+        exitIntentShown = true;
+        sessionStorage.setItem(SESSION_KEY, 'true');
+        try { localStorage.setItem(LAST_SHOWN_AT_KEY, Date.now().toString()); } catch (e) {}
+        
+        const popup = document.createElement('div');
+        popup.className = 'exit-intent-popup';
+        popup.innerHTML = `
+          <div class="exit-intent-content" role="dialog" aria-modal="true" aria-label="Exit Intent Offer">
+            <span class="exit-intent-close" aria-label="Close">&times;</span>
+            <div class="brand-wordmark signature" aria-label="Saywishes">Saywishes</div>
+            <h2 class="headline" style="color: {{ settings.exit_intent_title_color | default: '#1a1a1a' }}; font-weight: {{ settings.exit_intent_title_weight | default: 700 }};">{{ settings.exit_intent_title_text | default: 'Get an exclusive 20% off today' }}</h2>
+            <p class="subcopy" style="color: {{ settings.exit_intent_subtitle_color | default: '#666666' }}; font-weight: {{ settings.exit_intent_subtitle_weight | default: 400 }};">{{ settings.exit_intent_subtitle_text | default: 'Applied automatically at checkout' }}</p>
+            {% if settings.exit_intent_body_text and settings.exit_intent_body_text != '' %}
+            <p class="bodycopy" style="color: {{ settings.exit_intent_body_color | default: '#666666' }}; font-weight: {{ settings.exit_intent_body_weight | default: 400 }};">{{ settings.exit_intent_body_text }}</p>
+            {% endif %}
+            <div class="cta-group">
+              <button class="cta-primary" id="claim-offer" style="background: {{ settings.exit_intent_primary_button_bg | default: '#e74c3c' }}; color: {{ settings.exit_intent_primary_button_label_color | default: '#ffffff' }};">{{ settings.exit_intent_primary_button_text | default: 'Claim 20% off' }}</button>
+              <button class="cta-secondary" id="no-thanks" style="background: {{ settings.exit_intent_secondary_button_bg | default: 'transparent' }}; color: {{ settings.exit_intent_secondary_button_label_color | default: '#333333' }};">{{ settings.exit_intent_secondary_button_text | default: 'No thanks' }}</button>
+            </div>
+            <div class="donation-note" aria-label="One order equals one meal donation" style="color: {{ settings.exit_intent_donation_color | default: '#666666' }}; font-weight: {{ settings.exit_intent_donation_weight | default: 400 }};">
+              <span class="icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="presentation">
+                  <path d="M12 21s-6.2-4.2-8.9-6.9C1.1 12.2 1.8 8.8 4.8 7.6c1.8-.7 3.9-.1 5.2 1.3 1.3-1.4 3.4-2 5.2-1.3 3 1.2 3.7 4.6.9 6.9C18.2 16.8 12 21 12 21z"/>
+                  <path d="M21 15.6c-.4-.8-1.4-1.2-2.2-.8l-4.1 1.9H8.6c-.5 0-.9.4-.9.9s.4.9.9.9h5.2l4.3-2.1c.8-.4 1.2-1.4.9-2.2zM7 17.5c-.8 0-1.4.6-1.4 1.4s.6 1.4 1.4 1.4 1.4-.6 1.4-1.4-.6-1.4-1.4-1.4z"/>
+                </svg>
+              </span>
+              <span>{{ settings.exit_intent_donation_text | default: 'One order = One meal donation' }}</span>
+            </div>
+          </div>
+          <!-- Discount code modal -->
+          <div class="discount-modal-overlay" id="discount-modal" role="dialog" aria-modal="true" aria-label="Discount Code Modal">
+            <div class="discount-modal">
+              <span class="discount-modal-close" aria-label="Close">&times;</span>
+              <h3 style="margin:0; color: {{ settings.exit_intent_title_color | default: '#1a1a1a' }}; font-weight: 700;">{{ settings.exit_intent_discount_modal_title | default: 'Your discount code' }}</h3>
+              <p style="color: #666; margin-top: 8px;">{{ settings.exit_intent_discount_modal_desc | default: 'Use the discount code below at checkout to get 20% off.' }}</p>
+              <div class="discount-code-box">
+                <span class="discount-code" id="discount-code">{{ settings.exit_intent_discount_code | default: 'SPIN20' }}</span>
+                <button class="copy-btn" id="copy-discount">{{ settings.exit_intent_copy_button_text | default: 'Copy' }}</button>
+              </div>
+              <div id="copy-status" style="margin-top:8px; font-size: 12px; color: #2ecc71; display:none;">{{ settings.exit_intent_copy_success_text | default: 'Copied!' }}</div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(popup);
+        popup.style.display = 'flex';
+        // prevent background scroll while popup open
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        
+        // Interactions
+        const claimBtn = popup.querySelector('#claim-offer');
+        const discountModal = popup.querySelector('#discount-modal');
+        const closeDiscountBtn = popup.querySelector('.discount-modal-close');
+        const copyBtn = popup.querySelector('#copy-discount');
+        const codeEl = popup.querySelector('#discount-code');
+        const statusEl = popup.querySelector('#copy-status');
+        const noThanksBtn = popup.querySelector('#no-thanks');
+        
+        if (claimBtn && discountModal) {
+          claimBtn.addEventListener('click', () => {
+            if (typeof gtag === 'function') { gtag('event', 'exit_intent_claim_clicked'); }
+            discountModal.style.display = 'flex';
+          });
+        }
+        
+        const hideDiscountModal = () => { if (discountModal) discountModal.style.display = 'none'; };
+        if (closeDiscountBtn) closeDiscountBtn.addEventListener('click', hideDiscountModal);
+        if (discountModal) {
+          discountModal.addEventListener('click', (e) => { if (e.target === discountModal) hideDiscountModal(); });
+        }
+        
+        if (copyBtn && codeEl) {
+          copyBtn.addEventListener('click', () => {
+            const textToCopy = (codeEl.textContent || '').trim();
+            const onSuccess = () => {
+              if (statusEl) { statusEl.style.display = 'block'; setTimeout(() => (statusEl.style.display = 'none'), 2000); }
+              if (typeof gtag === 'function') { gtag('event', 'discount_code_copied', { event_category: 'conversion_optimization', event_label: textToCopy }); }
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(textToCopy).then(onSuccess).catch(() => {
+                try { const ta = document.createElement('textarea'); ta.value = textToCopy; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); onSuccess(); } catch (err) {}
+              });
+            } else {
+              try { const ta = document.createElement('textarea'); ta.value = textToCopy; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); onSuccess(); } catch (err) {}
+            }
+          });
+        }
+        
+        const hidePopup = () => {
+          popup.style.display = 'none';
+          document.body.style.overflow = previousOverflow || '';
+          if (typeof gtag === 'function') { gtag('event', 'exit_intent_closed', { event_category: 'conversion_optimization' }); }
+        };
+        
+        // Close buttons and interactions
+        const closeEl = popup.querySelector('.exit-intent-close');
+        if (closeEl) closeEl.onclick = hidePopup;
+        if (noThanksBtn) {
+          noThanksBtn.addEventListener('click', () => {
+            if (typeof gtag === 'function') { gtag('event', 'exit_intent_no_thanks'); }
+            hidePopup();
+          });
+        }
+        popup.onclick = (e) => { if (e.target === popup) hidePopup(); };
+        window.addEventListener('keydown', (e) => { if (e.key === 'Escape') hidePopup(); });
+        
+        // Tracking
+        if (typeof gtag === 'function') {
+          gtag('event', 'exit_intent_shown', { event_category: 'conversion_optimization' });
+        }
+      };
+      
+      // Desktop: top mouse-out detection (robust)
+      document.addEventListener('mouseout', (e) => {
+        if (!isDesktop) return;
+        const toTopEdge = e.clientY <= 0;
+        const leavingWindow = !e.relatedTarget;
+        if (toTopEdge && leavingWindow) showExitIntent();
+      });
+      document.addEventListener('mouseleave', (e) => {
+        if (!isDesktop) return;
+        if (e.clientY <= 0 && !e.relatedTarget) showExitIntent();
+      });
+      
+      // Mobile: combined trigger (≥70% scroll depth) AND (≥25s inactivity OR rapid upward scroll)
+      if (!isDesktop) {
+        let deepScrolled = false;
+        let inactivityReached = false;
+        let rapidUpReached = false;
+        
+        // Inactivity tracking
+        let lastActivityAt = Date.now();
+        const resetActivity = () => { lastActivityAt = Date.now(); inactivityReached = false; };
+        ['touchstart','touchmove','scroll','keydown'].forEach(evt => document.addEventListener(evt, resetActivity, { passive: true }));
+        const inactivityChecker = setInterval(() => {
+          if ((Date.now() - lastActivityAt) >= INACTIVITY_MS_MOBILE) { inactivityReached = true; maybeTriggerMobile(); }
+        }, 1000);
+        
+        // Scroll depth + rapid upward detection
+        let lastY = window.scrollY;
+        let lastT = Date.now();
+        const onScrollMobile = () => {
+          const doc = document.documentElement;
+          const totalHeight = doc.scrollHeight || (window.scrollY + window.innerHeight);
+          const depth = (window.scrollY + window.innerHeight) / totalHeight;
+          if (depth >= MIN_SCROLL_DEPTH) deepScrolled = true;
+          
+          const now = Date.now();
+          const deltaY = lastY - window.scrollY; // positive when scrolling upward
+          const dt = now - lastT;
+          // Consider rapid upward gesture when moving up ≥120px within ≤250ms
+          if (dt > 0 && deltaY >= 120 && dt <= 250) {
+            rapidUpReached = true;
+          }
+          lastY = window.scrollY;
+          lastT = now;
+          maybeTriggerMobile();
+        };
+        document.addEventListener('scroll', onScrollMobile, { passive: true });
+        
+        const maybeTriggerMobile = () => {
+          if (deepScrolled && (inactivityReached || rapidUpReached)) {
+            showExitIntent();
+          }
+        };
+      }
+      
+      // Tracking note: mobile trigger implemented as ≥70% scroll depth plus (≥25s inactivity or rapid upward scroll).
+    },
+    
+    // 库存指示器
+    initStockIndicator: function() {
+      {% if template contains 'product' %}
+        const stockElements = document.querySelectorAll('.stock-indicator');
+        
+        stockElements.forEach(element => {
+          const stock = parseInt(element.getAttribute('data-stock')) || Math.floor(Math.random() * 10) + 1;
+          
+          if (stock <= 3) {
+            element.classList.add('low');
+            element.textContent = `⚠️ Only ${stock} left in stock!`;
+          } else if (stock <= 10) {
+            element.textContent = `📦 ${stock} available`;
+          } else {
+            element.textContent = `✅ In Stock`;
+          }
+        });
+      {% endif %}
+    },
+    
+    // 信任徽章
+    initTrustBadges: function() {
+      const trustContainer = document.querySelector('.trust-badges');
+      if (!trustContainer) return;
+      
+      const badges = [
+        { icon: '🔒', text: 'Secure Payment' },
+        { icon: '🚚', text: 'Fast Delivery' },
+        { icon: '⭐', text: '1000+ Reviews' },
+        { icon: '💯', text: 'Satisfaction Guaranteed' }
+      ];
+      
+      badges.forEach(badge => {
+        const element = document.createElement('div');
+        element.className = 'trust-badge';
+        element.innerHTML = `<span>${badge.icon}</span><span>${badge.text}</span>`;
+        trustContainer.appendChild(element);
+      });
+    },
+    
+    // 跟踪转化事件
+    trackConversion: function(type, value) {
+      if (typeof gtag === 'function') {
+        gtag('event', 'conversion_optimization', {
+          optimization_type: type,
+          conversion_value: value
+        });
+      }
+    }
+  };
+  
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', function() {
+    window.ConversionOptimizer.init();
+  });
+</script>
+
+<!-- 产品页面转化元素 -->
+{% if template contains 'product' %}
+  <div class="urgency-timer" data-duration="1800"></div>
+  <div class="stock-indicator" data-stock="{{ product.selected_or_first_available_variant.inventory_quantity | default: 5 }}"></div>
+  <div class="trust-badges"></div>
+{% endif %}
+
+<!-- 购物车页面优化 -->
+{% if template contains 'cart' %}
+  <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;">
+    <p style="margin: 0; font-weight: bold; color: #e74c3c;">🎁 Add ${{ settings.free_shipping_threshold | default: 50 | minus: cart.total_price | money_without_currency }} more for FREE shipping!</p>
+  </div>
+{% endif %}
+{% endif %}

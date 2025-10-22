@@ -1,0 +1,413 @@
+<style>
+  .exit-intent-test {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .test-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .test-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+
+  .test-subtitle {
+    font-size: 1.1rem;
+    color: #718096;
+    margin-bottom: 1rem;
+  }
+
+  .trigger-methods {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .trigger-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-left: 4px solid #4299e1;
+  }
+
+  .trigger-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .trigger-description {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .trigger-demo {
+    background: #edf2f7;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #2d3748;
+  }
+
+  .status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+  }
+
+  .status-active {
+    background: #48bb78;
+    animation: pulse 2s infinite;
+  }
+
+  .status-inactive {
+    background: #cbd5e0;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+
+  .test-controls {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+  }
+
+  .control-button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+    transition: transform 0.2s;
+  }
+
+  .control-button:hover {
+    transform: translateY(-2px);
+  }
+
+  .control-button.reset {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  }
+
+  .event-log {
+    background: #1a202c;
+    color: #e2e8f0;
+    padding: 1rem;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 1rem;
+  }
+
+  .log-entry {
+    margin-bottom: 0.25rem;
+    padding: 0.25rem 0;
+  }
+
+  .log-timestamp {
+    color: #68d391;
+  }
+
+  .log-event {
+    color: #90cdf4;
+  }
+
+  .log-details {
+    color: #fbb6ce;
+  }
+
+  .warning-box {
+    background: #fed7d7;
+    border: 1px solid #feb2b2;
+    color: #c53030;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .info-box {
+    background: #bee3f8;
+    border: 1px solid #90cdf4;
+    color: #2b6cb0;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+</style>
+
+<div class="exit-intent-test">
+  <div class="test-header">
+    <h1 class="test-title">🎯 退出意图检测测试</h1>
+    <p class="test-subtitle">实时监控退出意图触发条件</p>
+  </div>
+
+  <div class="warning-box">
+    <strong>⚠️ 注意：</strong>为了测试目的，此页面会显示退出意图弹窗的触发情况。在生产环境中，弹窗只会在客户真正准备离开时显示。
+  </div>
+
+  <div class="info-box">
+    <strong>💡 提示：</strong>退出意图弹窗已优化为只在真实退出行为时触发，避免干扰正常浏览体验。
+  </div>
+
+  <div class="trigger-methods">
+    <div class="trigger-card">
+      <h3 class="trigger-title">
+        <span class="status-indicator" id="mouseStatus"></span>
+        🖱️ 鼠标退出检测
+      </h3>
+      <p class="trigger-description">
+        当用户将鼠标移出浏览器窗口顶部时触发。这是最常见的退出意图信号。
+      </p>
+      <div class="trigger-demo">
+        <strong>测试方法：</strong>将鼠标快速移动到浏览器窗口顶部边缘外
+      </div>
+    </div>
+
+    <div class="trigger-card">
+      <h3 class="trigger-title">
+        <span class="status-indicator" id="keyboardStatus"></span>
+        ⌨️ 键盘快捷键检测
+      </h3>
+      <p class="trigger-description">
+        检测常用的关闭页面快捷键：Alt+F4（关闭窗口）、Ctrl+W（关闭标签页）。
+      </p>
+      <div class="trigger-demo">
+        <strong>测试方法：</strong>按下 Ctrl+W 或 Alt+F4（注意：实际会尝试关闭页面）
+      </div>
+    </div>
+
+    <div class="trigger-card">
+      <h3 class="trigger-title">
+        <span class="status-indicator" id="scrollStatus"></span>
+        📱 移动端滚动检测
+      </h3>
+      <p class="trigger-description">
+        在移动设备上，检测用户连续向上滚动到页面顶部的行为，这通常表示想要离开。
+      </p>
+      <div class="trigger-demo">
+        <strong>测试方法：</strong>在移动设备上快速连续向上滚动到页面顶部
+      </div>
+    </div>
+
+    <div class="trigger-card">
+      <h3 class="trigger-title">
+        <span class="status-indicator" id="timeStatus"></span>
+        ⏰ 时间触发器（已禁用）
+      </h3>
+      <p class="trigger-description">
+        原本的3分钟自动触发已被禁用，避免干扰用户正常浏览。只有在后台手动启用时才会生效。
+      </p>
+      <div class="trigger-demo">
+        <strong>状态：</strong>默认禁用，推荐保持禁用状态以提供更好的用户体验
+      </div>
+    </div>
+  </div>
+
+  <div class="test-controls">
+    <h3>🔧 测试控制</h3>
+    <button class="control-button" onclick="simulateMouseExit()">模拟鼠标退出</button>
+    <button class="control-button" onclick="simulateKeyboardExit()">模拟键盘退出</button>
+    <button class="control-button" onclick="simulateMobileScroll()">模拟移动滚动</button>
+    <button class="control-button reset" onclick="resetTest()">重置测试</button>
+    
+    <div class="event-log" id="eventLog">
+      <div class="log-entry">
+        <span class="log-timestamp">[系统]</span> 
+        <span class="log-event">退出意图检测系统已启动</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  class ExitIntentTester {
+    constructor() {
+      this.eventLog = document.getElementById('eventLog');
+      this.mouseStatus = document.getElementById('mouseStatus');
+      this.keyboardStatus = document.getElementById('keyboardStatus');
+      this.scrollStatus = document.getElementById('scrollStatus');
+      this.timeStatus = document.getElementById('timeStatus');
+      
+      this.init();
+    }
+
+    init() {
+      this.updateStatusIndicators();
+      this.bindEvents();
+      this.logEvent('系统', '开始监控退出意图行为');
+    }
+
+    updateStatusIndicators() {
+      // 鼠标检测始终活跃
+      this.mouseStatus.className = 'status-indicator status-active';
+      
+      // 键盘检测始终活跃
+      this.keyboardStatus.className = 'status-indicator status-active';
+      
+      // 移动端滚动检测（根据设备类型）
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      this.scrollStatus.className = `status-indicator ${isMobile ? 'status-active' : 'status-inactive'}`;
+      
+      // 时间触发器（已禁用）
+      this.timeStatus.className = 'status-indicator status-inactive';
+    }
+
+    bindEvents() {
+      // 鼠标离开检测
+      document.addEventListener('mouseleave', (e) => {
+        if (e.clientY <= 0) {
+          this.logEvent('鼠标', `检测到鼠标离开窗口顶部 (Y: ${e.clientY})`, '这会触发退出意图弹窗');
+        }
+      });
+
+      // 键盘事件检测
+      document.addEventListener('keydown', (e) => {
+        if ((e.altKey && e.key === 'F4') || 
+            (e.ctrlKey && (e.key === 'w' || e.key === 'W'))) {
+          this.logEvent('键盘', `检测到退出快捷键: ${e.ctrlKey ? 'Ctrl+' : ''}${e.altKey ? 'Alt+' : ''}${e.key}`, '这会触发退出意图弹窗');
+        }
+      });
+
+      // 滚动事件检测（移动端）
+      let lastScrollTop = 0;
+      let scrollUpCount = 0;
+      
+      window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop < lastScrollTop) {
+          scrollUpCount++;
+          
+          if (scrollUpCount > 3 && scrollTop < 100) {
+            this.logEvent('滚动', `检测到连续向上滚动 (次数: ${scrollUpCount}, 位置: ${scrollTop}px)`, '这会在移动端触发退出意图弹窗');
+          }
+        } else {
+          scrollUpCount = 0;
+        }
+        
+        lastScrollTop = scrollTop;
+      });
+    }
+
+    logEvent(source, event, details = '') {
+      const timestamp = new Date().toLocaleTimeString('en-US');
+      const logEntry = document.createElement('div');
+      logEntry.className = 'log-entry';
+      logEntry.innerHTML = `
+        <span class="log-timestamp">[${timestamp}]</span> 
+        <span class="log-event">${source}: ${event}</span>
+        ${details ? `<br><span class="log-details">→ ${details}</span>` : ''}
+      `;
+      
+      this.eventLog.appendChild(logEntry);
+      this.eventLog.scrollTop = this.eventLog.scrollHeight;
+    }
+
+    simulateMouseExit() {
+      this.logEvent('模拟', '手动触发鼠标退出事件', '在实际环境中，这会显示退出意图弹窗');
+    }
+
+    simulateKeyboardExit() {
+      this.logEvent('模拟', '手动触发键盘退出事件 (Ctrl+W)', '在实际环境中，这会显示退出意图弹窗');
+    }
+
+    simulateMobileScroll() {
+      this.logEvent('模拟', '手动触发移动端滚动退出事件', '在移动设备上，这会显示退出意图弹窗');
+    }
+
+    reset() {
+      this.eventLog.innerHTML = `
+        <div class="log-entry">
+          <span class="log-timestamp">[系统]</span> 
+          <span class="log-event">测试已重置，重新开始监控</span>
+        </div>
+      `;
+      this.logEvent('系统', '退出意图检测系统已重启');
+    }
+  }
+
+  // 全局函数
+  function simulateMouseExit() {
+    if (window.exitIntentTester) {
+      window.exitIntentTester.simulateMouseExit();
+    }
+  }
+
+  function simulateKeyboardExit() {
+    if (window.exitIntentTester) {
+      window.exitIntentTester.simulateKeyboardExit();
+    }
+  }
+
+  function simulateMobileScroll() {
+    if (window.exitIntentTester) {
+      window.exitIntentTester.simulateMobileScroll();
+    }
+  }
+
+  function resetTest() {
+    if (window.exitIntentTester) {
+      window.exitIntentTester.reset();
+    }
+  }
+
+  // 初始化测试器
+  document.addEventListener('DOMContentLoaded', function() {
+    window.exitIntentTester = new ExitIntentTester();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Exit Intent Test",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Test Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_test",
+      "label": "Show Exit Intent Test",
+      "default": true,
+      "info": "Display the exit intent detection test page"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Exit Intent Test"
+    }
+  ]
+}
+{% endschema %}

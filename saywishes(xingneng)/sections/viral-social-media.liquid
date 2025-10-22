@@ -1,0 +1,935 @@
+{{ 'component-image-with-text.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 75 | divided_by: 100 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 75 | divided_by: 100 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .viral-social-section {
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start | default: '#8BC34A' }}, {{ section.settings.gradient_color_end | default: '#E91E63' }});
+    {% else %}
+      background-color: {{ section.settings.section_background | default: '#f8f8f8' }};
+    {% endif %}
+  }
+
+  .viral-social-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .viral-social-image {
+    position: relative;
+    border-radius: {{ section.settings.card_border_radius | default: 20 }}px;
+    overflow: hidden;
+    background: {{ section.settings.card_background | default: 'linear-gradient(135deg, #ff4757, #ff6b9d)' }};
+    padding: {{ section.settings.card_padding | default: 2 }}rem;
+    text-align: center;
+  }
+
+  .viral-social-image h3 {
+    color: {{ section.settings.card_title_color | default: 'white' }};
+    font-size: {{ section.settings.card_title_font_size | default: 1.8 }}rem;
+    font-weight: {{ section.settings.card_title_font_weight | default: 'bold' }};
+    margin-bottom: 1.5rem;
+  }
+
+  .viral-social-image .phone-mockup {
+    max-width: 200px;
+    width: 100%;
+    height: 200px;
+    margin: 0 auto 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 15px;
+  }
+
+  .viral-social-image .phone-mockup img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 15px;
+  }
+
+  .viral-social-image .social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .viral-social-image .social-icon {
+    width: 30px;
+    height: 30px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .viral-social-text {
+    padding: {{ section.settings.text_padding | default: 2 }}rem;
+  }
+
+  .viral-social-text h2 {
+    font-size: {{ section.settings.main_title_font_size | default: 2.5 }}rem;
+    font-weight: {{ section.settings.main_title_font_weight | default: 'bold' }};
+    margin-bottom: 1.5rem;
+    color: {{ section.settings.main_title_color | default: '#333' }};
+    line-height: 1.2;
+    text-transform: {{ section.settings.main_title_text_transform | default: 'none' }};
+  }
+
+  .viral-social-text p {
+    font-size: {{ section.settings.description_font_size | default: 1 }}rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: {{ section.settings.description_color | default: '#666' }};
+    font-style: {{ section.settings.description_font_style | default: 'italic' }};
+    font-weight: {{ section.settings.description_font_weight | default: 'normal' }};
+  }
+
+  .viral-social-button {
+    background: {{ section.settings.button_background | default: 'linear-gradient(135deg, #e91e63, #ff6b9d)' }};
+    color: {{ section.settings.button_text_color | default: 'white' }};
+    padding: {{ section.settings.button_padding_vertical | default: 1 }}rem {{ section.settings.button_padding_horizontal | default: 2 }}rem;
+    border: {{ section.settings.button_border_width | default: 0 }}px solid {{ section.settings.button_border_color | default: 'transparent' }};
+    border-radius: {{ section.settings.button_border_radius | default: 25 }}px;
+    font-size: {{ section.settings.button_font_size | default: 1 }}rem;
+    font-weight: {{ section.settings.button_font_weight | default: 'bold' }};
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.3s ease;
+    text-transform: {{ section.settings.button_text_transform | default: 'none' }};
+  }
+
+  .viral-social-button:hover {
+    transform: translateY(-2px);
+    color: {{ section.settings.button_text_color | default: 'white' }};
+    background: {{ section.settings.button_hover_background | default: 'linear-gradient(135deg, #d81b60, #e91e63)' }};
+  }
+
+  /* Tag Us 互动元素样式 */
+  .tag-us-section {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+  }
+
+  .tag-us-header {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .tag-us-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: {{ section.settings.card_title_color }};
+    margin: 0 0 0.5rem 0;
+  }
+
+  .tag-us-subtitle {
+    font-size: 0.9rem;
+    color: rgba({{ section.settings.card_title_color | color_extract: 'red' }}, {{ section.settings.card_title_color | color_extract: 'green' }}, {{ section.settings.card_title_color | color_extract: 'blue' }}, 0.8);
+    margin: 0;
+  }
+
+  .user-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 0.8rem;
+    margin: 1rem 0;
+  }
+
+  .user-content-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 1;
+  }
+
+  .user-content-image {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .user-content-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .user-content-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .user-content-item:hover .user-content-overlay {
+    opacity: 1;
+  }
+
+  .user-tag {
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.2rem 0.4rem;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+  }
+
+  .tag-us-cta {
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .tag-us-instruction {
+    font-size: 0.9rem;
+    color: {{ section.settings.card_title_color }};
+    margin: 0 0 0.8rem 0;
+  }
+
+  .social-tags {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .social-tag {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+  }
+
+  .social-tag:hover {
+    transform: scale(1.05);
+  }
+
+  .instagram-tag {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  }
+
+  .tiktok-tag {
+    background: linear-gradient(45deg, #ff0050, #00f2ea);
+  }
+
+  .button-container {
+    text-align: {{ section.settings.button_alignment | default: 'left' }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .viral-social-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    
+    .viral-social-text h2 {
+      font-size: {{ section.settings.mobile_main_title_font_size | default: 2 }}rem;
+    }
+    
+    .viral-social-image h3 {
+      font-size: {{ section.settings.mobile_card_title_font_size | default: 1.5 }}rem;
+    }
+    
+    .viral-social-text p {
+      font-size: {{ section.settings.mobile_description_font_size | default: 0.9 }}rem;
+    }
+    
+    .viral-social-button {
+      font-size: {{ section.settings.mobile_button_font_size | default: 0.9 }}rem;
+      padding: {{ section.settings.mobile_button_padding_vertical | default: 0.8 }}rem {{ section.settings.mobile_button_padding_horizontal | default: 1.5 }}rem;
+    }
+    
+    .button-container {
+      text-align: {{ section.settings.mobile_button_alignment | default: section.settings.button_alignment | default: 'left' }};
+    }
+    
+    .viral-social-image .phone-mockup {
+      max-width: 180px;
+      height: 180px;
+    }
+    
+    /* Tag Us 移动端样式 */
+    .tag-us-section {
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .tag-us-title {
+      font-size: 1rem;
+    }
+    
+    .tag-us-subtitle {
+      font-size: 0.8rem;
+    }
+    
+    .user-content-grid {
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 0.5rem;
+    }
+    
+    .user-tag {
+      font-size: 0.6rem;
+      padding: 0.1rem 0.3rem;
+    }
+    
+    .tag-us-instruction {
+      font-size: 0.8rem;
+    }
+    
+    .social-tag {
+      font-size: 0.7rem;
+      padding: 0.3rem 0.6rem;
+    }
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding viral-social-section">
+  <div class="page-width">
+    <div class="viral-social-content">
+      <div class="viral-social-image">
+        <h3>{{ section.settings.card_title }}</h3>
+        {%- if section.settings.phone_image != blank -%}
+          <div class="phone-mockup">
+            {{ section.settings.phone_image | image_url: width: 400 | image_tag: loading: 'lazy' }}
+          </div>
+        {%- else -%}
+          <div class="phone-mockup" style="background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem;">
+            手机展示图片
+          </div>
+        {%- endif -%}
+        
+        <div class="social-icons">
+          <div class="social-icon">📱</div>
+          <div class="social-icon">📸</div>
+          <div class="social-icon">📺</div>
+          <div class="social-icon">👥</div>
+        </div>
+      </div>
+      
+      <div class="viral-social-text">
+        <h2>{{ section.settings.main_title }}</h2>
+        <p>{{ section.settings.description }}</p>
+        
+        <!-- Tag Us 互动元素 -->
+        {% if section.settings.enable_tag_us %}
+        <div class="tag-us-section">
+          <div class="tag-us-header">
+            <h4 class="tag-us-title">{{ section.settings.tag_us_title }}</h4>
+            <p class="tag-us-subtitle">{{ section.settings.tag_us_subtitle }}</p>
+          </div>
+          
+          <div class="user-content-grid">
+            {% for block in section.blocks %}
+              {% if block.type == 'user_content' %}
+              <div class="user-content-item" {{ block.shopify_attributes }}>
+                {% if block.settings.user_image %}
+                  <div class="user-content-image">
+                    <img src="{{ block.settings.user_image | image_url: width: 200, height: 200 }}" alt="User content" loading="lazy" width="200" height="200">
+                    <div class="user-content-overlay">
+                      <span class="user-tag">{{ block.settings.user_tag }}</span>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          
+          <div class="tag-us-cta">
+            <p class="tag-us-instruction">{{ section.settings.tag_instruction }}</p>
+            <div class="social-tags">
+              {% if section.settings.instagram_tag %}
+                <span class="social-tag instagram-tag">{{ section.settings.instagram_tag }}</span>
+              {% endif %}
+              {% if section.settings.tiktok_tag %}
+                <span class="social-tag tiktok-tag">{{ section.settings.tiktok_tag }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
+        {%- if section.settings.button_label != blank -%}
+          <div class="button-container">
+            {%- assign button_url = section.settings.button_link -%}
+            {%- unless button_url contains 'http://' or button_url contains 'https://' or button_url contains 'mailto:' or button_url contains 'tel:' -%}
+              {%- if button_url contains '@' -%}
+                {%- assign button_url = 'mailto:' | append: button_url -%}
+              {%- else -%}
+                {%- assign button_url = 'https://' | append: button_url -%}
+              {%- endif -%}
+            {%- endunless -%}
+            <a href="{{ button_url }}" class="viral-social-button" target="_blank" rel="noopener noreferrer">
+              {{ section.settings.button_label }}
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "VIRAL ON SOCIAL MEDIA",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "区块设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "启用渐变背景",
+      "default": false,
+      "info": "启用此选项以使用渐变背景而不是纯色背景"
+    },
+    {
+      "type": "color",
+      "id": "section_background",
+      "label": "区块背景颜色",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "渐变起始颜色",
+      "default": "#8BC34A",
+      "info": "渐变的起始颜色（左上角）"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "渐变结束颜色",
+      "default": "#E91E63",
+      "info": "渐变的结束颜色（右下角）"
+    },
+    {
+      "type": "header",
+      "content": "内容设置"
+    },
+    {
+      "type": "text",
+      "id": "main_title",
+      "label": "主标题",
+      "default": "VIRAL ON TIKTOK, INSTAGRAM & YOUTUBE"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "描述文字",
+      "default": "Our TikTok, Instagram, Youtube and Facebook account is growing enormously! Don't hesitate, follow us and see fun promotions from time to time."
+    },
+    {
+      "type": "header",
+      "content": "主标题样式"
+    },
+    {
+      "type": "range",
+      "id": "main_title_font_size",
+      "min": 1.5,
+      "max": 4,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "主标题字体大小",
+      "default": 2.5
+    },
+    {
+      "type": "select",
+      "id": "main_title_font_weight",
+      "label": "主标题字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" },
+        { "value": "700", "label": "粗体" },
+        { "value": "800", "label": "特粗" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "color",
+      "id": "main_title_color",
+      "label": "主标题颜色",
+      "default": "#333333"
+    },
+    {
+      "type": "select",
+      "id": "main_title_text_transform",
+      "label": "主标题文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "描述文字样式"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "描述文字大小",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "description_font_weight",
+      "label": "描述文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "描述文字颜色",
+      "default": "#666666"
+    },
+    {
+      "type": "select",
+      "id": "description_font_style",
+      "label": "描述文字样式",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "italic", "label": "斜体" }
+      ],
+      "default": "italic"
+    },
+    {
+      "type": "header",
+      "content": "左侧卡片设置"
+    },
+    {
+      "type": "text",
+      "id": "card_title",
+      "label": "卡片标题",
+      "default": "Follow us on Social Media!"
+    },
+    {
+      "type": "image_picker",
+      "id": "phone_image",
+      "label": "手机展示图片"
+    },
+    {
+      "type": "header",
+      "content": "卡片样式"
+    },
+    {
+      "type": "color_background",
+      "id": "card_background",
+      "label": "卡片背景",
+      "default": "linear-gradient(135deg, #ff4757, #ff6b9d)"
+    },
+    {
+      "type": "range",
+      "id": "card_title_font_size",
+      "min": 1,
+      "max": 2.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "卡片标题字体大小",
+      "default": 1.8
+    },
+    {
+      "type": "select",
+      "id": "card_title_font_weight",
+      "label": "卡片标题字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "color",
+      "id": "card_title_color",
+      "label": "卡片标题颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "卡片圆角",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "min": 1,
+      "max": 4,
+      "step": 0.5,
+      "unit": "rem",
+      "label": "卡片内边距",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "text_padding",
+      "min": 1,
+      "max": 4,
+      "step": 0.5,
+      "unit": "rem",
+      "label": "文字区域内边距",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Tag Us 互动功能"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_tag_us",
+      "label": "启用Tag Us功能",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tag_us_title",
+      "label": "Tag Us标题",
+      "default": "Tag Us & Get Featured!"
+    },
+    {
+      "type": "text",
+      "id": "tag_us_subtitle",
+      "label": "Tag Us副标题",
+      "default": "Share your photos and get a chance to be featured"
+    },
+    {
+      "type": "text",
+      "id": "tag_instruction",
+      "label": "标签使用说明",
+      "default": "Use these hashtags when posting:"
+    },
+    {
+      "type": "text",
+      "id": "instagram_tag",
+      "label": "Instagram标签",
+      "default": "#SayWishes"
+    },
+    {
+      "type": "text",
+      "id": "tiktok_tag",
+      "label": "TikTok标签",
+      "default": "#SayWishesChallenge"
+    },
+    {
+      "type": "header",
+      "content": "按钮设置"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "按钮文字",
+      "default": "CLICK TO FOLLOW"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "按钮链接"
+    },
+    {
+      "type": "header",
+      "content": "按钮样式"
+    },
+    {
+      "type": "color_background",
+      "id": "button_background",
+      "label": "按钮背景",
+      "default": "linear-gradient(135deg, #e91e63, #ff6b9d)"
+    },
+    {
+      "type": "color_background",
+      "id": "button_hover_background",
+      "label": "按钮悬停背景",
+      "default": "linear-gradient(135deg, #d81b60, #e91e63)"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "按钮文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "按钮字体大小",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "按钮字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "label": "按钮文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "button_alignment",
+      "label": "按钮位置",
+      "options": [
+        { "value": "left", "label": "左对齐" },
+        { "value": "center", "label": "居中" },
+        { "value": "right", "label": "右对齐" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "min": 0.5,
+      "max": 2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "按钮垂直内边距",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "min": 1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "按钮水平内边距",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "按钮圆角",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "按钮边框宽度",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "按钮边框颜色",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "移动端设置"
+    },
+    {
+      "type": "range",
+      "id": "mobile_main_title_font_size",
+      "min": 1.2,
+      "max": 3,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端主标题字体大小",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_title_font_size",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端卡片标题字体大小",
+      "default": 1.5
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_font_size",
+      "min": 0.8,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端描述字体大小",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_font_size",
+      "min": 0.8,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端按钮字体大小",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_vertical",
+      "min": 0.5,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端按钮垂直内边距",
+      "default": 0.8
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_horizontal",
+      "min": 1,
+      "max": 2.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "移动端按钮水平内边距",
+      "default": 1.5
+    },
+    {
+      "type": "select",
+      "id": "mobile_button_alignment",
+      "label": "移动端按钮位置",
+      "options": [
+        { "value": "left", "label": "左对齐" },
+        { "value": "center", "label": "居中" },
+        { "value": "right", "label": "右对齐" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "间距设置"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "顶部间距",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "底部间距",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "user_content",
+      "name": "用户内容",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "user_image",
+          "label": "用户图片"
+        },
+        {
+          "type": "text",
+          "id": "user_tag",
+          "label": "用户标签",
+          "default": "@username"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "VIRAL ON SOCIAL MEDIA",
+      "blocks": [
+        {
+          "type": "user_content"
+        },
+        {
+          "type": "user_content"
+        },
+        {
+          "type": "user_content"
+        },
+        {
+          "type": "user_content"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

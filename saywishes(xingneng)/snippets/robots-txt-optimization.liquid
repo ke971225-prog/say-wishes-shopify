@@ -1,0 +1,139 @@
+{% comment %}
+  Robots.txt Optimization Recommendations
+  This file contains recommendations for improving robots.txt
+  Note: robots.txt is managed by Shopify and cannot be directly modified
+  These are suggestions for Shopify support or theme customization
+{% endcomment %}
+
+<!-- 
+ROBOTS.TXT OPTIMIZATION RECOMMENDATIONS:
+
+Current robots.txt is too restrictive. Recommended changes:
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /carts
+Disallow: /account
+Disallow: /services/
+Disallow: /mini_cart
+Disallow: /on/
+Disallow: /.well-known/
+Disallow: /cdn/
+Disallow: /s/files/
+Disallow: /*?*sort_by=
+Disallow: /*?*page=
+Disallow: /*?*limit=
+Disallow: /search?*
+Disallow: /*?*q=
+Disallow: /apps/
+Disallow: /services/
+Disallow: /tools/
+Disallow: /wpm/
+Disallow: /digital/
+Disallow: /a/
+Disallow: /admin
+Disallow: /cart/
+Disallow: /orders/
+Disallow: /checkouts/
+Disallow: /checkout/
+Disallow: /carts/
+Disallow: /account/
+
+# Allow important pages
+Allow: /products/
+Allow: /collections/
+Allow: /pages/
+Allow: /blogs/
+Allow: /policies/
+
+# Specific bot rules
+User-agent: adsbot-google
+Disallow: /
+
+User-agent: Nutch
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: AhrefsSiteAudit
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: Pinterest
+Disallow: /
+
+# Sitemap
+Sitemap: https://wishesvideo.com/sitemap.xml
+
+IMPLEMENTATION NOTES:
+1. Contact Shopify support to modify robots.txt
+2. Current robots.txt blocks too many legitimate pages
+3. Should allow product and collection pages for indexing
+4. Keep blocking admin, cart, and checkout pages
+5. Allow policy pages for better SEO
+-->
+
+<!-- Meta robots optimization for current page -->
+{% liquid
+  assign current_page_type = request.page_type
+  assign robots_content = 'index, follow'
+  
+  case current_page_type
+    when 'search'
+      assign robots_content = 'noindex, follow'
+    when 'customers/account'
+      assign robots_content = 'noindex, nofollow'
+    when 'customers/login'
+      assign robots_content = 'noindex, nofollow'
+    when 'customers/register'
+      assign robots_content = 'noindex, nofollow'
+    when 'cart'
+      assign robots_content = 'noindex, nofollow'
+    when '404'
+      assign robots_content = 'noindex, follow'
+    when 'password'
+      assign robots_content = 'noindex, nofollow'
+  endcase
+  
+  if request.path contains '/pages/'
+    if request.path contains 'password'
+      assign robots_content = 'noindex, nofollow'
+    endif
+  endif
+  
+  if request.path contains '?'
+    if request.path contains 'sort_by=' or request.path contains 'page=' or request.path contains 'limit='
+      assign robots_content = 'noindex, follow'
+    endif
+  endif
+%}
+
+<meta name="robots" content="{{ robots_content }}">
+
+<!-- Additional SEO directives -->
+{% if current_page_type == 'product' and product.available == false %}
+  <meta name="robots" content="noindex, follow">
+{% endif %}
+
+{% if current_page_type == 'collection' and collection.products.size == 0 %}
+  <meta name="robots" content="noindex, follow">
+{% endif %}
+
+<!-- Canonical URL to prevent duplicate content -->
+<!-- canonical handled by seo-robots-optimization -->
+
+<!-- Prevent indexing of filtered/sorted pages -->
+{% if request.path contains '?' %}
+  {% assign query_params = request.path | split: '?' | last %}
+  {% if query_params contains 'sort_by=' or query_params contains 'page=' or query_params contains 'limit=' %}
+    <meta name="robots" content="noindex, follow">
+  {% endif %}
+{% endif %}

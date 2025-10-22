@@ -1,0 +1,556 @@
+/* Spin Wheel Popup Styles */
+
+.spin-wheel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.spin-wheel-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.spin-wheel-container {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 24px;
+  padding: 2.5rem;
+  max-width: 520px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  transform: scale(0.7) translateY(50px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.spin-wheel-overlay.active .spin-wheel-container {
+  transform: scale(1) translateY(0);
+}
+
+.close-popup {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-popup:hover {
+  background: rgba(0, 0, 0, 0.2);
+  color: #333;
+  transform: scale(1.1);
+}
+
+.popup-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #2d3748;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.popup-subtitle {
+  font-size: 1.1rem;
+  color: #718096;
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+}
+
+.wheel-container {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  margin: 0 auto 2.5rem;
+}
+
+.wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  border: 10px solid #ffffff;
+  box-shadow: 
+    0 0 0 3px #e2e8f0,
+    0 15px 35px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.wheel-segment {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  transform-origin: 100% 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(45deg, var(--segment-color), var(--segment-color-light));
+}
+
+.wheel-segment:nth-child(1) {
+  --segment-color: #ff6b35;
+  --segment-color-light: #ff8c5a;
+}
+
+.wheel-segment:nth-child(2) {
+  --segment-color: #f7931e;
+  --segment-color-light: #ffa940;
+}
+
+.wheel-segment:nth-child(3) {
+  --segment-color: #28a745;
+  --segment-color-light: #48bb78;
+}
+
+.wheel-segment:nth-child(4) {
+  --segment-color: #6f42c1;
+  --segment-color-light: #9f7aea;
+}
+
+.wheel-segment:nth-child(5) {
+  --segment-color: #e83e8c;
+  --segment-color-light: #ed64a6;
+}
+
+.wheel-segment:nth-child(6) {
+  --segment-color: #fd7e14;
+  --segment-color-light: #fd9843;
+}
+
+.wheel-segment:nth-child(7) {
+  --segment-color: #20c997;
+  --segment-color-light: #4fd1c7;
+}
+
+.wheel-segment:nth-child(8) {
+  --segment-color: #6610f2;
+  --segment-color-light: #9061f9;
+}
+
+.wheel-pointer {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-top: 30px solid #ff6b35;
+  z-index: 10;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
+}
+
+.wheel-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  z-index: 5;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 16px rgba(255, 107, 53, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 3px solid #ffffff;
+}
+
+.wheel-center:hover {
+  background: linear-gradient(135deg, #e55a2b, #e8851d);
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 
+    0 12px 24px rgba(255, 107, 53, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.wheel-center:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+.spin-button {
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 1rem;
+  box-shadow: 0 8px 16px rgba(255, 107, 53, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.spin-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.spin-button:hover::before {
+  left: 100%;
+}
+
+.spin-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(255, 107, 53, 0.4);
+}
+
+.spin-button:active {
+  transform: translateY(-1px);
+}
+
+.spin-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 4px 8px rgba(255, 107, 53, 0.2);
+}
+
+.email-form {
+  margin-top: 2rem;
+  display: none;
+  animation: fadeInUp 0.5s ease;
+}
+
+.email-form.show {
+  display: block;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.email-input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  background: #ffffff;
+}
+
+.email-input:focus {
+  outline: none;
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.claim-button {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
+}
+
+.claim-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(40, 167, 69, 0.4);
+}
+
+.claim-button:active {
+  transform: translateY(0);
+}
+
+.result-message {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  display: none;
+  animation: bounceIn 0.6s ease;
+}
+
+.result-message.show {
+  display: block;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.result-message.success {
+  background: linear-gradient(135deg, #d4edda, #c3e6cb);
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.result-message.error {
+  background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.popup-footer {
+  margin-top: 2rem;
+  font-size: 0.85rem;
+  color: #a0aec0;
+  line-height: 1.5;
+}
+
+/* 社会证明元素 */
+.social-proof {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: #4a5568;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* 紧迫感计时器 */
+.urgency-timer {
+  background: linear-gradient(135deg, #ff4757, #ff3838);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .spin-wheel-container {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+    max-width: 95%;
+  }
+
+  .wheel-container {
+    width: 280px;
+    height: 280px;
+  }
+
+  .popup-title {
+    font-size: 1.6rem;
+  }
+
+  .popup-subtitle {
+    font-size: 1rem;
+  }
+
+  .wheel-segment {
+    font-size: 0.85rem;
+  }
+
+  .wheel-center {
+    width: 60px;
+    height: 60px;
+    font-size: 0.8rem;
+  }
+
+  .spin-button {
+    padding: 14px 30px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .spin-wheel-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .wheel-container {
+    width: 240px;
+    height: 240px;
+  }
+
+  .popup-title {
+    font-size: 1.4rem;
+  }
+
+  .wheel-segment {
+    font-size: 0.75rem;
+  }
+
+  .wheel-center {
+    width: 50px;
+    height: 50px;
+    font-size: 0.7rem;
+  }
+}
+
+/* 加载动画 */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 成功图标动画 */
+.success-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #28a745;
+  position: relative;
+  margin-right: 8px;
+}
+
+.success-icon::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* 特殊效果 */
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ff6b35;
+  animation: confetti-fall 3s linear infinite;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  .spin-wheel-container {
+    border: 2px solid #000;
+  }
+  
+  .wheel {
+    border-color: #000;
+  }
+  
+  .popup-title {
+    color: #000;
+    -webkit-text-fill-color: #000;
+  }
+}
+
+/* 减少动画模式支持 */
+@media (prefers-reduced-motion: reduce) {
+  .spin-wheel-overlay,
+  .spin-wheel-container,
+  .wheel,
+  .spin-button,
+  .email-form,
+  .result-message {
+    transition: none;
+    animation: none;
+  }
+  
+  .wheel {
+    transition: transform 1s ease;
+  }
+}

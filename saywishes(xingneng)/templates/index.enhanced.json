@@ -1,0 +1,809 @@
+{
+  "sections": {
+    "video_message_africa_cxKw9n": {
+      "type": "video-message-africa",
+      "name": "Video Message from Africa",
+      "settings": {
+        "subtitle": "Authentic African Video Message",
+        "title": "🔥 Personalized African Video Messages - Custom Birthday Greetings! ❤️ LIMITED TIME OFFER!",
+        "description": "⚡ HURRY! Only 24 Hours Left! ⚡ Surprise someone special with authentic African family celebration videos—personalized video gifts they'll NEVER forget! 💝 Custom video greetings from Africa for birthdays, anniversaries & special occasions!",
+        "image": "shopify:\/\/shop_images\/20250827211313_256.jpg",
+        "button_label": "➜ ORDER YOUR VIDEO",
+        "button_link": "shopify:\/\/products\/personalized-greeting-video-from-africa",
+        "enable_gradient_background": true,
+        "background_color": "#f8f9fa",
+        "gradient_color_start": "#e5fbe2",
+        "gradient_color_end": "#ff6b35",
+        "subtitle_color": "#666666",
+        "title_color": "#333333",
+        "heart_color": "#e91e63",
+        "description_color": "#555555",
+        "highlight_color": "#333333",
+        "button_bg_start": "#5be91e",
+        "button_bg_end": "#f06292",
+        "button_text_color": "#e71414",
+        "button_hover_bg_start": "#1d18c2",
+        "button_hover_bg_end": "#e91e63",
+        "button_hover_text_color": "#ffffff",
+        "button_border_color": "rgba(0,0,0,0)",
+        "button_hover_shadow": "#e91e6366",
+        "button_font_size": 1,
+        "button_font_weight": "bold",
+        "button_padding_vertical": 16,
+        "button_padding_horizontal": 30,
+        "button_border_radius": 25,
+        "button_border_width": 0,
+        "button_text_transform": "uppercase",
+        "subtitle_font_size": 1.5,
+        "subtitle_font_weight": "600",
+        "title_font_size": 3,
+        "title_font_weight": "bold",
+        "description_font_size": 1.5,
+        "description_font_weight": "500",
+        "text_alignment": "center",
+        "container_width": 1200,
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "padding_horizontal": 20,
+        "media_max_width": 800,
+        "media_border_radius": 15,
+        "media_shadow_color": "#00000033",
+        "show_rating": true,
+        "rating_stars": 5,
+        "rating_text": "Rated 4.9\/5 by 50,000+ Happy Customers!",
+        "rating_text_color": "#666666",
+        "rating_stars_color": "#ffc107",
+        "rating_font_size": 1.5,
+        "rating_stars_size": 1.6,
+        "top_marquee_text": "🔥 FLASH SALE: 53% OFF + FREE SHIPPING! 🌍 ONLY 24 HOURS LEFT! ⏰ Don't Miss Out! 💖",
+        "top_marquee_bg": "#ff6b35",
+        "top_marquee_color": "#ffffff",
+        "bottom_marquee_text": "🚨 URGENT: 50,000+ Happy Customers Can't Be Wrong! 💝 Get Your Authentic African Video NOW! 🎬 Lightning Fast Delivery! 🚀",
+        "bottom_marquee_bg": "#ff6b35",
+        "bottom_marquee_color": "#ffffff",
+        "marquee_font_size": 1.3,
+        "marquee_speed": 20,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40,
+        "mobile_padding_horizontal": 15,
+        "mobile_title_font_size": 2,
+        "mobile_description_font_size": 1,
+        "mobile_button_font_size": 0.9,
+        "mobile_button_padding_vertical": 12,
+        "mobile_button_padding_horizontal": 25,
+        "mobile_marquee_font_size": 1
+      }
+    },
+    "service_features_zWyyQb": {
+      "type": "service-features",
+      "blocks": {
+        "feature_NwakPy": {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Premium Quality African Videos:",
+            "description": "Every personalized video message crafted with authentic African excellence!"
+          }
+        },
+        "feature_ChMNWx": {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "100% Custom Satisfaction:",
+            "description": "Your happiness with our personalized African greetings comes first—always."
+          }
+        },
+        "feature_7LtGJN": {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Easy Custom Ordering:",
+            "description": "Simple steps to order your personalized African video messages."
+          }
+        },
+        "feature_Ca9BPc": {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Perfect for Family Celebrations:",
+            "description": "Ideal for birthdays, anniversaries & family milestone celebrations!"
+          }
+        },
+        "feature_NWwjBh": {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Unique Personalized Messages:",
+            "description": "Your very own custom African video greeting, one-of-a-kind."
+          }
+        },
+        "feature_rgnBp8": {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Fast African Video Delivery:",
+            "description": "1-2 day delivery for your personalized African video messages!"
+          }
+        },
+        "feature_RbDUmA": {
+          "type": "feature",
+          "settings": {
+            "icon": "⭐",
+            "title": "Top-Rated African Videos:",
+            "description": "4.9\/5 star rating for our authentic African video greetings"
+          }
+        }
+      },
+      "block_order": [
+        "feature_NwakPy",
+        "feature_ChMNWx",
+        "feature_7LtGJN",
+        "feature_Ca9BPc",
+        "feature_NWwjBh",
+        "feature_rgnBp8",
+        "feature_RbDUmA"
+      ],
+      "name": "Service Features",
+      "settings": {
+        "badge": "AUTHENTIC AFRICAN VIDEO MESSAGES!",
+        "title": "Why Choose Our Personalized African Video Greetings? ❤️",
+        "image": "shopify:\/\/shop_images\/20250827211316_257.jpg",
+        "button_label": "➜ ORDER YOUR VIDEO",
+        "button_link": "shopify:\/\/products\/personalized-greeting-video-from-africa",
+        "enable_gradient_background": true,
+        "section_bg_color": "#f8f9fa",
+        "gradient_color_start": "#e5fbe2",
+        "gradient_color_end": "#ff6b35",
+        "badge_color": "#666666",
+        "title_color": "#333333",
+        "icon_color": "#ffd700",
+        "item_title_color": "#333333",
+        "item_desc_color": "#666666",
+        "button_alignment": "left",
+        "button_bg_color": "#65ff14",
+        "button_text_color": "#e71414",
+        "button_hover_bg_color": "#1d18c2",
+        "button_hover_text_color": "#ffffff",
+        "button_border_color": "rgba(0,0,0,0)",
+        "button_border_width": 0,
+        "button_border_radius": 25,
+        "button_padding_vertical": 16,
+        "button_padding_horizontal": 30,
+        "button_text_transform": "uppercase",
+        "badge_font_size": 1.4,
+        "badge_font_weight": "600",
+        "title_font_size": 2.4,
+        "title_font_weight": "bold",
+        "icon_font_size": 1.5,
+        "item_title_font_size": 1.5,
+        "item_title_font_weight": "600",
+        "item_desc_font_size": 1.3,
+        "item_desc_font_weight": "normal",
+        "button_font_size": 1,
+        "button_font_weight": "600",
+        "mobile_badge_font_size": 1.2,
+        "mobile_title_font_size": 2.4,
+        "mobile_icon_font_size": 1.2,
+        "mobile_item_title_font_size": 1.3,
+        "mobile_item_desc_font_size": 1.2,
+        "mobile_button_font_size": 1
+      }
+    },
+    "order_steps_aBcTET": {
+      "type": "order-steps",
+      "blocks": {
+        "order_step_ehBnfH": {
+          "type": "order_step",
+          "settings": {
+            "icon": "👥",
+            "title": "Step 1: Choose Your African Team",
+            "description": "Select your favorite African performers for your personalized video message"
+          }
+        },
+        "order_step_MFDAqa": {
+          "type": "order_step",
+          "settings": {
+            "icon": "🎁",
+            "title": "Step 2: Upload Family Photos",
+            "description": "Upload custom photos to be featured in your personalized African video greeting 📱"
+          }
+        },
+        "order_step_8E7CJE": {
+          "type": "order_step",
+          "disabled": true,
+          "settings": {
+            "icon": "📋",
+            "title": "Step 2",
+            "description": "Choose between Women or Men team to personalize your surprise! 🎭"
+          }
+        },
+        "order_step_eNW66R": {
+          "type": "order_step",
+          "settings": {
+            "icon": "📋",
+            "title": "Step 3: Write Custom Message",
+            "description": "Create your personalized message text for the African video greeting poster 🎬"
+          }
+        },
+        "order_step_9aMnpx": {
+          "type": "order_step",
+          "settings": {
+            "icon": "📧",
+            "title": "Step 4: Provide Email",
+            "description": "Enter your email to receive your custom African video message 📧"
+          }
+        },
+        "order_step_mTNEka": {
+          "type": "order_step",
+          "settings": {
+            "icon": "❤️",
+            "title": "Step 5: Choose Music",
+            "description": "Select your favorite song for our African friends to dance to in your personalized video 🎵"
+          }
+        },
+        "order_step_4zpXhF": {
+          "type": "order_step",
+          "settings": {
+            "icon": "📧",
+            "title": "Step 6: Fast Delivery",
+            "description": "Receive your custom African video greeting via email within 1-2 days 📬"
+          }
+        }
+      },
+      "block_order": [
+        "order_step_ehBnfH",
+        "order_step_MFDAqa",
+        "order_step_8E7CJE",
+        "order_step_eNW66R",
+        "order_step_9aMnpx",
+        "order_step_mTNEka",
+        "order_step_4zpXhF"
+      ],
+      "name": "Order Steps",
+      "settings": {
+        "heading": "Order Your Personalized African Video in 6 Simple Steps! 😊",
+        "subtitle": "Follow these easy steps to create your custom African video greeting for family celebrations",
+        "enable_gradient_background": true,
+        "section_bg_color": "#ffffff",
+        "gradient_color_start": "#e5fbe2",
+        "gradient_color_end": "#ff6b35",
+        "title_color": "#333333",
+        "subtitle_color": "#666666",
+        "step_bg_color": "#f1f4ff",
+        "step_accent_color": "#14ff4c",
+        "icon_color": "#65ff14",
+        "step_title_color": "#333333",
+        "step_desc_color": "#666666",
+        "number_bg_color": "#14ff4c",
+        "number_text_color": "#ffffff",
+        "button_bg_color": "#1cec1e",
+        "button_text_color": "#ec2e2e",
+        "button_hover_bg_color": "#1d18c2",
+        "button_hover_text_color": "#ffffff",
+        "button_border_color": "rgba(0,0,0,0)",
+        "button_border_width": 0,
+        "button_border_radius": 25,
+        "button_padding_vertical": 18,
+        "button_padding_horizontal": 40,
+        "button_text_transform": "uppercase",
+        "title_font_size": 3.2,
+        "title_font_weight": "bold",
+        "subtitle_font_size": 1.6,
+        "subtitle_font_weight": "600",
+        "icon_font_size": 3.2,
+        "step_title_font_size": 1.7,
+        "step_title_font_weight": "600",
+        "step_desc_font_size": 1.4,
+        "step_desc_font_weight": "normal",
+        "number_font_size": 1.2,
+        "number_font_weight": "600",
+        "button_font_size": 1.1,
+        "button_font_weight": "600",
+        "mobile_title_font_size": 2,
+        "mobile_subtitle_font_size": 1,
+        "mobile_icon_font_size": 2.5,
+        "mobile_step_title_font_size": 1.3,
+        "mobile_step_desc_font_size": 0.9,
+        "mobile_number_font_size": 0.8,
+        "mobile_button_font_size": 1,
+        "mobile_button_padding_vertical": 15,
+        "mobile_button_padding_horizontal": 30,
+        "button_label": "➜ ORDER YOUR VIDEO",
+        "button_link": "shopify:\/\/products\/personalized-greeting-video-from-africa"
+      }
+    },
+    "guarantee_comparison_hhkU6y": {
+      "type": "guarantee-comparison",
+      "blocks": {
+        "comparison_row_QExqc8": {
+          "type": "comparison_row",
+          "settings": {
+            "feature_name": "FAST DELIVERY",
+            "us_value": "yes",
+            "others_value": "✗"
+          }
+        },
+        "comparison_row_wrpcYw": {
+          "type": "comparison_row",
+          "settings": {
+            "feature_name": "QUALITY GUARANTEE",
+            "us_value": "yes",
+            "others_value": "✗"
+          }
+        },
+        "comparison_row_ghX6b6": {
+          "type": "comparison_row",
+          "settings": {
+            "feature_name": "HAPPINESS GUARANTEED",
+            "us_value": "yes",
+            "others_value": "✗"
+          }
+        },
+        "comparison_row_fUjBWR": {
+          "type": "comparison_row",
+          "settings": {
+            "feature_name": "FOR EVERY OCCASION",
+            "us_value": "yes",
+            "others_value": "✗"
+          }
+        },
+        "comparison_row_qFKrxA": {
+          "type": "comparison_row",
+          "settings": {
+            "feature_name": "EASY TO ORDER",
+            "us_value": "yes",
+            "others_value": "✗"
+          }
+        },
+        "comparison_row_fF9Jhy": {
+          "type": "comparison_row",
+          "settings": {
+            "feature_name": "EXCELLENT SERVICE",
+            "us_value": "yes",
+            "others_value": "✗"
+          }
+        },
+        "comparison_row_qqJ9FX": {
+          "type": "comparison_row",
+          "settings": {
+            "feature_name": "TOP RATED",
+            "us_value": "yes",
+            "others_value": "✗"
+          }
+        }
+      },
+      "block_order": [
+        "comparison_row_QExqc8",
+        "comparison_row_wrpcYw",
+        "comparison_row_ghX6b6",
+        "comparison_row_fUjBWR",
+        "comparison_row_qFKrxA",
+        "comparison_row_fF9Jhy",
+        "comparison_row_qqJ9FX"
+      ],
+      "name": "Guarantee Comparison",
+      "settings": {
+        "enable_gradient_background": true,
+        "section_background_color": "#f8f9fa",
+        "gradient_color_start": "#e5fbe2",
+        "gradient_color_end": "#ff6b35",
+        "section_padding_top": 60,
+        "section_padding_bottom": 60,
+        "section_padding_horizontal": 20,
+        "heading": "WHAT MAKES US SPECIAL? 🎉",
+        "subtitle": "Why Say Wishes? Find out why it’s the right pick!",
+        "title_font_size": 3,
+        "title_font_weight": "700",
+        "title_color": "#333333",
+        "subtitle_font_size": 1.4,
+        "subtitle_font_weight": "400",
+        "subtitle_color": "#00000080",
+        "guarantee_badge": "💯 100% SATISFACTION GUARANTEED 💯",
+        "guarantee_rating": "⭐⭐⭐⭐⭐",
+        "guarantee_text": "🔥 100% MONEY BACK GUARANTEE 🔥\n\nAt Say Wishes, we're all about giving you a standout shopping experience—because your satisfaction matters most to us. And with our fast delivery, these personalized video greetings make the perfect last-minute gift: whether it's for a family member, friend, or colleague. 🎁\n\n✅ Not satisfied? Get your money back - NO QUESTIONS ASKED!",
+        "guarantee_background": "linear-gradient(135deg, rgba(118, 233, 30, 1), rgba(240, 98, 146, 1) 100%)",
+        "guarantee_text_color": "#ffffff",
+        "guarantee_border_radius": 35,
+        "guarantee_padding": 60,
+        "badge_font_size": 2,
+        "badge_font_weight": "400",
+        "rating_font_size": 1.1,
+        "rating_font_weight": "400",
+        "rating_color": "#ffd700",
+        "guarantee_text_font_size": 1.1,
+        "guarantee_text_font_weight": "400",
+        "guarantee_button_label": "➜ ORDER YOUR VIDEO",
+        "guarantee_button_link": "shopify:\/\/products\/personalized-greeting-video-from-africa",
+        "button_background": "linear-gradient(135deg, rgba(41, 233, 30, 1), rgba(240, 98, 146, 1) 100%)",
+        "button_hover_background": "linear-gradient(135deg, rgba(92, 216, 27, 1), rgba(236, 64, 122, 1) 100%)",
+        "button_text_color": "#e14e18",
+        "button_hover_text_color": "#ffffff",
+        "button_font_size": 1,
+        "button_font_weight": "600",
+        "button_text_transform": "none",
+        "button_border_radius": 25,
+        "button_border_width": 0,
+        "button_border_color": "#000000",
+        "button_padding_vertical": 16,
+        "button_padding_horizontal": 30,
+        "us_label": "US",
+        "others_label": "OTHERS",
+        "table_background": "linear-gradient(135deg, rgba(86, 233, 30, 1), rgba(240, 98, 146, 1) 100%)",
+        "comparison_table_background": "#ffffff",
+        "table_border_radius": 20,
+        "comparison_table_border_radius": 15,
+        "table_padding": 40,
+        "header_background": "#333333",
+        "header_text_color": "#ffffff",
+        "header_font_size": 0.9,
+        "header_font_weight": "600",
+        "feature_background": "linear-gradient(135deg, rgba(233, 30, 99, 1), rgba(240, 98, 146, 1) 100%)",
+        "feature_text_color": "#ffffff",
+        "feature_font_size": 0.9,
+        "feature_font_weight": "600",
+        "check_font_size": 1.3,
+        "check_font_weight": "700",
+        "check_yes_color": "#4caf50",
+        "check_no_color": "#76e91e",
+        "row_border_color": "#eeeeee",
+        "mobile_section_padding_top": 40,
+        "mobile_section_padding_bottom": 40,
+        "mobile_section_padding_horizontal": 20,
+        "mobile_title_font_size": 2,
+        "mobile_subtitle_font_size": 1,
+        "mobile_badge_font_size": 1.8,
+        "mobile_rating_font_size": 1.1,
+        "mobile_guarantee_text_font_size": 0.9,
+        "mobile_button_font_size": 0.9,
+        "mobile_button_padding_vertical": 12,
+        "mobile_button_padding_horizontal": 25,
+        "mobile_header_font_size": 0.8,
+        "mobile_feature_font_size": 0.8,
+        "mobile_check_font_size": 1
+      }
+    },
+    "viral_social_media_BzkRyx": {
+      "type": "viral-social-media",
+      "name": "VIRAL ON SOCIAL MEDIA",
+      "settings": {
+        "enable_gradient_background": true,
+        "section_background": "#e5fbe2",
+        "gradient_color_start": "#e5fbe2",
+        "gradient_color_end": "#ff6b35",
+        "main_title": "VIRAL ON TIKTOK, INSTAGRAM & YOUTUBE",
+        "description": "Our TikTok, Instagram, Youtube and Facebook account is growing enormously! Don't hesitate, follow us and see fun promotions from time to time.",
+        "main_title_font_size": 2.5,
+        "main_title_font_weight": "bold",
+        "main_title_color": "#333333",
+        "main_title_text_transform": "none",
+        "description_font_size": 1.3,
+        "description_font_weight": "normal",
+        "description_color": "#666666",
+        "description_font_style": "italic",
+        "card_title": "Follow us on Social Media!",
+        "phone_image": "shopify:\/\/shop_images\/other-minimal-3.jpg",
+        "card_background": "linear-gradient(135deg, rgba(109, 255, 71, 1), rgba(255, 107, 157, 1) 100%)",
+        "card_title_font_size": 2,
+        "card_title_font_weight": "bold",
+        "card_title_color": "#ffffff",
+        "card_border_radius": 20,
+        "card_padding": 2,
+        "text_padding": 2,
+        "enable_tag_us": true,
+        "tag_us_title": "Tag Us & Get Featured!",
+        "tag_us_subtitle": "Share your photos and get a chance to be featured",
+        "tag_instruction": "Use these hashtags when posting:",
+        "instagram_tag": "#SayWishes",
+        "tiktok_tag": "#SayWishesChallenge",
+        "button_label": "CLICK TO FOLLOW",
+        "button_link": "",
+        "button_background": "linear-gradient(135deg, rgba(91, 233, 30, 1), rgba(255, 107, 157, 1) 100%)",
+        "button_hover_background": "linear-gradient(135deg, rgba(27, 98, 216, 1), rgba(233, 30, 99, 1) 100%)",
+        "button_text_color": "#ffffff",
+        "button_font_size": 1,
+        "button_font_weight": "bold",
+        "button_text_transform": "none",
+        "button_alignment": "center",
+        "button_padding_vertical": 1,
+        "button_padding_horizontal": 2,
+        "button_border_radius": 25,
+        "button_border_width": 0,
+        "button_border_color": "#000000",
+        "mobile_main_title_font_size": 2,
+        "mobile_card_title_font_size": 1.5,
+        "mobile_description_font_size": 0.9,
+        "mobile_button_font_size": 0.9,
+        "mobile_button_padding_vertical": 0.8,
+        "mobile_button_padding_horizontal": 1.5,
+        "mobile_button_alignment": "center",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "win_win_situation_GjHdwR": {
+      "type": "win-win-situation",
+      "name": "WIN WIN SITUATION",
+      "settings": {
+        "enable_gradient_background": true,
+        "section_background": "#f8f8f8",
+        "gradient_color_start": "#e5fbe2",
+        "gradient_color_end": "#ff6b35",
+        "main_title": "WIN WIN SITUATION",
+        "main_title_font_size": 3.5,
+        "main_title_font_weight": "bold",
+        "main_title_color": "#333333",
+        "main_title_text_transform": "uppercase",
+        "left_title": "Bring Hope to African Children!",
+        "left_text_1": "Order a personalized video greeting with Say Wishes — and for every purchase, we’ll donate a meal to a child in Africa. Your kindness doesn’t just stay digital — it becomes real, nourishing hope for a child in need.",
+        "left_text_2": "This is a true win-win: You give a one-of-a-kind heartfelt message, and they get a chance at a better life.",
+        "left_text_3": "Join our movement of warmth — be the bridge that shares Africa’s unique spirit. Every order is more than a transaction; it’s a story of hope, written by you.",
+        "left_text_4": "A gift that does good — twice.",
+        "button_label": "➜ ORDER YOUR VIDEO",
+        "button_link": "shopify:\/\/products\/personalized-greeting-video-from-africa",
+        "button_bg_color": "linear-gradient(135deg, rgba(82, 233, 30, 1), rgba(240, 98, 146, 1) 100%)",
+        "button_text_color": "#ffffff",
+        "button_hover_bg_color": "linear-gradient(135deg, rgba(194, 24, 91, 1), rgba(233, 30, 99, 1) 100%)",
+        "button_hover_text_color": "#ffffff",
+        "button_border_color": "rgba(0,0,0,0)",
+        "button_border_width": 0,
+        "button_border_radius": 25,
+        "button_padding_vertical": 18,
+        "button_padding_horizontal": 40,
+        "button_font_size": 1.1,
+        "button_font_weight": "600",
+        "button_text_transform": "uppercase",
+        "button_alignment": "center",
+        "text_background": "rgba(0,0,0,0)",
+        "text_border_radius": 5,
+        "text_padding": 2.5,
+        "left_title_font_size": 2.1,
+        "left_title_font_weight": "bold",
+        "left_title_color": "#333333",
+        "left_title_text_transform": "none",
+        "left_text_font_size": 1.3,
+        "left_text_font_weight": "normal",
+        "left_text_color": "#666666",
+        "highlight_font_size": 1.1,
+        "highlight_font_weight": "bold",
+        "highlight_color": "#e91e63",
+        "highlight_text_transform": "capitalize",
+        "card_subtitle": "The goal of",
+        "card_title": "Say wishes",
+        "card_description": "is to bring a smile to the world",
+        "card_image": "shopify:\/\/shop_images\/69f49769dc549121ae8be022ad9739c3.jpg",
+        "card_background": "linear-gradient(135deg, rgba(82, 233, 30, 1), rgba(255, 107, 157, 1) 100%)",
+        "card_text_color": "#ffffff",
+        "card_border_radius": 20,
+        "card_padding": 2,
+        "card_subtitle_font_size": 1.2,
+        "card_subtitle_font_weight": "normal",
+        "card_subtitle_text_transform": "none",
+        "card_title_font_size": 2.4,
+        "card_title_font_weight": "bold",
+        "card_title_text_transform": "none",
+        "card_description_font_size": 1.1,
+        "card_description_font_weight": "normal",
+        "card_image_border_radius": 10,
+        "mobile_main_title_font_size": 2,
+        "mobile_left_title_font_size": 1.5,
+        "mobile_left_text_font_size": 0.9,
+        "mobile_highlight_font_size": 0.9,
+        "mobile_button_font_size": 1,
+        "mobile_button_padding_vertical": 15,
+        "mobile_button_padding_horizontal": 30,
+        "mobile_button_alignment": "center",
+        "mobile_card_subtitle_font_size": 1,
+        "mobile_card_title_font_size": 1.6,
+        "mobile_card_description_font_size": 0.8,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "about_us_fTwePX": {
+      "type": "about-us",
+      "name": "About Us",
+      "settings": {
+        "enable_gradient_background": true,
+        "section_background_color": "#93f585",
+        "gradient_color_start": "#e5fbe2",
+        "gradient_color_end": "#ff6b35",
+        "heading": "WHO ARE WE?",
+        "heading_size": "h1",
+        "heading_font_size": 26,
+        "heading_font_size_mobile": 20,
+        "heading_font_weight": "500",
+        "heading_color": "#333333",
+        "heading_text_transform": "uppercase",
+        "heading_margin_bottom": 32,
+        "image": "shopify:\/\/shop_images\/20250827211316_257.jpg",
+        "image_container_background": "#ffffff",
+        "image_container_border_radius": 10,
+        "image_container_padding": 30,
+        "image_border_radius": 10,
+        "content_title": "Our Philanthropic Mission",
+        "content_title_font_size": 28,
+        "content_title_font_size_mobile": 24,
+        "content_title_font_weight": "700",
+        "content_title_color": "#333333",
+        "content_title_text_transform": "uppercase",
+        "content_title_margin_bottom": 28,
+        "text_content_background": "#f8f8f8",
+        "text_content_padding": 40,
+        "text_content_padding_mobile": 24,
+        "text_content_border_radius": 10,
+        "text_content_margin_bottom": 24,
+        "description": "Founded by socially conscious entrepreneurs, Say Wishes was born from a philanthropic heart. Amid the pandemic’s hardships, we cared deeply about both people’s disconnection and African children’s survival struggles—this drove our mission.\nWe bridge distances to bring you African-made personalized video greetings. And here’s our promise: every order gives an African child a meal. Spreading warmth and aiding those in need have been linked from day one.",
+        "description_font_size": 14,
+        "description_font_size_mobile": 13,
+        "description_font_weight": "400",
+        "description_color": "#555555",
+        "description_font_style": "normal",
+        "description_line_height": 1.8,
+        "description_margin_bottom": 28,
+        "button_label": "READ MORE",
+        "button_link": "shopify:\/\/pages\/about-us",
+        "button_alignment": "center",
+        "mobile_button_alignment": "center",
+        "button_background_color": "#2be91e",
+        "button_hover_background_color": "#182fc2",
+        "button_text_color": "#ffffff",
+        "button_hover_text_color": "#ffffff",
+        "button_font_size": 14,
+        "button_font_size_mobile": 14,
+        "button_font_weight": "700",
+        "button_text_transform": "uppercase",
+        "button_padding_vertical": 14,
+        "button_padding_horizontal": 24,
+        "button_padding_vertical_mobile": 10,
+        "button_padding_horizontal_mobile": 20,
+        "button_border_radius": 20,
+        "button_border_width": 2,
+        "button_border_color": "#2be91e",
+        "section_color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "customer_reviews_KhDg4i": {
+      "type": "customer-reviews",
+      "blocks": {
+        "review_zRJfg8": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Sarah M.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Absolutely loved the personalized video! It brought tears of joy to my mom's eyes."
+          }
+        },
+        "review_q3pGhB": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Mike R.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Fast delivery and amazing quality. Will definitely order again!"
+          }
+        },
+        "review_d7jqiC": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Lisa K.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Such a unique gift idea! The team was so professional and friendly."
+          }
+        },
+        "review_chE47C": {
+          "type": "review",
+          "settings": {
+            "customer_name": "David L.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Perfect for my anniversary surprise. My wife was so touched!"
+          }
+        },
+        "review_VDE6HN": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Emma T.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Great customer service and the video exceeded my expectations!"
+          }
+        },
+        "review_BJhNLe": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Chris P.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Highly recommend! Made my friend's birthday extra special."
+          }
+        }
+      },
+      "block_order": [
+        "review_zRJfg8",
+        "review_q3pGhB",
+        "review_d7jqiC",
+        "review_chE47C",
+        "review_VDE6HN",
+        "review_BJhNLe"
+      ],
+      "name": "Customer Reviews",
+      "settings": {
+        "heading": "🌟 50,000+ VERIFIED REVIEWS! 🥰",
+        "heading_font_size_desktop": 48,
+        "heading_font_size_mobile": 32,
+        "heading_font_weight": "700",
+        "heading_color": "#000000",
+        "heading_text_transform": "none",
+        "heading_bottom_margin": 20,
+        "description": "🏆 AWARD-WINNING SERVICE! Our customers can't get enough of their custom greeting videos—and their kind words say it all. Join thousands of satisfied customers who chose us for their special moments:",
+        "description_font_size": 16,
+        "description_font_weight": "400",
+        "description_color": "#666666",
+        "description_font_style": "normal",
+        "description_line_height": 1.5,
+        "description_bottom_margin": 24,
+        "rating_text": "⭐ VERIFIED: 4.9\/5 Stars on Trustpilot | 50,000+ Happy Customers Worldwide! ⭐",
+        "button_label": "➜  ORDER NOW",
+        "button_link": "shopify:\/\/products\/personalized-greeting-video-from-africa",
+        "button_alignment": "left",
+        "button_background_color": "#46ed32",
+        "button_hover_background_color": "#a214ad",
+        "button_text_color": "#ffffff",
+        "button_hover_text_color": "#ffffff",
+        "button_font_size_desktop": 16,
+        "button_font_size_mobile": 17,
+        "button_font_weight": "600",
+        "button_text_transform": "uppercase",
+        "button_padding_vertical_desktop": 12,
+        "button_padding_horizontal_desktop": 24,
+        "button_padding_vertical_mobile": 10,
+        "button_padding_horizontal_mobile": 20,
+        "button_border_radius": 40,
+        "button_border_width": 0,
+        "button_border_color": "#000000",
+        "enable_gradient_background": true,
+        "gradient_color_start": "#e5fbe2",
+        "gradient_color_end": "#f67748",
+        "section_background_color": "#8bc34a",
+        "full_width": false,
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "vip_club_signup_zrLHKA": {
+      "type": "vip-club-signup",
+      "name": "VIP Club Signup",
+      "settings": {
+        "title": "Join Our VIP Club Today! 🎁",
+        "description": "Join our VIP Club for exclusive offers, free giveaways, and special promotions.",
+        "placeholder": "Enter your email",
+        "button_text": "Subscribe",
+        "enable_gradient_background": true,
+        "gradient_direction": "135deg",
+        "background_color_1": "#e5fbe2",
+        "background_color_2": "#ff6b35",
+        "title_color": "#ffffff",
+        "title_font_size": 40,
+        "title_font_weight": "700",
+        "description_color": "#ffffff",
+        "description_font_size": 19,
+        "description_font_weight": "normal",
+        "button_background_color": "#333333",
+        "button_hover_color": "#555555",
+        "button_text_color": "#ffffff",
+        "button_font_size": 16,
+        "button_font_weight": "600"
+      }
+    }
+  },
+  "order": [
+    "video_message_africa_cxKw9n",
+    "service_features_zWyyQb",
+    "order_steps_aBcTET",
+    "guarantee_comparison_hhkU6y",
+    "viral_social_media_BzkRyx",
+    "win_win_situation_GjHdwR",
+    "about_us_fTwePX",
+    "customer_reviews_KhDg4i",
+    "vip_club_signup_zrLHKA"
+  ]
+}

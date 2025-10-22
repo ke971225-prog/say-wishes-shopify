@@ -1,0 +1,21 @@
+<svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f7931e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="35" fill="url(#logoGrad)"/>
+  
+  <!-- Heart icon in circle -->
+  <path d="M40 45 C40 40, 45 35, 50 35 C55 35, 60 40, 60 45 C60 50, 50 60, 50 60 C50 60, 40 50, 40 45 Z" fill="white"/>
+  
+  <!-- Text -->
+  <text x="90" y="40" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333">Say</text>
+  <text x="90" y="65" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff6b35">Wishes</text>
+  
+  <!-- Small decorative star -->
+  <polygon points="270,20 273,27 280,27 275,32 277,39 270,35 263,39 265,32 260,27 267,27" fill="#f7931e"/>
+</svg>

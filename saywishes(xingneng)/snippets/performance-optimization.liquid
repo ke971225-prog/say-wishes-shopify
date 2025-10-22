@@ -1,0 +1,561 @@
+{%- comment -%}
+Performance Optimization for Page Speed
+Based on analysis of top-performing competitors (target: 2.1s load time)
+Implements critical performance improvements
+{%- endcomment -%}
+
+<!-- Enhanced Critical Resource Hints -->
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
+<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+<link rel="preconnect" href="https://monorail-edge.shopifysvc.com" crossorigin>
+<link rel="preconnect" href="https://v.shopify.com" crossorigin>
+
+<!-- Enhanced DNS Prefetch for External Resources -->
+<link rel="dns-prefetch" href="//cdn.shopify.com">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link rel="dns-prefetch" href="//www.google-analytics.com">
+<link rel="dns-prefetch" href="//connect.facebook.net">
+<link rel="dns-prefetch" href="//www.googletagmanager.com">
+<link rel="dns-prefetch" href="//monorail-edge.shopifysvc.com">
+<link rel="dns-prefetch" href="//v.shopify.com">
+<link rel="dns-prefetch" href="//www.facebook.com">
+<link rel="dns-prefetch" href="//platform.twitter.com">
+
+<!-- Early Hints for Critical Resources -->
+<link rel="modulepreload" href="{{ 'global.js' | asset_url }}">
+<link rel="preload" href="{{ 'base.css' | asset_url }}" as="style">
+<!-- component-loading-overlay.css not available, using base.css for loading styles -->
+
+<!-- Preload Critical Assets -->
+{%- if settings.type_header_font -%}
+  <link rel="preload" href="{{ settings.type_header_font | font_url }}" as="font" type="font/woff2" crossorigin>
+{%- endif -%}
+{%- if settings.type_body_font -%}
+  <link rel="preload" href="{{ settings.type_body_font | font_url }}" as="font" type="font/woff2" crossorigin>
+{%- endif -%}
+
+<!-- Preload Critical CSS -->
+<link rel="preload" href="{{ 'base.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{{ 'base.css' | asset_url }}"></noscript>
+
+<!-- Enhanced Critical CSS Inline (Above the fold) -->
+<style>
+  /* Critical CSS for immediate rendering */
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+    font-size: 1.6rem;
+    line-height: 1.6;
+    color: rgb(var(--color-foreground));
+    background-color: rgb(var(--color-background));
+    font-display: swap;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background-color: rgb(var(--color-background));
+    will-change: transform;
+    contain: layout style paint;
+  }
+  
+  /* Performance optimizations */
+  .page-container {
+    contain: layout style paint;
+  }
+  
+  /* Reduce layout thrashing */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    contain: layout;
+  }
+  
+  /* Optimize animations */
+  .animate {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+  
+  /* Critical button styles */
+  .btn {
+    display: inline-block;
+    padding: 1.2rem 2.4rem;
+    background-color: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    text-decoration: none;
+    border-radius: 0.4rem;
+    transition: background-color 0.2s ease;
+    contain: layout style paint;
+  }
+  
+  .main-content {
+    min-height: 50vh;
+  }
+  
+  /* Loading optimization */
+  .loading {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .loaded {
+    opacity: 1;
+  }
+  
+  /* Image optimization */
+  img {
+    max-width: 100%;
+    height: auto;
+    loading: lazy;
+  }
+  
+  /* Hero section optimization */
+  .hero {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    will-change: transform;
+  }
+</style>
+
+<!-- Lazy Loading Script -->
+<script>
+  // Intersection Observer for lazy loading
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src;
+          img.classList.remove('loading');
+          img.classList.add('loaded');
+          imageObserver.unobserve(img);
+        }
+      });
+    });
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      const lazyImages = document.querySelectorAll('img[data-src]');
+      lazyImages.forEach(img => imageObserver.observe(img));
+    });
+  }
+</script>
+
+<!-- Enhanced Resource Loading Optimization -->
+<script>
+  // Enhanced resource loading optimization
+  (function() {
+    'use strict';
+    
+    // Critical resource loading
+    function loadCriticalResources() {
+      // Defer non-critical CSS with priority
+      const deferredStyles = [
+        { href: '{{ "component-cart.css" | asset_url }}', priority: 'low' },
+        { href: '{{ "section-main-product.css" | asset_url }}', priority: 'medium' },
+        { href: '{{ "section-footer.css" | asset_url }}', priority: 'low' },
+        { href: '{{ "template-collection.css" | asset_url }}', priority: 'medium' }
+      ];
+      
+      // Load high priority styles first
+      const highPriorityStyles = deferredStyles.filter(style => style.priority === 'high');
+      const mediumPriorityStyles = deferredStyles.filter(style => style.priority === 'medium');
+      const lowPriorityStyles = deferredStyles.filter(style => style.priority === 'low');
+      
+      function loadStylesWithDelay(styles, delay = 0) {
+        setTimeout(() => {
+          styles.forEach(function(style) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = style.href;
+            link.media = 'print';
+            link.onload = function() { this.media = 'all'; };
+            document.head.appendChild(link);
+          });
+        }, delay);
+      }
+      
+      loadStylesWithDelay(highPriorityStyles, 0);
+      loadStylesWithDelay(mediumPriorityStyles, 100);
+      loadStylesWithDelay(lowPriorityStyles, 300);
+    }
+    
+    // Intelligent prefetching
+    function setupIntelligentPrefetch() {
+      let prefetchTimer;
+      const prefetchedUrls = new Set();
+      
+      function prefetchUrl(url) {
+        if (prefetchedUrls.has(url)) return;
+        prefetchedUrls.add(url);
+        
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = url;
+        document.head.appendChild(link);
+      }
+      
+      // Prefetch on hover with delay
+      document.addEventListener('mouseover', function(e) {
+        const link = e.target.closest('a[href]');
+        if (link && link.hostname === location.hostname) {
+          clearTimeout(prefetchTimer);
+          prefetchTimer = setTimeout(() => {
+            prefetchUrl(link.href);
+          }, 100);
+        }
+      });
+      
+      // Prefetch visible product links
+      if ('IntersectionObserver' in window) {
+        const linkObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              prefetchUrl(entry.target.href);
+              linkObserver.unobserve(entry.target);
+            }
+          });
+        }, { rootMargin: '50px' });
+        
+        document.querySelectorAll('a[href*="/products/"]').forEach(link => {
+          linkObserver.observe(link);
+        });
+      }
+    }
+    
+    // Load optimizations based on connection speed
+    function adaptToConnection() {
+      if ('connection' in navigator) {
+        const connection = navigator.connection;
+        if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
+          // Reduce image quality for slow connections
+          document.documentElement.classList.add('slow-connection');
+        }
+      }
+    }
+    
+    // Initialize optimizations
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        loadCriticalResources();
+        setupIntelligentPrefetch();
+        adaptToConnection();
+      });
+    } else {
+      loadCriticalResources();
+      setupIntelligentPrefetch();
+      adaptToConnection();
+    }
+    
+    // Load event optimizations
+    window.addEventListener('load', function() {
+      // Mark page as fully loaded
+      document.documentElement.classList.add('page-loaded');
+      
+      // Clean up will-change properties
+      setTimeout(() => {
+        document.querySelectorAll('[style*="will-change"]').forEach(el => {
+          el.style.willChange = 'auto';
+        });
+      }, 1000);
+    });
+  })();
+</script>
+
+<!-- Enhanced Service Worker for Advanced Caching -->
+<script>
+  (function() {
+    'use strict';
+    
+    if ('serviceWorker' in navigator) {
+      // Enhanced service worker registration
+      function registerServiceWorker() {
+        navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
+          updateViaCache: 'none'
+        }).then(function(registration) {
+          console.log('Enhanced SW registered: ', registration);
+          
+          // Check for updates
+          registration.addEventListener('updatefound', function() {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', function() {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New content available, notify user
+                if (window.showUpdateNotification) {
+                  window.showUpdateNotification();
+                }
+              }
+            });
+          });
+          
+          // Auto-update check
+          setInterval(() => {
+            registration.update();
+          }, 60000); // Check every minute
+          
+        }).catch(function(registrationError) {
+          console.log('SW registration failed: ', registrationError);
+        });
+      }
+      
+      // Intelligent cache warming
+      function warmCache() {
+        if ('caches' in window) {
+          const criticalUrls = [
+            '{{ routes.root_url }}',
+            '{{ routes.collections_url }}',
+            '{{ "base.css" | asset_url }}',
+        '{{ "global.js" | asset_url }}'
+          ];
+          
+          caches.open('critical-v1').then(cache => {
+            return cache.addAll(criticalUrls);
+          }).catch(err => {
+            console.log('Cache warming failed:', err);
+          });
+        }
+      }
+      
+      // Network-first strategy for dynamic content
+      function setupNetworkStrategies() {
+        if (navigator.serviceWorker.controller) {
+          // Send message to SW about current page type
+          const pageType = document.body.dataset.template || 'page';
+          navigator.serviceWorker.controller.postMessage({
+            type: 'PAGE_TYPE',
+            pageType: pageType,
+            url: window.location.href
+          });
+        }
+      }
+      
+      // Initialize on load
+      window.addEventListener('load', function() {
+        registerServiceWorker();
+        warmCache();
+        setupNetworkStrategies();
+      });
+      
+      // Handle SW messages
+      navigator.serviceWorker.addEventListener('message', function(event) {
+        if (event.data.type === 'CACHE_UPDATED') {
+          console.log('Cache updated for:', event.data.url);
+        }
+      });
+    }
+    
+    // Fallback for browsers without SW support
+    else {
+      // Use localStorage for basic caching
+      function fallbackCache() {
+        try {
+          const cacheKey = 'page_cache_' + window.location.pathname;
+          const cachedData = localStorage.getItem(cacheKey);
+          
+          if (!cachedData) {
+            // Store current page data
+            const pageData = {
+              html: document.documentElement.outerHTML,
+              timestamp: Date.now()
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(pageData));
+          }
+          
+          // Clean old cache entries
+          Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('page_cache_')) {
+              const data = JSON.parse(localStorage.getItem(key));
+              if (Date.now() - data.timestamp > 3600000) { // 1 hour
+                localStorage.removeItem(key);
+              }
+            }
+          });
+        } catch (e) {
+          console.log('Fallback cache failed:', e);
+        }
+      }
+      
+      window.addEventListener('load', fallbackCache);
+    }
+  })();
+</script>
+
+<!-- Enhanced Performance Monitoring & Web Vitals -->
+<script>
+  (function() {
+    'use strict';
+    
+    // Enhanced performance monitoring
+    const performanceMonitor = {
+      metrics: {},
+      thresholds: {
+        LCP: { good: 2500, poor: 4000 },
+        FID: { good: 100, poor: 300 },
+        CLS: { good: 0.1, poor: 0.25 },
+        FCP: { good: 1800, poor: 3000 },
+        TTFB: { good: 800, poor: 1800 }
+      },
+      
+      // Enhanced analytics sending
+      sendToAnalytics: function(metric) {
+        this.metrics[metric.name] = metric;
+        
+        // Determine performance rating
+        const threshold = this.thresholds[metric.name];
+        let rating = 'good';
+        if (threshold) {
+          if (metric.value > threshold.poor) rating = 'poor';
+          else if (metric.value > threshold.good) rating = 'needs-improvement';
+        }
+        
+        // Send to Google Analytics
+        if (typeof gtag !== 'undefined') {
+          gtag('event', metric.name, {
+            event_category: 'Web Vitals',
+            event_label: metric.id,
+            value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+            custom_map: { metric_rating: rating },
+            non_interaction: true,
+          });
+        }
+        
+        // Send to custom analytics
+        this.sendToCustomAnalytics(metric, rating);
+        
+        // Log performance issues
+        if (rating === 'poor') {
+          console.warn(`Poor ${metric.name} performance:`, metric.value, metric);
+        }
+      },
+      
+      // Custom analytics endpoint
+      sendToCustomAnalytics: function(metric, rating) {
+        try {
+          const data = {
+            metric: metric.name,
+            value: metric.value,
+            rating: rating,
+            url: window.location.href,
+            userAgent: navigator.userAgent,
+            timestamp: Date.now(),
+            connection: navigator.connection ? {
+              effectiveType: navigator.connection.effectiveType,
+              downlink: navigator.connection.downlink
+            } : null
+          };
+          
+          // Send to your performance monitoring service
+          if (window.fetch) {
+            fetch('/api/performance-metrics', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            }).catch(err => console.log('Performance metric send failed:', err));
+          }
+        } catch (e) {
+          console.log('Custom analytics failed:', e);
+        }
+      },
+      
+      // Monitor additional metrics
+      monitorAdditionalMetrics: function() {
+        // Monitor resource loading times
+        if ('performance' in window && 'getEntriesByType' in performance) {
+          window.addEventListener('load', () => {
+            setTimeout(() => {
+              const resources = performance.getEntriesByType('resource');
+              const slowResources = resources.filter(resource => resource.duration > 1000);
+              
+              if (slowResources.length > 0) {
+                console.warn('Slow loading resources:', slowResources);
+                this.sendToCustomAnalytics({
+                  name: 'SLOW_RESOURCES',
+                  value: slowResources.length,
+                  resources: slowResources.map(r => ({ name: r.name, duration: r.duration }))
+                }, 'poor');
+              }
+            }, 1000);
+          });
+        }
+        
+        // Monitor JavaScript errors
+        window.addEventListener('error', (event) => {
+          this.sendToCustomAnalytics({
+            name: 'JS_ERROR',
+            value: 1,
+            error: {
+              message: event.message,
+              filename: event.filename,
+              lineno: event.lineno,
+              colno: event.colno
+            }
+          }, 'poor');
+        });
+        
+        // Monitor unhandled promise rejections
+        window.addEventListener('unhandledrejection', (event) => {
+          this.sendToCustomAnalytics({
+            name: 'PROMISE_REJECTION',
+            value: 1,
+            reason: event.reason
+          }, 'poor');
+        });
+      },
+      
+      // Initialize monitoring
+      init: function() {
+        const self = this;
+        
+        // Load Web Vitals library dynamically
+        if (!window.webVitals) {
+          const script = document.createElement('script');
+          script.src = 'https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js';
+          script.onload = function() {
+            if (window.webVitals) {
+              webVitals.getCLS(self.sendToAnalytics.bind(self));
+              webVitals.getFID(self.sendToAnalytics.bind(self));
+              webVitals.getFCP(self.sendToAnalytics.bind(self));
+              webVitals.getLCP(self.sendToAnalytics.bind(self));
+              webVitals.getTTFB(self.sendToAnalytics.bind(self));
+            }
+          };
+          document.head.appendChild(script);
+        } else {
+          // Web Vitals already loaded
+          webVitals.getCLS(self.sendToAnalytics.bind(self));
+          webVitals.getFID(self.sendToAnalytics.bind(self));
+          webVitals.getFCP(self.sendToAnalytics.bind(self));
+          webVitals.getLCP(self.sendToAnalytics.bind(self));
+          webVitals.getTTFB(self.sendToAnalytics.bind(self));
+        }
+        
+        this.monitorAdditionalMetrics();
+      }
+    };
+    
+    // Initialize performance monitoring
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        performanceMonitor.init();
+      });
+    } else {
+      performanceMonitor.init();
+    }
+    
+    // Expose for debugging
+    window.performanceMonitor = performanceMonitor;
+  })();
+</script>

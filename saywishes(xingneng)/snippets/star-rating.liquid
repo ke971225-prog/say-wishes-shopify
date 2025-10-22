@@ -1,0 +1,58 @@
+{% comment %}
+  Renders star rating display
+  Accepts:
+  - rating: number - The rating value (1-5)
+  - show_text: boolean - Whether to show rating text
+  - size: number - Star size in px
+{% endcomment %}
+
+{%- assign rating_value = rating | default: 0 -%}
+{%- assign show_rating_text = show_text | default: false -%}
+{%- assign star_size = size | default: 16 -%}
+
+<div class="star-rating" data-rating="{{ rating_value }}" style="--star-size: {{ star_size }}px;">
+  <div class="stars">
+    {%- for i in (1..5) -%}
+      {%- assign star_class = 'star' -%}
+      {%- if i <= rating_value -%}
+        {%- assign star_class = star_class | append: ' filled' -%}
+      {%- endif -%}
+      <span class="{{ star_class }}">★</span>
+    {%- endfor -%}
+  </div>
+  {%- if show_rating_text -%}
+    <span class="rating-text">
+      {{ rating_value }} out of 5 stars
+    </span>
+  {%- endif -%}
+</div>
+
+<style>
+  .star-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .star-rating .stars {
+    display: flex;
+    gap: 0.1rem;
+  }
+  
+  /* Use container-provided CSS variables for colors */
+  .star-rating .star {
+    color: var(--star-empty, #ddd);
+    transition: color 0.2s ease;
+    font-size: var(--star-size, 16px);
+  }
+  
+  .star-rating .star.filled {
+    color: var(--star-fill, #ffd700);
+  }
+  
+  .rating-text {
+    font-size: var(--star-caption-size, 14px);
+    color: var(--star-text-color, rgb(var(--color-foreground)));
+    font-weight: var(--star-text-weight, 500);
+  }
+</style>

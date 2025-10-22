@@ -1,0 +1,559 @@
+{% comment %}
+  转化率分析和A/B测试组件
+  功能：跟踪用户行为、转化率分析、A/B测试等
+{% endcomment %}
+
+<style>
+/* 分析面板样式 */
+.conversion-analytics-wrapper {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.analytics-dashboard {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin: 20px;
+  padding: 15px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.dashboard-toggle {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.analytics-card {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 15px;
+}
+
+.card-title {
+  color: #6c757d;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.card-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #212529;
+}
+
+.card-change {
+  color: #28a745;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.ab-test-section,
+.heatmap-section {
+  margin-top: 20px;
+}
+
+.ab-test-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.ab-test-item {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.test-status.active {
+  color: #28a745;
+}
+
+.heatmap-placeholder {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+}
+</style>
+
+<div class="conversion-analytics-wrapper" data-section-id="{{ section.id }}" style="display: none;">
+  {% if section.settings.enable_analytics %}
+    <!-- 分析数据显示面板（仅管理员可见） -->
+    {% if request.design_mode %}
+      <div class="analytics-dashboard">
+        <div class="dashboard-header">
+          <h3>转化率分析面板</h3>
+          <span class="dashboard-toggle" onclick="toggleDashboard()">📊</span>
+        </div>
+        
+        <div class="dashboard-content" id="dashboard-content-{{ section.id }}">
+          <div class="analytics-grid">
+            <div class="analytics-card">
+              <div class="card-title">页面浏览量</div>
+              <div class="card-value" id="page-views">0</div>
+              <div class="card-change">+0% 今日</div>
+            </div>
+            
+            <div class="analytics-card">
+              <div class="card-title">转化率</div>
+              <div class="card-value" id="conversion-rate">0%</div>
+              <div class="card-change">+0% 今日</div>
+            </div>
+            
+            <div class="analytics-card">
+              <div class="card-title">弹窗转化</div>
+              <div class="card-value" id="popup-conversion">0%</div>
+              <div class="card-change">+0% 今日</div>
+            </div>
+            
+            <div class="analytics-card">
+              <div class="card-title">平均停留时间</div>
+              <div class="card-value" id="avg-time">0s</div>
+              <div class="card-change">+0% 今日</div>
+            </div>
+          </div>
+          
+          <div class="ab-test-section">
+            <h4>A/B测试状态</h4>
+            <div class="ab-test-grid">
+              <div class="ab-test-item">
+                <span class="test-name">转盘弹窗测试</span>
+                <span class="test-status active">进行中</span>
+                <span class="test-result">A: 12.5% | B: 15.3%</span>
+              </div>
+              <div class="ab-test-item">
+                <span class="test-name">退出意图测试</span>
+                <span class="test-status active">进行中</span>
+                <span class="test-result">A: 8.2% | B: 9.7%</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="heatmap-section">
+            <h4>用户行为热力图</h4>
+            <div class="heatmap-placeholder">
+              <p>热力图数据加载中...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+
+<!-- 隐藏的跟踪脚本 -->
+<script>
+(function() {
+  const sectionId = '{{ section.id }}';
+  const settings = {
+    enableAnalytics: {{ section.settings.enable_analytics | json }},
+    enableAbTesting: {{ section.settings.enable_ab_testing | json }},
+    enableHeatmap: {{ section.settings.enable_heatmap | json }},
+    trackingId: '{{ section.settings.tracking_id | default: "CA-" }}{{ section.id }}',
+    sampleRate: {{ section.settings.sample_rate | default: 100 }}
+  };
+  
+  // 检查是否应该跟踪此用户
+  function shouldTrack() {
+    return Math.random() * 100 < settings.sampleRate;
+  }
+  
+  if (!settings.enableAnalytics || !shouldTrack()) {
+    return;
+  }
+  
+  // 初始化分析数据
+  let analyticsData = {
+    sessionId: generateSessionId(),
+    pageViews: 0,
+    timeOnPage: 0,
+    interactions: [],
+    conversions: [],
+    abTestGroup: null,
+    startTime: Date.now()
+  };
+  
+  // 生成会话ID
+  function generateSessionId() {
+    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+  
+  // A/B测试分组
+  function assignAbTestGroup() {
+    if (!settings.enableAbTesting) return null;
+    
+    const groups = ['A', 'B'];
+    const group = groups[Math.floor(Math.random() * groups.length)];
+    
+    // 存储到localStorage以保持一致性
+    const storageKey = `ab_test_group_${settings.trackingId}`;
+    const existingGroup = localStorage.getItem(storageKey);
+    
+    if (existingGroup) {
+      return existingGroup;
+    }
+    
+    localStorage.setItem(storageKey, group);
+    return group;
+  }
+  
+  // 跟踪页面浏览
+  function trackPageView() {
+    analyticsData.pageViews++;
+    sendAnalyticsEvent('page_view', {
+      url: window.location.href,
+      title: document.title,
+      timestamp: Date.now()
+    });
+  }
+  
+  // 跟踪用户交互
+  function trackInteraction(type, element, data = {}) {
+    const interaction = {
+      type: type,
+      element: element,
+      timestamp: Date.now(),
+      data: data
+    };
+    
+    analyticsData.interactions.push(interaction);
+    sendAnalyticsEvent('interaction', interaction);
+  }
+  
+  // 跟踪转化事件
+  function trackConversion(type, value = 0, data = {}) {
+    const conversion = {
+      type: type,
+      value: value,
+      timestamp: Date.now(),
+      data: data
+    };
+    
+    analyticsData.conversions.push(conversion);
+    sendAnalyticsEvent('conversion', conversion);
+  }
+  
+  // 发送分析事件
+  function sendAnalyticsEvent(eventType, eventData) {
+    const payload = {
+      trackingId: settings.trackingId,
+      sessionId: analyticsData.sessionId,
+      eventType: eventType,
+      eventData: eventData,
+      abTestGroup: analyticsData.abTestGroup,
+      userAgent: navigator.userAgent,
+      timestamp: Date.now()
+    };
+    
+    // 发送到分析服务器（这里使用localStorage模拟）
+    const storageKey = `analytics_${settings.trackingId}_${Date.now()}`;
+    localStorage.setItem(storageKey, JSON.stringify(payload));
+    
+    // 在实际应用中，这里应该发送到真实的分析服务器
+    // fetch('/analytics/track', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(payload)
+    // });
+  }
+  
+  // 热力图跟踪
+  function initHeatmapTracking() {
+    if (!settings.enableHeatmap) return;
+    
+    let mouseMovements = [];
+    let clicks = [];
+    
+    // 跟踪鼠标移动
+    document.addEventListener('mousemove', function(e) {
+      mouseMovements.push({
+        x: e.clientX,
+        y: e.clientY,
+        timestamp: Date.now()
+      });
+      
+      // 限制数据量
+      if (mouseMovements.length > 1000) {
+        mouseMovements = mouseMovements.slice(-500);
+      }
+    });
+    
+    // 跟踪点击
+    document.addEventListener('click', function(e) {
+      // 确保不干扰菜单功能
+      if (e.target.closest('.header__icon--menu, .mobile-menu-btn, #Details-menu-drawer-container')) {
+        return; // 不处理菜单相关的点击
+      }
+      
+      clicks.push({
+        x: e.clientX,
+        y: e.clientY,
+        element: e.target.tagName,
+        timestamp: Date.now()
+      });
+      
+      trackInteraction('click', e.target.tagName, {
+        x: e.clientX,
+        y: e.clientY
+      });
+    });
+    
+    // 定期发送热力图数据
+    setInterval(function() {
+      if (mouseMovements.length > 0 || clicks.length > 0) {
+        sendAnalyticsEvent('heatmap', {
+          mouseMovements: mouseMovements.slice(),
+          clicks: clicks.slice()
+        });
+        
+        mouseMovements = [];
+        clicks = [];
+      }
+    }, 30000); // 每30秒发送一次
+  }
+  
+  // 跟踪滚动深度
+  function trackScrollDepth() {
+    let maxScroll = 0;
+    let scrollMilestones = [25, 50, 75, 100];
+    let trackedMilestones = [];
+    
+    window.addEventListener('scroll', function() {
+      const scrollPercent = Math.round(
+        (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100
+      );
+      
+      maxScroll = Math.max(maxScroll, scrollPercent);
+      
+      scrollMilestones.forEach(milestone => {
+        if (scrollPercent >= milestone && !trackedMilestones.includes(milestone)) {
+          trackedMilestones.push(milestone);
+          trackInteraction('scroll', 'page', { depth: milestone });
+        }
+      });
+    });
+  }
+  
+  // 跟踪页面停留时间
+  function trackTimeOnPage() {
+    setInterval(function() {
+      analyticsData.timeOnPage = Date.now() - analyticsData.startTime;
+    }, 1000);
+    
+    // 页面卸载时发送最终数据
+    window.addEventListener('beforeunload', function() {
+      sendAnalyticsEvent('session_end', {
+        timeOnPage: analyticsData.timeOnPage,
+        interactions: analyticsData.interactions.length,
+        conversions: analyticsData.conversions.length
+      });
+    });
+  }
+  
+  // 监听转化事件
+  function setupConversionTracking() {
+    // 监听表单提交
+    document.addEventListener('submit', function(e) {
+      if (e.target.matches('form')) {
+        trackConversion('form_submit', 1, {
+          formId: e.target.id || 'unknown',
+          formClass: e.target.className
+        });
+      }
+    });
+    
+    // 监听添加到购物车
+    document.addEventListener('click', function(e) {
+      // 确保不干扰菜单功能
+      if (e.target.closest('.header__icon--menu, .mobile-menu-btn, #Details-menu-drawer-container')) {
+        return; // 不处理菜单相关的点击
+      }
+      
+      if (e.target.matches('[data-add-to-cart], .btn-add-to-cart, .add-to-cart')) {
+        trackConversion('add_to_cart', 1, {
+          productId: e.target.dataset.productId || 'unknown'
+        });
+      }
+    });
+    
+    // 监听弹窗交互
+    document.addEventListener('click', function(e) {
+      // 确保不干扰菜单功能
+      if (e.target.closest('.header__icon--menu, .mobile-menu-btn, #Details-menu-drawer-container')) {
+        return; // 不处理菜单相关的点击
+      }
+      
+      if (e.target.closest('.spin-wheel-popup, .exit-intent-popup')) {
+        trackInteraction('popup_interaction', e.target.tagName, {
+          popupType: e.target.closest('[class*="popup"]').className
+        });
+      }
+    });
+  }
+  
+  // 更新仪表板数据（仅在设计模式下）
+  function updateDashboard() {
+    if (!document.querySelector('.analytics-dashboard')) return;
+    
+    // 模拟数据更新
+    const pageViewsEl = document.getElementById('page-views');
+    const conversionRateEl = document.getElementById('conversion-rate');
+    const popupConversionEl = document.getElementById('popup-conversion');
+    const avgTimeEl = document.getElementById('avg-time');
+    
+    if (pageViewsEl) {
+      pageViewsEl.textContent = analyticsData.pageViews;
+    }
+    
+    if (conversionRateEl) {
+      const conversionRate = analyticsData.conversions.length > 0 
+        ? ((analyticsData.conversions.length / analyticsData.pageViews) * 100).toFixed(1)
+        : '0.0';
+      conversionRateEl.textContent = conversionRate + '%';
+    }
+    
+    if (avgTimeEl) {
+      const avgTime = Math.round(analyticsData.timeOnPage / 1000);
+      avgTimeEl.textContent = avgTime + 's';
+    }
+  }
+  
+  // 初始化
+  function init() {
+    analyticsData.abTestGroup = assignAbTestGroup();
+    
+    trackPageView();
+    initHeatmapTracking();
+    trackScrollDepth();
+    trackTimeOnPage();
+    setupConversionTracking();
+    
+    // 定期更新仪表板
+    setInterval(updateDashboard, 5000);
+    
+    // 初始更新
+    updateDashboard();
+  }
+  
+  // 页面加载完成后初始化
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  
+  // 暴露全局跟踪函数
+  window.trackConversion = trackConversion;
+  window.trackInteraction = trackInteraction;
+})();
+
+// 仪表板切换函数
+function toggleDashboard() {
+  const content = document.querySelector('.dashboard-content');
+  if (content) {
+    content.style.display = content.style.display === 'none' ? 'block' : 'none';
+  }
+}
+</script>
+
+{% schema %}
+{
+  "name": "转化率分析",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "分析设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_analytics",
+      "label": "启用转化率分析",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tracking_id",
+      "label": "跟踪ID",
+      "default": "CA-",
+      "info": "用于标识此分析实例"
+    },
+    {
+      "type": "range",
+      "id": "sample_rate",
+      "label": "采样率 (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "default": 100,
+      "info": "设置跟踪用户的百分比"
+    },
+    {
+      "type": "header",
+      "content": "A/B测试设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_ab_testing",
+      "label": "启用A/B测试",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "热力图设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_heatmap",
+      "label": "启用用户行为热力图",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "数据存储设置"
+    },
+    {
+      "type": "text",
+      "id": "analytics_endpoint",
+      "label": "分析数据接收端点",
+      "info": "留空使用本地存储"
+    },
+    {
+      "type": "checkbox",
+      "id": "gdpr_compliant",
+      "label": "GDPR合规模式",
+      "default": true,
+      "info": "启用后将请求用户同意"
+    }
+  ],
+  "presets": [
+    {
+      "name": "转化率分析",
+      "settings": {
+        "enable_analytics": true,
+        "enable_ab_testing": true,
+        "enable_heatmap": true,
+        "sample_rate": 100
+      }
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,574 @@
+<header class="header-enhanced" id="header-enhanced">
+  <div class="header-container">
+    <!-- Logo 区域 -->
+    <div class="header-logo">
+      {% if section.settings.logo %}
+        <a href="{{ routes.root_url }}" class="logo-link">
+          <img src="{{ section.settings.logo | image_url: width: 200 }}" 
+               alt="{{ shop.name }}" 
+               class="logo-image"
+               width="{{ section.settings.logo_width | default: 150 }}"
+               height="auto">
+        </a>
+      {% else %}
+        <a href="{{ routes.root_url }}" class="logo-text">
+          {{ section.settings.logo_text | default: shop.name }}
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- 主导航菜单 -->
+    <nav class="header-nav" role="navigation">
+      <ul class="nav-list">
+        {% for link in section.settings.main_menu.links %}
+          <li class="nav-item">
+            <a href="{{ link.url }}" class="nav-link"
+               {% if link.active %}aria-current="page"{% endif %}>
+              {{ link.title }}
+            </a>
+            {% if link.links != blank %}
+              <ul class="dropdown-menu">
+                {% for child_link in link.links %}
+                  <li class="dropdown-item">
+                    <a href="{{ child_link.url }}" class="dropdown-link">
+                      {{ child_link.title }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <!-- 右侧操作区域 -->
+    <div class="header-actions">
+      <!-- 搜索按钮 -->
+      <button class="action-btn search-btn" onclick="toggleSearch()" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+
+      <!-- 用户账户 -->
+      <a href="{{ routes.account_url }}" class="action-btn account-btn" aria-label="Account">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </a>
+
+      <!-- 购物车 -->
+      <a href="{{ routes.cart_url }}" class="action-btn cart-btn" aria-label="Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z"></path>
+          <path d="M20 22C20.5523 22 21 21.5523 21 21C21 20.4477 20.5523 20 20 20C19.4477 20 19 20.4477 19 21C19 21.5523 19.4477 22 20 22Z"></path>
+          <path d="M1 1H5L7.68 14.39C7.77144 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H19.4C19.8693 16.009 20.3268 15.8526 20.6925 15.5583C21.0581 15.264 21.3086 14.8504 21.4 14.39L23 6H6"></path>
+        </svg>
+        <span class="cart-count" id="cart-count">{{ cart.item_count }}</span>
+      </a>
+
+      <!-- 移动端菜单按钮 -->
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 搜索栏 -->
+  <div class="search-overlay" id="search-overlay">
+    <div class="search-container">
+      <form action="{{ routes.search_url }}" method="get" class="search-form">
+        <input type="search" 
+               name="q" 
+               placeholder="{{ section.settings.search_placeholder | default: 'Search products...' }}"
+               class="search-input"
+               autocomplete="off">
+        <button type="submit" class="search-submit" aria-label="Submit search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+      </form>
+      <button class="search-close" onclick="toggleSearch()" aria-label="Close search">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- 移动端菜单 -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-content">
+      <ul class="mobile-nav-list">
+        {% for link in section.settings.main_menu.links %}
+          <li class="mobile-nav-item">
+            <a href="{{ link.url }}" class="mobile-nav-link">
+              {{ link.title }}
+            </a>
+            {% if link.links != blank %}
+              <ul class="mobile-dropdown">
+                {% for child_link in link.links %}
+                  <li class="mobile-dropdown-item">
+                    <a href="{{ child_link.url }}" class="mobile-dropdown-link">
+                      {{ child_link.title }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</header>
+<div class="header-enhanced-spacer" id="header-enhanced-spacer" aria-hidden="true"></div>
+<style>
+  .header-enhanced {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1200;
+    transition: all 0.3s ease;
+  }
+
+  /* 占位元素高度，确保内容不被固定头部遮挡 */
+  :root { --header-height: 0px; --enhanced-header-height: 0px; }
+  .header-enhanced-spacer{display:block}
+  .header-enhanced-spacer { height: var(--enhanced-header-height, var(--header-height, 0px)); }
+  html { scroll-padding-top: var(--enhanced-header-height, var(--header-height, 0px)); }
+  .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px 20px;
+  }
+
+  /* Logo 样式 */
+  .header-logo {
+    flex-shrink: 0;
+  }
+
+  .logo-link {
+    display: block;
+  }
+
+  .logo-image {
+    max-height: 50px;
+    width: auto;
+  }
+
+  .logo-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+  }
+
+  /* 导航样式 */
+  .header-nav {
+    flex: 1;
+    margin: 0 40px;
+  }
+
+  .nav-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    gap: 30px;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  .nav-link {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 10px 0;
+    transition: color 0.3s ease;
+    position: relative;
+  }
+
+  .nav-link:hover {
+    color: #007bff;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #007bff;
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
+  /* 下拉菜单 */
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 10px 0;
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    list-style: none;
+    margin: 0;
+  }
+
+  .nav-item:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dropdown-link {
+    display: block;
+    padding: 10px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .dropdown-link:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+  }
+
+  /* 操作按钮 */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .action-btn {
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    position: relative;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .action-btn:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  /* 搜索覆盖层 */
+  .search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .search-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .search-container {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+  }
+
+  .search-form {
+    display: flex;
+    gap: 10px;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  .search-input:focus {
+    border-color: #007bff;
+  }
+
+  .search-submit {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .search-submit:hover {
+    background: #0056b3;
+  }
+
+  .search-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
+  }
+
+  /* 移动端菜单按钮 */
+  .mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    gap: 3px;
+  }
+
+  .hamburger-line {
+    width: 20px;
+    height: 2px;
+    background: #333;
+    transition: all 0.3s ease;
+  }
+
+  /* 移动端菜单 */
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 300px;
+    height: 100vh;
+    background: white;
+    z-index: 1001;
+    transition: right 0.3s ease;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+  }
+
+  .mobile-menu.active {
+    right: 0;
+  }
+
+  .mobile-menu-content {
+    padding: 80px 20px 20px;
+  }
+
+  .mobile-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mobile-nav-item {
+    border-bottom: 1px solid #eee;
+  }
+
+  .mobile-nav-link {
+    display: block;
+    padding: 15px 0;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .mobile-dropdown {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    padding-left: 20px;
+  }
+
+  .mobile-dropdown-link {
+    display: block;
+    padding: 10px 0;
+    color: #666;
+    text-decoration: none;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .header-nav {
+      display: none;
+    }
+
+    .mobile-menu-btn {
+      display: flex;
+    }
+
+    .header-actions {
+      gap: 10px;
+    }
+
+    .search-container {
+      padding: 20px;
+    }
+  }
+</style>
+
+<script>
+  function toggleSearch() {
+    const searchOverlay = document.getElementById('search-overlay');
+    searchOverlay.classList.toggle('active');
+    
+    if (searchOverlay.classList.contains('active')) {
+      setTimeout(() => {
+        const searchInput = searchOverlay.querySelector('.search-input');
+        if (searchInput) searchInput.focus();
+      }, 100);
+    }
+  }
+
+  function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenu.classList.toggle('active');
+    // 切换移动端菜单后，重新计算并更新占位高度
+    setEnhancedHeaderHeight();
+  }
+
+  // 点击外部关闭搜索
+  document.addEventListener('click', function(e) {
+    const searchOverlay = document.getElementById('search-overlay');
+    if (e.target === searchOverlay) {
+      toggleSearch();
+    }
+  });
+
+  // ESC 键关闭搜索
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const searchOverlay = document.getElementById('search-overlay');
+      if (searchOverlay.classList.contains('active')) {
+        toggleSearch();
+      }
+    }
+  });
+
+  // 计算并设置固定头部占位高度，避免遮挡页面内容
+  function setEnhancedHeaderHeight() {
+    const header=document.getElementById('header-enhanced');
+    if(!header) return;
+    // Use getBoundingClientRect for sub-pixel precision and include borders
+    const h=Math.round(header.getBoundingClientRect().height);
+    // Update both variables for compatibility
+    document.documentElement.style.setProperty('--header-height', `${h}px`);
+    document.documentElement.style.setProperty('--enhanced-header-height', `${h}px`);
+  }
+
+  document.addEventListener('DOMContentLoaded', setEnhancedHeaderHeight);
+  window.addEventListener('load', setEnhancedHeaderHeight);
+  window.addEventListener('resize', setEnhancedHeaderHeight);
+</script>
+
+{% schema %}
+{
+  "name": "Enhanced Header",
+  "tag": "header",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Image"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo Text",
+      "default": "Your Store"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo Width",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "default": 150
+    },
+    {
+      "type": "link_list",
+      "id": "main_menu",
+      "label": "Main Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search Placeholder",
+      "default": "Search products..."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enhanced Header"
+    }
+  ]
+}
+{% endschema %}

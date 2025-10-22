@@ -1,0 +1,87 @@
+{% comment %}
+  SEO Robots Meta Tag Optimization (simplified and deduplicated)
+  - Single source of truth for robots directives
+  - Canonical URL simplified to drop all query parameters
+{% endcomment %}
+
+{%- liquid
+  assign robots_content = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
+
+  # Search page with no terms
+  if request.page_type == 'search' and search.terms == blank
+    assign robots_content = 'noindex, follow'
+  endif
+
+  # Customer/account related and password pages
+  if request.page_type == 'customers/account' or request.page_type == 'customers/order' or request.page_type == 'customers/addresses'
+    assign robots_content = 'noindex, nofollow'
+  endif
+  if request.page_type == 'password'
+    assign robots_content = 'noindex, nofollow'
+  endif
+
+  # Non-indexable utility pages
+  if request.page_type == 'cart' or request.page_type == '404'
+    assign robots_content = 'noindex, follow'
+  endif
+  if request.page_type == 'gift_card' or template contains 'gift_card'
+    assign robots_content = 'noindex, nofollow'
+  endif
+
+  # Pagination
+  if current_page and current_page > 1
+    assign robots_content = 'noindex, follow'
+  endif
+
+  # Product-specific: keep index for OOS (no unavailable_after here)
+  if request.page_type == 'product' and product.available == false
+    assign robots_content = 'index, follow'
+  endif
+
+  # Collection filters/sorting (avoid duplicate content)
+  if request.page_type == 'collection'
+    if collection.current_type != blank or collection.current_vendor != blank
+      assign robots_content = 'noindex, follow'
+    endif
+    if collection.sort_by != blank
+      assign robots_content = 'noindex, follow'
+    endif
+  endif
+
+  # Search results and sort handling
+  if request.page_type == 'search' and search.terms != blank
+    if search.results_count == 0
+      assign robots_content = 'noindex, follow'
+    else
+      assign robots_content = 'index, follow'
+    endif
+  endif
+  if request.page_type == 'search' and search.sort_by != blank
+    assign robots_content = 'noindex, follow'
+  endif
+-%}
+
+<!-- Robots directives -->
+<meta name="robots" content="{{ robots_content }}">
+
+{%- comment -%}
+  Canonical URL optimization (drop all query parameters)
+{%- endcomment -%}
+{%- liquid
+  assign canonical_url_final = canonical_url | split: '?' | first
+-%}
+<link rel="canonical" href="{{ canonical_url_final }}">
+
+{%- comment -%}
+  Hreflang implementation:
+  - Output only when multiple locales are published
+  - For safety, only emit alternates on the homepage where URLs are unambiguous
+{%- endcomment -%}
+{%- if shop.published_locales and shop.published_locales.size > 1 -%}
+  {%- if request.page_type == 'index' -%}
+    {%- for locale in shop.published_locales -%}
+      <link rel="alternate" hreflang="{{ locale.iso_code }}" href="{{ shop.url }}{{ locale.root_url }}">
+    {%- endfor -%}
+    <link rel="alternate" hreflang="x-default" href="{{ shop.url }}">
+  {%- endif -%}
+{%- endif -%}

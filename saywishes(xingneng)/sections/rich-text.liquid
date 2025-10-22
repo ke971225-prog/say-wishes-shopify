@@ -1,0 +1,727 @@
+{{ 'section-rich-text.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    {%- if section.settings.enable_gradient_background -%}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start }}, {{ section.settings.gradient_color_end }});
+    {%- else -%}
+      background-color: {{ section.settings.section_background }};
+    {%- endif -%}
+  }
+
+  .section-{{ section.id }} .rich-text__heading {
+    font-size: {{ section.settings.heading_font_size }}rem;
+    font-weight: {{ section.settings.heading_font_weight }};
+    color: {{ section.settings.heading_color }};
+    text-transform: {{ section.settings.heading_text_transform }};
+  }
+
+  .section-{{ section.id }} .rich-text__text {
+    font-size: {{ section.settings.text_font_size }}rem;
+    font-weight: {{ section.settings.text_font_weight }};
+    color: {{ section.settings.text_color }};
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+  .section-{{ section.id }} .rich-text__image-background { position: relative; display: grid; place-items: center; }
+  .section-{{ section.id }} .rich-text__image-background-media { position: absolute; inset: 0; overflow: hidden; }
+  .section-{{ section.id }} .rich-text__image-background-media img { width: 100%; height: 100%; object-fit: cover; filter: brightness(var(--brightness)); transform: translateZ(0); }
+  .section-{{ section.id }} .rich-text__image-background-layer { position: absolute; inset: 0; background: rgba(0,0,0,var(--overlay-opacity)); }
+  .section-{{ section.id }} .rich-text__image-background-content { position: relative; z-index: 1; width: auto; margin: 0 auto; transform: translate(var(--offset-x, 0px), var(--offset-y, 0px)); text-shadow: 0 1px 2px rgba(0,0,0,0.35); }
+  .section-{{ section.id }} .desktop-image { display: none; }
+  .section-{{ section.id }} .mobile-image { display: block; }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }} .desktop-image { display: block; }
+    .section-{{ section.id }} .mobile-image { display: none; }
+  }
+{%- endstyle -%}
+<script>
+  (() => {
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
+    root.querySelectorAll('.rich-text__image-background-content').forEach(el => {
+      const words = (el.getAttribute('data-highlight-words') || '').trim();
+      if (!words) return;
+      const list = words.split(',').map(w => w.trim()).filter(Boolean);
+      if (!list.length) return;
+      let html = el.innerHTML;
+      list.forEach(word => {
+        const safe = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp(`(${safe})`, 'gi');
+        html = html.replace(re, '<mark>$1</mark>');
+      });
+      el.innerHTML = html;
+    });
+  })();
+</script>
+
+<div class="isolate{% unless section.settings.full_width %} page-width{% endunless %}">
+  <div class="rich-text content-container color-{{ section.settings.color_scheme }} gradient{% if section.settings.full_width %} rich-text--full-width content-container--full-width{% endif %} section-{{ section.id }}-padding">
+    <div class="rich-text__wrapper rich-text__wrapper--{{ section.settings.desktop_content_position }}{% if section.settings.full_width %} page-width{% endif %}">
+      <div class="rich-text__blocks {{ section.settings.content_alignment }}">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'heading' -%}
+              <h2
+                class="rich-text__heading rte inline-richtext {{ block.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                {{ block.shopify_attributes }}
+                {% if settings.animations_reveal_on_scroll %}
+                  data-cascade
+                  style="--animation-order: {{ forloop.index }};"
+                {% endif %}
+              >
+                {{ block.settings.heading }}
+              </h2>
+            {%- when 'caption' -%}
+              <p
+                class="rich-text__caption {{ block.settings.text_style }} {{ block.settings.text_style }}--{{ block.settings.text_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                {{ block.shopify_attributes }}
+                {% if settings.animations_reveal_on_scroll %}
+                  data-cascade
+                  style="--animation-order: {{ forloop.index }};"
+                {% endif %}
+              >
+                {{ block.settings.caption | escape }}
+              </p>
+            {%- when 'text' -%}
+              <div
+                class="rich-text__text rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                {{ block.shopify_attributes }}
+                {% if settings.animations_reveal_on_scroll %}
+                  data-cascade
+                  style="--animation-order: {{ forloop.index }}; color: {{ block.settings.text_color }}; font-weight: {{ block.settings.font_weight }};"
+                {% else %}
+                  style="color: {{ block.settings.text_color }}; font-weight: {{ block.settings.font_weight }};"
+                {% endif %}
+              >
+                {{ block.settings.text }}
+              </div>
+            {%- when 'button' -%}
+              <div
+                class="rich-text__buttons{% if block.settings.button_label != blank and block.settings.button_label_2 != blank %} rich-text__buttons--multiple{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                {{ block.shopify_attributes }}
+                {% if settings.animations_reveal_on_scroll %}
+                  data-cascade
+                  style="--animation-order: {{ forloop.index }};"
+                {% endif %}
+              >
+                {%- if block.settings.button_label != blank -%}
+                  <a
+                    {% if block.settings.button_link == blank %}
+                      role="link" aria-disabled="true"
+                    {% else %}
+                      href="{{ block.settings.button_link }}"
+                    {% endif %}
+                    class="button{% if block.settings.button_style_secondary %} button--secondary{% else %} button--primary{% endif %}"
+                  >
+                    {{- block.settings.button_label | escape -}}
+                  </a>
+                {%- endif -%}
+                {%- if block.settings.button_label_2 != blank -%}
+                  <a
+                    {% if block.settings.button_link_2 == blank %}
+                      role="link" aria-disabled="true"
+                    {% else %}
+                      href="{{ block.settings.button_link_2 }}"
+                    {% endif %}
+                    class="button{% if block.settings.button_style_secondary_2 %} button--secondary{% else %} button--primary{% endif %}"
+                  >
+                    {{- block.settings.button_label_2 | escape -}}
+                  </a>
+                {%- endif -%}
+              </div>
+            {%- when 'image_background' -%}
+              <style>
+                .rich-text__image-background { position: relative; display: grid; place-items: center; isolation: isolate; width: 100vw; min-height: 100vh; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+                /* 当使用满屏背景时，移除该区块上/下的留白 */
+                .section-{{ section.id }}-padding { padding-top: 0 !important; padding-bottom: 0 !important; }
+                .rich-text__image-background-media { position: absolute; inset: 0; overflow: hidden; }
+                .rich-text__image-background-media img { width: 100%; height: 100%; object-fit: cover; filter: brightness(var(--brightness, 1)); }
+                .rich-text__image-background-layer { position: absolute; inset: 0; background: var(--overlay-color, #000); opacity: var(--overlay-opacity, .3); }
+                .rich-text__image-background-content { position: relative; z-index: 1; padding: 1.5rem; width: auto; margin: 0 auto; }
+                .rich-text__buttons { display: flex; flex-wrap: wrap; gap: var(--buttons-gap, 12px); justify-content: center; width: 100%; margin-top: 1rem; }
+                .rtb-button { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; background: var(--button-bg, #1a73e8); color: var(--button-text, #fff); border-radius: var(--button-radius, 50px); transition: background .2s ease,color .2s ease, box-shadow .2s ease; padding: var(--button-padding-y, 15px) var(--button-padding-x, 30px); font-size: var(--button-font-size, 16px); }
+                .rtb-button:hover { background: var(--button-hover-bg, #1459b7); color: var(--button-hover-text, #fff); }
+                .rtb-button.size-small { --button-font-size: 14px; --button-padding-y: 10px; --button-padding-x: 24px; }
+                .rtb-button.size-medium { --button-font-size: 16px; --button-padding-y: 15px; --button-padding-x: 30px; }
+                .rtb-button.size-large { --button-font-size: 18px; --button-padding-y: 16px; --button-padding-x: 34px; }
+                .desktop-image { display: block; }
+                .mobile-image { display: none; }
+                @media (max-width: 749px) { .desktop-image { display: none; } .mobile-image { display: block; }
+                  .rich-text__image-background { min-height: 100vh; }
+                }
+                /* icons row */
+                .rtb-icons { display:flex; align-items:center; justify-content:center; gap: var(--icons-gap, 12px); margin-top: 1rem; flex-wrap: wrap; }
+                .rtb-icons img { display:block; width: 64px; height: 64px; object-fit: contain; filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+              </style>
+              <div class="rich-text__image-background" {{ block.shopify_attributes }} style="--brightness: {{ block.settings.image_brightness | divided_by: 100.0 }}; --overlay-opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }}; --overlay-color: {{ block.settings.overlay_color }}; --buttons-gap: {{ block.settings.buttons_gap }}px; --buttons-align: {{ block.settings.buttons_alignment }}; --button-bg: {{ block.settings.button_bg_color }}; --button-text: {{ block.settings.button_text_color }}; --button-hover-bg: {{ block.settings.button_hover_bg_color }}; --button-hover-text: {{ block.settings.button_hover_text_color }}; --button-radius: {{ block.settings.button_radius }}px; --button-padding-y: {{ block.settings.button_padding_y | default: 15 }}px; --button-padding-x: {{ block.settings.button_padding_x | default: 30 }}px; --button-font-size: {{ block.settings.button_font_size | default: 16 }}px; --offset-x: {{ block.settings.content_offset_x | default: 0 }}px; --offset-y: {{ block.settings.content_offset_y | default: 0 }}px;">
+                <div class="rich-text__image-background-media">
+                  {% liquid
+                    assign desktop_image = block.settings.desktop_image
+                    assign mobile_image = block.settings.mobile_image
+                    assign alt_text = block.settings.image_alt | default: block.settings.content | strip_html | escape
+                  %}
+                  {% if desktop_image != blank %}
+                    {{ desktop_image | image_url: width: 2048 | image_tag: alt: alt_text, class: 'desktop-image', loading: 'lazy', width: desktop_image.width, height: desktop_image.height }}
+                  {% endif %}
+                  {% if mobile_image != blank %}
+                    {{ mobile_image | image_url: width: 1024 | image_tag: alt: alt_text, class: 'mobile-image', loading: 'lazy', width: mobile_image.width, height: mobile_image.height }}
+                  {% else %}
+                    {% if desktop_image != blank %}
+                      {{ desktop_image | image_url: width: 1024 | image_tag: alt: alt_text, class: 'mobile-image', loading: 'lazy', width: desktop_image.width, height: desktop_image.height }}
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <div class="rich-text__image-background-layer"></div>
+                <div class="rich-text__image-background-content{% if section.settings.full_width %} page-width{% endif %}" data-highlight-words="{{ block.settings.highlight_words }}" style="max-width: {{ block.settings.content_max_width }}px; text-align: {{ block.settings.text_alignment }}; color: {{ block.settings.text_color }}; line-height: {{ block.settings.line_height }}; letter-spacing: {{ block.settings.letter_spacing }}px; font-style: {{ block.settings.font_style }}; font-weight: {{ block.settings.font_weight }}; font-size: {{ block.settings.font_size }}px;">
+                  {{ block.settings.content }}
+                  {% liquid
+                    assign icon_alt = block.settings.image_alt
+                    if icon_alt == blank
+                      assign icon_alt = 'icon'
+                    endif
+                  %}
+                  <div class="rtb-icons" style="--icons-gap: {{ block.settings.icons_gap }}px;">
+                    {% if block.settings.icon_1 != blank %}
+                      {{ block.settings.icon_1 | image_url: width: 128 | image_tag: alt: icon_alt, loading: 'lazy', width: 64, height: 64 }}
+                    {% endif %}
+                    {% if block.settings.icon_2 != blank %}
+                      {{ block.settings.icon_2 | image_url: width: 128 | image_tag: alt: icon_alt, loading: 'lazy', width: 64, height: 64 }}
+                    {% endif %}
+                    {% if block.settings.icon_3 != blank %}
+                      {{ block.settings.icon_3 | image_url: width: 128 | image_tag: alt: icon_alt, loading: 'lazy', width: 64, height: 64 }}
+                    {% endif %}
+                  </div>
+                  <div class="rich-text__buttons">
+                    {% if block.settings.show_button and block.settings.button_label_1 != blank %}
+                      <a {% if block.settings.button_link_1 == blank %} role="link" aria-disabled="true" {% else %} href="{{ block.settings.button_link_1 }}" {% if block.settings.open_in_new_tab_1 %} target="_blank" rel="noopener" {% endif %} {% endif %} class="rtb-button size-{{ block.settings.button_size }}">
+                        {{- block.settings.button_label_1 | escape -}}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+                {% comment %} SEO JSON-LD for block {% endcomment %}
+                {% capture seo_name %}{{ block.settings.seo_title | default: block.settings.content | strip_html }}{% endcapture %}
+                {% capture seo_desc %}{{ block.settings.seo_description | default: block.settings.content | strip_html | truncate: 160 }}{% endcapture %}
+                {% capture seo_keywords %}{{ block.settings.seo_keywords }}{% endcapture %}
+                {% assign seo_image = block.settings.desktop_image | image_url %}
+                <script type="application/ld+json">
+                {
+                  "@context": "https://schema.org",
+                  "@type": "CreativeWork",
+                  "name": {{ seo_name | json }},
+                  "description": {{ seo_desc | json }},
+                  "keywords": {{ seo_keywords | json }}{% if seo_image != blank %}, "image": {{ seo_image | json }}{% endif %}
+                }
+                </script>
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.rich-text.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "背景设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "启用渐变背景",
+      "default": false,
+      "info": "启用此选项使用渐变背景而不是纯色背景"
+    },
+    {
+      "type": "color",
+      "id": "section_background",
+      "label": "区块背景颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "渐变起始颜色",
+      "default": "#8BC34A",
+      "info": "渐变的起始颜色（左上角）"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "渐变结束颜色",
+      "default": "#E91E63",
+      "info": "渐变的结束颜色（右下角）"
+    },
+    {
+      "type": "header",
+      "content": "标题样式设置"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "min": 1.5,
+      "max": 4,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "标题字体大小",
+      "default": 2.5
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "label": "标题字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" },
+        { "value": "700", "label": "粗体" },
+        { "value": "800", "label": "特粗" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "标题颜色",
+      "default": "#333333"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_transform",
+      "label": "标题文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "文本样式设置"
+    },
+    {
+      "type": "range",
+      "id": "text_font_size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "文本字体大小",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "text_font_weight",
+      "label": "文本字体粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "加粗" },
+        { "value": "600", "label": "半粗" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "文本颜色",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "布局设置"
+    },
+    {
+      "type": "select",
+      "id": "desktop_content_position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.rich-text.settings.desktop_content_position.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.rich-text.settings.desktop_content_position.options__2.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.rich-text.settings.desktop_content_position.options__3.label"
+        }
+      ],
+      "default": "center",
+      "label": "t:sections.rich-text.settings.desktop_content_position.label"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.rich-text.settings.content_alignment.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.rich-text.settings.content_alignment.options__2.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.rich-text.settings.content_alignment.options__3.label"
+        }
+      ],
+      "default": "center",
+      "label": "t:sections.rich-text.settings.content_alignment.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": true,
+      "label": "t:sections.rich-text.settings.full_width.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 52
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "t:sections.rich-text.blocks.heading.name",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "default": "t:sections.rich-text.blocks.heading.settings.heading.default",
+          "label": "t:sections.rich-text.blocks.heading.settings.heading.label"
+        },
+        {
+          "type": "select",
+          "id": "heading_size",
+          "options": [
+            {
+              "value": "h2",
+              "label": "t:sections.all.heading_size.options__1.label"
+            },
+            {
+              "value": "h1",
+              "label": "t:sections.all.heading_size.options__2.label"
+            },
+            {
+              "value": "h0",
+              "label": "t:sections.all.heading_size.options__3.label"
+            },
+            {
+              "value": "hxl",
+              "label": "t:sections.all.heading_size.options__4.label"
+            },
+            {
+              "value": "hxxl",
+              "label": "t:sections.all.heading_size.options__5.label"
+            }
+          ],
+          "default": "h1",
+          "label": "t:sections.all.heading_size.label"
+        }
+      ]
+    },
+    {
+      "type": "caption",
+      "name": "t:sections.rich-text.blocks.caption.name",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "caption",
+          "default": "t:sections.rich-text.blocks.caption.settings.text.default",
+          "label": "t:sections.rich-text.blocks.caption.settings.text.label"
+        },
+        {
+          "type": "select",
+          "id": "text_style",
+          "options": [
+            {
+              "value": "subtitle",
+              "label": "t:sections.rich-text.blocks.caption.settings.text_style.options__1.label"
+            },
+            {
+              "value": "caption-with-letter-spacing",
+              "label": "t:sections.rich-text.blocks.caption.settings.text_style.options__2.label"
+            }
+          ],
+          "default": "caption-with-letter-spacing",
+          "label": "t:sections.rich-text.blocks.caption.settings.text_style.label"
+        },
+        {
+          "type": "select",
+          "id": "text_size",
+          "options": [
+            {
+              "value": "small",
+              "label": "t:sections.rich-text.blocks.caption.settings.caption_size.options__1.label"
+            },
+            {
+              "value": "medium",
+              "label": "t:sections.rich-text.blocks.caption.settings.caption_size.options__2.label"
+            },
+            {
+              "value": "large",
+              "label": "t:sections.rich-text.blocks.caption.settings.caption_size.options__3.label"
+            }
+          ],
+          "default": "medium",
+          "label": "t:sections.rich-text.blocks.caption.settings.caption_size.label"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:sections.rich-text.blocks.text.name",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "default": "t:sections.rich-text.blocks.text.settings.text.default",
+          "label": "t:sections.rich-text.blocks.text.settings.text.label"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "字体颜色",
+          "default": "#000000"
+        },
+        {
+          "type": "select",
+          "id": "font_weight",
+          "label": "字体粗细",
+          "options": [
+            {
+              "value": "normal",
+              "label": "正常"
+            },
+            {
+              "value": "bold",
+              "label": "粗体"
+            },
+            {
+              "value": "lighter",
+              "label": "细体"
+            },
+            {
+              "value": "300",
+              "label": "轻量 (300)"
+            },
+            {
+              "value": "400",
+              "label": "正常 (400)"
+            },
+            {
+              "value": "500",
+              "label": "中等 (500)"
+            },
+            {
+              "value": "600",
+              "label": "半粗 (600)"
+            },
+            {
+              "value": "700",
+              "label": "粗体 (700)"
+            },
+            {
+              "value": "800",
+              "label": "特粗 (800)"
+            },
+            {
+              "value": "900",
+              "label": "超粗 (900)"
+            }
+          ],
+          "default": "normal"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "t:sections.rich-text.blocks.buttons.name",
+      "limit": 2,
+      "settings": [
+        {
+         "type": "header",
+         "content": "t:sections.rich-text.blocks.buttons.settings.header_button1.content"
+        },        
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "t:sections.rich-text.blocks.buttons.settings.button_label_1.default",
+          "label": "t:sections.rich-text.blocks.buttons.settings.button_label_1.label",
+          "info": "t:sections.rich-text.blocks.buttons.settings.button_label_1.info"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:sections.rich-text.blocks.buttons.settings.button_link_1.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_style_secondary",
+          "default": false,
+          "label": "t:sections.rich-text.blocks.buttons.settings.button_style_secondary_1.label"
+        },
+        {
+         "type": "header",
+         "content": "t:sections.rich-text.blocks.buttons.settings.header_button2.content"
+        },          
+        {
+          "type": "text",
+          "id": "button_label_2",
+          "label": "t:sections.rich-text.blocks.buttons.settings.button_label_2.label",
+          "info": "t:sections.rich-text.blocks.buttons.settings.button_label_2.info"
+        },
+        {
+          "type": "url",
+          "id": "button_link_2",
+          "label": "t:sections.rich-text.blocks.buttons.settings.button_link_2.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_style_secondary_2",
+          "default": false,
+          "label": "t:sections.rich-text.blocks.buttons.settings.button_style_secondary_2.label"
+        }
+      ]
+    },
+    {
+      "type": "image_background",
+      "name": "图片背景区块",
+      "limit": 6,
+      "settings": [
+        { "type": "image_picker", "id": "desktop_image", "label": "背景图片（桌面）", "info": "上传高质量图片以获得更好的显示效果" },
+        { "type": "image_picker", "id": "mobile_image", "label": "背景图片（移动端）", "info": "可选，未设置时自动使用桌面图片" },
+        { "type": "text", "id": "image_alt", "label": "图片替代文本（Alt）", "info": "用于 SEO，可简要描述图片内容" },
+        { "type": "range", "id": "image_brightness", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80, "label": "图片亮度", "info": "0% 最暗，100% 最亮，建议 60%-90%" },
+        { "type": "color", "id": "overlay_color", "label": "遮罩颜色", "default": "#000000" },
+        { "type": "range", "id": "overlay_opacity", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 30, "label": "遮罩不透明度" },
+        { "type": "color", "id": "text_color", "label": "文本颜色", "default": "#FFFFFF" },
+        { "type": "range", "id": "font_size", "min": 12, "max": 48, "step": 1, "unit": "px", "default": 16, "label": "正文字号" },
+        { "type": "range", "id": "content_max_width", "min": 300, "max": 1400, "step": 20, "unit": "px", "default": 900, "label": "内容最大宽度" },
+        { "type": "range", "id": "min_height", "min": 240, "max": 900, "step": 20, "unit": "px", "default": 480, "label": "区块最小高度" },
+        { "type": "select", "id": "text_alignment", "label": "文本对齐方式", "options": [
+          { "value": "left", "label": "左对齐" },
+          { "value": "center", "label": "居中" },
+          { "value": "right", "label": "右对齐" }
+        ], "default": "center" },
+        { "type": "range", "id": "line_height", "min": 1, "max": 2, "step": 0.1, "default": 1.6, "label": "行距" },
+        { "type": "range", "id": "letter_spacing", "min": 0, "max": 5, "step": 0.5, "unit": "px", "default": 0, "label": "字间距" },
+        { "type": "select", "id": "font_weight", "label": "字体粗细", "options": [
+          { "value": "normal", "label": "正常" },
+          { "value": "bold", "label": "粗体" },
+          { "value": "500", "label": "中等" },
+          { "value": "700", "label": "加粗" }
+        ], "default": "normal" },
+        { "type": "select", "id": "font_style", "label": "字体样式", "options": [
+          { "value": "normal", "label": "正常" },
+          { "value": "italic", "label": "斜体" }
+        ], "default": "normal" },
+        { "type": "richtext", "id": "content", "label": "富文本内容", "default": "<p>在此输入内容</p>", "info": "支持加粗/斜体/下划线、对齐、图片插入与链接" },
+        { "type": "text", "id": "highlight_words", "label": "高亮词列表", "info": "使用逗号分隔要高亮的词语" },
+        { "type": "header", "content": "图标设置（可选）" },
+        { "type": "image_picker", "id": "icon_1", "label": "图标 1" },
+        { "type": "image_picker", "id": "icon_2", "label": "图标 2" },
+        { "type": "image_picker", "id": "icon_3", "label": "图标 3" },
+        { "type": "range", "id": "icons_gap", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 12, "label": "图标间距" },
+        { "type": "header", "content": "按钮设置" },
+        { "type": "checkbox", "id": "show_button", "label": "显示按钮", "default": true },
+        { "type": "text", "id": "button_label_1", "label": "按钮 文本" },
+        { "type": "url", "id": "button_link_1", "label": "按钮 链接" },
+        { "type": "checkbox", "id": "open_in_new_tab_1", "label": "新窗口打开按钮", "default": false },
+        { "type": "select", "id": "button_size", "label": "按钮大小（预设）", "options": [
+          { "value": "small", "label": "小" },
+          { "value": "medium", "label": "中（参考 Hero 大小）" },
+          { "value": "large", "label": "大" }
+        ], "default": "large" },
+        { "type": "range", "id": "button_font_size", "label": "按钮字号", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 16 },
+        { "type": "range", "id": "button_padding_y", "label": "按钮垂直内边距", "min": 8, "max": 20, "step": 1, "unit": "px", "default": 15 },
+        { "type": "range", "id": "button_padding_x", "label": "按钮水平内边距", "min": 16, "max": 40, "step": 2, "unit": "px", "default": 30 },
+        { "type": "range", "id": "buttons_gap", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 12, "label": "按钮间距" },
+        { "type": "select", "id": "buttons_alignment", "label": "按钮对齐", "options": [
+          { "value": "flex-start", "label": "居左" },
+          { "value": "center", "label": "居中" },
+          { "value": "flex-end", "label": "居右" }
+        ], "default": "center" },
+        { "type": "color", "id": "button_bg_color", "label": "按钮背景色", "default": "#1a73e8" },
+        { "type": "color", "id": "button_text_color", "label": "按钮文字色", "default": "#ffffff" },
+        { "type": "color", "id": "button_hover_bg_color", "label": "按钮悬停背景色", "default": "#1459b7" },
+        { "type": "color", "id": "button_hover_text_color", "label": "按钮悬停文字色", "default": "#ffffff" },
+        { "type": "range", "id": "button_radius", "min": 0, "max": 60, "step": 1, "unit": "px", "default": 50, "label": "按钮圆角" },
+        { "type": "header", "content": "位置微调" },
+        { "type": "range", "id": "content_offset_x", "min": -400, "max": 400, "step": 10, "unit": "px", "default": 0, "label": "水平偏移（X）" },
+        { "type": "range", "id": "content_offset_y", "min": -400, "max": 400, "step": 10, "unit": "px", "default": 0, "label": "垂直偏移（Y）" },
+        { "type": "header", "content": "SEO 设置" },
+        { "type": "text", "id": "seo_title", "label": "SEO 标题" },
+        { "type": "text", "id": "seo_description", "label": "SEO 描述" },
+        { "type": "text", "id": "seo_keywords", "label": "SEO 关键词", "info": "使用逗号分隔" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.rich-text.presets.name",
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        },
+        {
+          "type": "button"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

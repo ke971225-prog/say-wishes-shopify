@@ -1,0 +1,210 @@
+<div class="custom-product-form">
+  <form id="custom-product-form" class="product-form">
+    <!-- 团队选择 -->
+    <div class="form-group">
+      <label for="team-select">Choose your team:</label>
+      <select id="team-select" name="properties[Team]" required>
+        <option value="">Select a team...</option>
+        <option value="pink-lovers">Pink Lovers</option>
+        <option value="blue-team">Blue Team</option>
+        <option value="green-squad">Green Squad</option>
+      </select>
+    </div>
+
+    <!-- 消息输入 -->
+    <div class="form-group">
+      <label for="message-input">Tell us about the person:</label>
+      <textarea 
+        id="message-input" 
+        name="properties[Message]" 
+        placeholder="Share details about the person you're surprising..."
+        rows="4"
+        required
+      ></textarea>
+    </div>
+
+    <!-- 图片上传 -->
+    <div class="form-group">
+      <label for="image-upload">Upload photos (optional):</label>
+      <input 
+        type="file" 
+        id="image-upload" 
+        name="properties[Images]" 
+        accept="image/*" 
+        multiple
+      >
+      <small>Upload photos to include in your video</small>
+    </div>
+
+    <!-- 交付时间 -->
+    <div class="form-group">
+      <label for="delivery-time">Delivery time:</label>
+      <select id="delivery-time" name="properties[Delivery]">
+        <option value="standard">Standard (1-2 days) - Free</option>
+        <option value="express">Express (24 Hours) - $10</option>
+      </select>
+    </div>
+
+    <!-- 附加服务 -->
+    <div class="form-group">
+      <label>Additional services:</label>
+      <div class="checkbox-group">
+        <label>
+          <input type="checkbox" name="properties[HD_Quality]" value="yes">
+          HD Quality (+$5)
+        </label>
+        <label>
+          <input type="checkbox" name="properties[Background_Music]" value="yes">
+          Background Music (+$3)
+        </label>
+        <label>
+          <input type="checkbox" name="properties[Extended_Length]" value="yes">
+          Extended Length (+$8)
+        </label>
+      </div>
+    </div>
+
+    <!-- 价格和购买按钮 -->
+    <div class="price-section">
+      <div class="price-display">
+        <span class="total-price">$38.00</span>
+        <span class="original-price">$83.00</span>
+      </div>
+      
+      <button type="submit" class="btn btn-primary add-to-cart">
+        Add to Cart
+      </button>
+    </div>
+
+    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+  </form>
+</div>
+
+<style>
+.custom-product-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.form-group select,
+.form-group textarea,
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  font-weight: normal;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+}
+
+.price-section {
+  text-align: center;
+  padding: 20px 0;
+  border-top: 1px solid #eee;
+}
+
+.price-display {
+  margin-bottom: 15px;
+}
+
+.total-price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #e91e63;
+}
+
+.original-price {
+  font-size: 16px;
+  text-decoration: line-through;
+  color: #999;
+  margin-left: 10px;
+}
+
+.add-to-cart {
+  background: #e91e63;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.add-to-cart:hover {
+  background: #c2185b;
+}
+</style>
+
+<script>
+document.getElementById('custom-product-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(this);
+  const properties = {};
+  
+  // 收集所有表单数据
+  for (let [key, value] of formData.entries()) {
+    if (key.startsWith('properties[')) {
+      const propKey = key.replace('properties[', '').replace(']', '');
+      properties[propKey] = value;
+    }
+  }
+  
+  // 添加到购物车
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+      id: formData.get('id'),
+      quantity: 1,
+      properties: properties
+    })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    // 成功添加到购物车
+    console.log('Product added to cart:', data);
+    window.location.href = '/cart';
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('添加到购物车时出错，请重试。');
+  });
+});
+</script>

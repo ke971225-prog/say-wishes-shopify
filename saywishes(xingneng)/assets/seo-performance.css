@@ -1,0 +1,47 @@
+/* SEO Performance Optimizations */
+
+/* Critical CSS for above-the-fold content */
+.hero-section {
+  display: block;
+  visibility: visible;
+}
+
+/* Lazy loading for images */
+img[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+img[loading="lazy"].loaded {
+  opacity: 1;
+}
+
+/* Optimize font loading */
+@font-face {
+  font-display: swap;
+}
+
+/* Reduce layout shift */
+.product-image {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+/* Optimize button interactions */
+.btn {
+  touch-action: manipulation;
+}
+
+/* Improve Core Web Vitals */
+.container {
+  contain: layout style paint;
+}
+
+/* Optimize animations */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

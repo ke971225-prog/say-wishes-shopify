@@ -1,0 +1,226 @@
+<style>
+.custom-announcement-bar {
+  background: #ff1493;
+  color: white;
+  padding: 8px 0;
+  position: relative;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.custom-announcement-bar .marquee-container {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.custom-announcement-bar .marquee-content {
+  display: inline-block;
+  animation: marquee 45s linear infinite;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.custom-announcement-bar .marquee-content:hover {
+  animation-play-state: paused;
+}
+
+.custom-announcement-bar .cta-button {
+  background: white;
+  color: #ff1493;
+  padding: 4px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 0 20px;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.custom-announcement-bar .cta-button:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.custom-announcement-bar .close-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+@media (max-width: 768px) {
+  .custom-announcement-bar .marquee-content {
+    font-size: 12px;
+    animation-duration: 35s;
+  }
+  
+  .custom-announcement-bar .cta-button {
+    padding: 3px 8px;
+    font-size: 12px;
+    margin: 0 10px;
+  }
+}
+
+.custom-announcement-bar.hidden {
+  display: none;
+}
+</style>
+
+<!-- HTML部分保持不变 -->
+{% if section.settings.show_announcement %}
+<div class="custom-announcement-bar" id="custom-announcement-bar">
+  <div class="marquee-container">
+    <div class="marquee-content">
+      {% assign announcement_text = section.settings.announcement_text | default: "🎉 SAVE 4-7$ FOR LIMITED CUPCAKES 🎉 🎉 🎉 SAVE 4-7$ FOR LIMITED CUPCAKES 🎉 🎉 🎉 SAVE 4-7$ FOR LIMITED CUPCAKES 🎉" %}
+      {{ announcement_text }}
+      {% if section.settings.show_cta and section.settings.cta_text != blank %}
+        {% if section.settings.cta_url != blank %}
+          <a href="{{ section.settings.cta_url }}" class="cta-button">{{ section.settings.cta_text }}</a>
+        {% else %}
+          <span class="cta-button">{{ section.settings.cta_text }}</span>
+        {% endif %}
+      {% endif %}
+      {{ announcement_text }}
+      {% if section.settings.show_cta and section.settings.cta_text != blank %}
+        {% if section.settings.cta_url != blank %}
+          <a href="{{ section.settings.cta_url }}" class="cta-button">{{ section.settings.cta_text }}</a>
+        {% else %}
+          <span class="cta-button">{{ section.settings.cta_text }}</span>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+  
+  {% if section.settings.show_close_button %}
+    <button class="close-btn" onclick="closeAnnouncementBar()" aria-label="关闭公告栏">
+      ×
+    </button>
+  {% endif %}
+</div>
+
+<!-- JavaScript部分保持不变 -->
+<script>
+function closeAnnouncementBar() {
+  const announcementBar = document.getElementById('custom-announcement-bar');
+  if (announcementBar) {
+    announcementBar.classList.add('hidden');
+    localStorage.setItem('announcement-bar-closed', 'true');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const isClosed = localStorage.getItem('announcement-bar-closed');
+  if (isClosed === 'true') {
+    const announcementBar = document.getElementById('custom-announcement-bar');
+    if (announcementBar) {
+      announcementBar.classList.add('hidden');
+    }
+  }
+});
+</script>
+{% endif %}
+
+<!-- Schema部分保持不变 -->
+{% schema %}
+{
+  "name": "自定义公告栏",
+  "class": "custom-announcement-bar-section",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "显示公告栏",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "announcement_text",
+      "label": "公告文本",
+      "default": "🎉 SAVE 4-7$ FOR LIMITED CUPCAKES 🎉 🎉 🎉 SAVE 4-7$ FOR LIMITED CUPCAKES 🎉 🎉 🎉 SAVE 4-7$ FOR LIMITED CUPCAKES 🎉",
+      "info": "输入要显示的公告文本，支持emoji表情"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "背景颜色",
+      "default": "#ff1493"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "label": "滚动速度",
+      "default": 45,
+      "info": "数值越大滚动越慢"
+    },
+    {
+      "type": "header",
+      "content": "CTA按钮设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "显示CTA按钮",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA按钮文本",
+      "default": "ORDER NOW"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA按钮链接"
+    },
+    {
+      "type": "header",
+      "content": "其他设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_close_button",
+      "label": "显示关闭按钮",
+      "default": true,
+      "info": "允许用户关闭公告栏"
+    }
+  ],
+  "presets": [
+    {
+      "name": "自定义公告栏"
+    }
+  ]
+}
+{% endschema %}

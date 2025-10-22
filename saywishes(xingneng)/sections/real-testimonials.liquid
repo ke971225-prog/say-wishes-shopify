@@ -1,0 +1,488 @@
+{{ 'component-image-with-text.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 75 | divided_by: 100 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 75 | divided_by: 100 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .real-testimonials {
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start | default: '#667eea' }}, {{ section.settings.gradient_color_end | default: '#764ba2' }});
+    {% else %}
+      background-color: {{ section.settings.section_background | default: '#f8f9fa' }};
+    {% endif %}
+    text-align: center;
+  }
+
+  .real-testimonials .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .real-testimonials-header {
+    margin-bottom: 3rem;
+  }
+
+  .real-testimonials-title {
+    font-size: {{ section.settings.title_font_size | default: 2.5 }}rem;
+    font-weight: {{ section.settings.title_font_weight | default: 'bold' }};
+    color: {{ section.settings.title_color | default: '#333' }};
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .real-testimonials-subtitle {
+    font-size: {{ section.settings.subtitle_font_size | default: 1.2 }}rem;
+    color: {{ section.settings.subtitle_color | default: '#666' }};
+    margin-bottom: 2rem;
+  }
+
+  .customer-count {
+    display: inline-flex;
+    align-items: center;
+    background: {{ section.settings.count_background | default: 'rgba(255,255,255,0.9)' }};
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+  .customer-count-number {
+    font-size: {{ section.settings.count_number_size | default: 2 }}rem;
+    font-weight: bold;
+    color: {{ section.settings.count_number_color | default: '#e91e63' }};
+    margin-right: 0.5rem;
+  }
+
+  .customer-count-text {
+    font-size: {{ section.settings.count_text_size | default: 1 }}rem;
+    color: {{ section.settings.count_text_color | default: '#333' }};
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .testimonial-card {
+    background: {{ section.settings.card_background | default: 'white' }};
+    padding: 2rem;
+    border-radius: {{ section.settings.card_border_radius | default: 15 }}px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+  }
+
+  .testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+  }
+
+  .testimonial-quote {
+    font-size: 2rem;
+    color: {{ section.settings.quote_color | default: '#e91e63' }};
+    margin-bottom: 1rem;
+    line-height: 1;
+  }
+
+  .testimonial-text {
+    font-size: {{ section.settings.testimonial_text_size | default: 1 }}rem;
+    line-height: 1.6;
+    color: {{ section.settings.testimonial_text_color | default: '#555' }};
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  .testimonial-rating {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .star {
+    color: {{ section.settings.star_color | default: '#ffc107' }};
+    font-size: 1.2rem;
+    margin: 0 2px;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid {{ section.settings.avatar_border_color | default: '#e91e63' }};
+  }
+
+  .author-info {
+    text-align: left;
+  }
+
+  .author-name {
+    font-weight: bold;
+    color: {{ section.settings.author_name_color | default: '#333' }};
+    margin-bottom: 0.25rem;
+  }
+
+  .author-location {
+    font-size: 0.9rem;
+    color: {{ section.settings.author_location_color | default: '#666' }};
+  }
+
+  .verified-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: {{ section.settings.verified_badge_bg | default: '#4caf50' }};
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+
+  @media screen and (max-width: 749px) {
+    .testimonials-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .real-testimonials-title {
+      font-size: 2rem;
+    }
+    
+    .customer-count {
+      padding: 0.75rem 1.5rem;
+    }
+  }
+{%- endstyle -%}
+
+<div class="real-testimonials section-{{ section.id }}-padding">
+  <div class="container">
+    <div class="real-testimonials-header">
+      {% if section.settings.title != blank %}
+        <h2 class="real-testimonials-title">{{ section.settings.title }}</h2>
+      {% endif %}
+      
+      {% if section.settings.subtitle != blank %}
+        <p class="real-testimonials-subtitle">{{ section.settings.subtitle }}</p>
+      {% endif %}
+      
+      {% if section.settings.show_customer_count %}
+        <div class="customer-count">
+          <span class="customer-count-number">{{ section.settings.customer_count | default: '45,000+' }}</span>
+          <span class="customer-count-text">{{ section.settings.customer_count_text | default: 'Happy Customers' }}</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="testimonials-grid">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'testimonial' %}
+            <div class="testimonial-card" {{ block.shopify_attributes }}>
+              {% if block.settings.show_verified_badge %}
+                <div class="verified-badge">✓ Verified Purchase</div>
+              {% endif %}
+              
+              <div class="testimonial-quote">"</div>
+              
+              {% if block.settings.testimonial_text != blank %}
+                <p class="testimonial-text">{{ block.settings.testimonial_text }}</p>
+              {% endif %}
+              
+              {% if block.settings.show_rating %}
+                <div class="testimonial-rating">
+                  {% assign rating = block.settings.rating | default: 5 %}
+                  {% for i in (1..5) %}
+                    {% if i <= rating %}
+                      <span class="star">★</span>
+                    {% else %}
+                      <span class="star" style="color: #ddd;">★</span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+              
+              <div class="testimonial-author">
+                {% if block.settings.author_avatar != blank %}
+                  <img src="{{ block.settings.author_avatar | image_url: width: 100, height: 100 }}" alt="{{ block.settings.author_name }}" class="author-avatar" width="100" height="100" loading="lazy">
+                {% endif %}
+                
+                <div class="author-info">
+                  {% if block.settings.author_name != blank %}
+                    <div class="author-name">{{ block.settings.author_name }}</div>
+                  {% endif %}
+                  {% if block.settings.author_location != blank %}
+                    <div class="author-location">{{ block.settings.author_location }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Customer Testimonials",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "What Our Customers Say"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Real reviews from real customers who love their personalized wishes"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_customer_count",
+      "label": "Show Customer Count",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "customer_count",
+      "label": "Customer Count",
+      "default": "45,000+"
+    },
+    {
+      "type": "text",
+      "id": "customer_count_text",
+      "label": "Customer Count Text",
+      "default": "Happy Customers"
+    },
+    {
+      "type": "header",
+      "content": "Background Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "Enable Gradient Background",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "Gradient Start Color",
+      "default": "#667eea"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "Gradient End Color",
+      "default": "#764ba2"
+    },
+    {
+      "type": "color",
+      "id": "section_background",
+      "label": "Section Background Color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "header",
+      "content": "Typography Settings"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Title Font Size (rem)",
+      "min": 1.5,
+      "max": 4,
+      "step": 0.1,
+      "default": 2.5
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Title Font Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" },
+        { "value": "bolder", "label": "Bolder" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#333"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size",
+      "label": "Subtitle Font Size (rem)",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#666"
+    },
+    {
+      "type": "header",
+      "content": "Card Settings"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card Border Radius (px)",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Customer Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "testimonial_text",
+          "label": "Testimonial Text",
+          "default": "This personalized wish made my daughter's birthday so special! The quality is amazing and it arrived exactly as promised."
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Customer Name",
+          "default": "Sarah Johnson"
+        },
+        {
+          "type": "text",
+          "id": "author_location",
+          "label": "Customer Location",
+          "default": "New York, USA"
+        },
+        {
+          "type": "image_picker",
+          "id": "author_avatar",
+          "label": "Customer Photo"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_rating",
+          "label": "Show Star Rating",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "show_verified_badge",
+          "label": "Show Verified Purchase Badge",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial_text": "This personalized wish made my daughter's birthday so special! The quality is amazing and it arrived exactly as promised.",
+            "author_name": "Sarah Johnson",
+            "author_location": "New York, USA",
+            "rating": 5
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial_text": "I was skeptical at first, but the final product exceeded all my expectations. My son was thrilled!",
+            "author_name": "Michael Chen",
+            "author_location": "California, USA",
+            "rating": 5
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial_text": "Fast delivery, beautiful packaging, and the personalized message was perfect. Will definitely order again!",
+            "author_name": "Emma Williams",
+            "author_location": "London, UK",
+            "rating": 5
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

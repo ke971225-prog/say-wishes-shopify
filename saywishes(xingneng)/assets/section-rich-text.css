@@ -1,0 +1,142 @@
+.rich-text {
+  z-index: 1;
+}
+
+.rich-text__wrapper {
+  display: flex;
+  justify-content: center;
+  width: calc(100% - 4rem / var(--font-body-scale));
+}
+
+.rich-text:not(.rich-text--full-width) .rich-text__wrapper {
+  margin: auto;
+  width: calc(100% - 8rem / var(--font-body-scale));
+}
+
+.rich-text__blocks {
+  width: 100%;
+}
+
+@media screen and (min-width: 750px) {
+  .rich-text__wrapper {
+    width: 100%;
+  }
+
+  .rich-text__wrapper--left {
+    justify-content: flex-start;
+  }
+
+  .rich-text__wrapper--right {
+    justify-content: flex-end;
+  }
+
+  .rich-text__blocks {
+    max-width: 50rem;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .rich-text__blocks {
+    max-width: 78rem;
+  }
+}
+
+.rich-text__blocks * {
+  overflow-wrap: break-word;
+}
+
+.rich-text__blocks > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.rich-text__blocks > * + * {
+  margin-top: 2rem;
+}
+
+.rich-text__blocks > * + a {
+  margin-top: 3rem;
+}
+
+.rich-text__buttons {
+  display: inline-flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+  max-width: 45rem;
+  word-break: break-word;
+}
+
+.rich-text__buttons--multiple > * {
+  flex-grow: 1;
+  min-width: 22rem;
+}
+
+.rich-text__buttons + .rich-text__buttons {
+  margin-top: 1rem;
+}
+
+.rich-text__blocks.left .rich-text__buttons {
+  justify-content: flex-start;
+}
+
+.rich-text__blocks.right .rich-text__buttons {
+  justify-content: flex-end;
+}
+
+/* 富文本字体样式增强 */
+.rich-text__text {
+  line-height: 1.6;
+  transition: all 0.3s ease;
+}
+
+.rich-text__text p {
+  margin-bottom: 1rem;
+}
+
+.rich-text__text p:last-child {
+  margin-bottom: 0;
+}
+
+/* 字体粗细样式类 */
+.rich-text__text--light {
+  font-weight: 300;
+}
+
+.rich-text__text--normal {
+  font-weight: 400;
+}
+
+.rich-text__text--medium {
+  font-weight: 500;
+}
+
+.rich-text__text--semibold {
+  font-weight: 600;
+}
+
+.rich-text__text--bold {
+  font-weight: 700;
+}
+
+.rich-text__text--extrabold {
+  font-weight: 800;
+}
+
+.rich-text__text--black {
+  font-weight: 900;
+}
+
+/* 响应式字体大小调整 */
+@media screen and (max-width: 749px) {
+  .rich-text__text {
+    font-size: 1.4rem;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .rich-text__text {
+    font-size: 1.6rem;
+  }
+}

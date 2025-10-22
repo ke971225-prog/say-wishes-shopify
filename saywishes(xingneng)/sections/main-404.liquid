@@ -1,0 +1,129 @@
+<!-- Enhanced 404 Page with SEO Optimization -->
+<style type="text/css">
+  .template-404 {
+    padding: 4rem 0;
+    text-align: center;
+  }
+  
+  .template-404 .title + * {
+    margin-top: 1rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .template-404 .title + * {
+      margin-top: 2rem;
+    }
+  }
+  
+  .error-404-content {
+    max-width: 60rem;
+    margin: 0 auto;
+  }
+  
+  .error-404-suggestions {
+    margin: 3rem 0;
+    padding: 2rem;
+    background-color: rgb(var(--color-background-contrast));
+    border-radius: 1rem;
+  }
+  
+  .error-404-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+  }
+  
+  .error-404-link {
+    padding: 2rem;
+    border: 1px solid rgba(var(--color-foreground), 0.1);
+    border-radius: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .error-404-link:hover {
+    transform: translateY(-0.2rem);
+    box-shadow: 0 0.5rem 2rem rgba(var(--color-foreground), 0.1);
+  }
+</style>
+
+<!-- Enhanced 404 Page Structure -->
+<div class="template-404 page-width page-margin">
+  <div class="error-404-content">
+    <h1 class="title h1">
+      {{ 'templates.404.title' | t }}
+    </h1>
+    <p class="h3" style="margin-top: 2rem;">
+      {{ 'templates.404.subtext' | t }}
+    </p>
+    
+    <!-- SEO-friendly suggestions -->
+    <div class="error-404-suggestions">
+      <h2 class="h4">🎬 Looking for Personalized African Video Messages?</h2>
+      <p>Don't worry! You can still find what you're looking for:</p>
+    </div>
+    
+    <!-- Enhanced navigation links -->
+    <div class="error-404-links">
+      <a href="{{ routes.root_url }}" class="error-404-link">
+        <h3 class="h5">🏠 Home Page</h3>
+        <p>Start fresh with our personalized video messages</p>
+      </a>
+      
+      <a href="{{ routes.all_products_collection_url }}" class="error-404-link">
+        <h3 class="h5">🎥 All Videos</h3>
+        <p>Browse our complete collection of African video messages</p>
+      </a>
+      
+      <a href="/pages/contact" class="error-404-link">
+        <h3 class="h5">📞 Contact Us</h3>
+        <p>Need help? Our team is here to assist you</p>
+      </a>
+      
+      <a href="/pages/faq" class="error-404-link">
+        <h3 class="h5">❓ FAQ</h3>
+        <p>Find answers to common questions</p>
+      </a>
+    </div>
+    
+    <!-- Primary CTA -->
+    <div style="margin-top: 4rem;">
+      <a href="{{ routes.all_products_collection_url }}" class="button button--primary">
+        🎬 Order Your Custom Video Now
+      </a>
+    </div>
+    
+    <!-- Search functionality -->
+    <div style="margin-top: 3rem;">
+      <form action="{{ routes.search_url }}" method="get" role="search">
+        <div class="field">
+          <input type="search" 
+                 name="q" 
+                 placeholder="Search for video messages..." 
+                 style="width: 100%; max-width: 40rem; margin: 0 auto; display: block;">
+          <button type="submit" class="button" style="margin-top: 1rem;">
+            Search
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Enhanced structured data for 404 page -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Page Not Found - {{ shop.name }}",
+  "description": "The requested page could not be found. Browse our personalized African video messages and custom greetings.",
+  "url": "{{ canonical_url }}",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "{{ shop.name }}",
+    "url": "{{ shop.url }}",
+    "description": "Personalized African video messages and custom greetings for special occasions"
+  }
+}
+</script>

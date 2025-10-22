@@ -1,0 +1,312 @@
+{% comment %}
+  Admin Order Processor for Custom Pricing
+  This tool helps merchants quickly process orders with custom pricing
+  Only visible in Shopify admin/preview mode
+{% endcomment %}
+
+{% if request.design_mode or request.preview_mode %}
+<div id="admin-order-processor" style="
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 350px;
+  background: white;
+  border: 2px solid #007cba;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: none;
+">
+  <div style="
+    background: #007cba;
+    color: white;
+    padding: 15px;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  ">
+    <h3 style="margin: 0; font-size: 16px;">定制价格订单处理器</h3>
+    <button onclick="toggleOrderProcessor()" style="
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+    ">×</button>
+  </div>
+  
+  <div style="padding: 20px;">
+    <div style="margin-bottom: 15px;">
+      <label style="display: block; margin-bottom: 5px; font-weight: 600;">订单号：</label>
+      <input type="text" id="order-number" placeholder="#1001" style="
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      ">
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <label style="display: block; margin-bottom: 5px; font-weight: 600;">客户邮箱：</label>
+      <input type="email" id="customer-email" placeholder="customer@example.com" style="
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      ">
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <label style="display: block; margin-bottom: 5px; font-weight: 600;">实际支付金额：</label>
+      <input type="number" id="paid-amount" placeholder="40.00" step="0.01" style="
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      ">
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <label style="display: block; margin-bottom: 5px; font-weight: 600;">定制价格总计：</label>
+      <input type="number" id="custom-total" placeholder="65.00" step="0.01" style="
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      ">
+    </div>
+    
+    <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+        <span>价格差异：</span>
+        <span id="price-difference" style="font-weight: bold;">$0.00</span>
+      </div>
+      <div style="font-size: 12px; color: #666;" id="difference-note">请输入金额计算差异</div>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <label style="display: block; margin-bottom: 5px; font-weight: 600;">处理类型：</label>
+      <select id="process-type" style="
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      ">
+        <option value="collect">需要补收费用</option>
+        <option value="refund">需要退款</option>
+        <option value="no-action">无需处理</option>
+      </select>
+    </div>
+    
+    <div style="display: flex; gap: 10px;">
+      <button onclick="generateEmail()" style="
+        flex: 1;
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      ">生成邮件</button>
+      
+      <button onclick="copyToClipboard()" style="
+        flex: 1;
+        background: #007cba;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      ">复制邮件</button>
+    </div>
+    
+    <div id="generated-email" style="
+      margin-top: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 1.4;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+    "></div>
+  </div>
+</div>
+
+<!-- 触发按钮 -->
+<button onclick="showOrderProcessor()" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #007cba;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,123,186,0.3);
+  z-index: 9999;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+" title="定制价格订单处理器">
+  💰
+</button>
+
+<script>
+  function showOrderProcessor() {
+    document.getElementById('admin-order-processor').style.display = 'block';
+  }
+  
+  function toggleOrderProcessor() {
+    const processor = document.getElementById('admin-order-processor');
+    processor.style.display = processor.style.display === 'none' ? 'block' : 'none';
+  }
+  
+  // 实时计算价格差异
+  document.addEventListener('DOMContentLoaded', function() {
+    const paidInput = document.getElementById('paid-amount');
+    const customInput = document.getElementById('custom-total');
+    const differenceSpan = document.getElementById('price-difference');
+    const noteDiv = document.getElementById('difference-note');
+    const processSelect = document.getElementById('process-type');
+    
+    function calculateDifference() {
+      const paid = parseFloat(paidInput.value) || 0;
+      const custom = parseFloat(customInput.value) || 0;
+      const difference = custom - paid;
+      
+      differenceSpan.textContent = '$' + Math.abs(difference).toFixed(2);
+      
+      if (difference > 0) {
+        differenceSpan.style.color = '#d32f2f';
+        noteDiv.textContent = '需要向客户补收费用';
+        processSelect.value = 'collect';
+      } else if (difference < 0) {
+        differenceSpan.style.color = '#28a745';
+        noteDiv.textContent = '需要向客户退款';
+        processSelect.value = 'refund';
+      } else {
+        differenceSpan.style.color = '#666';
+        noteDiv.textContent = '价格一致，无需处理';
+        processSelect.value = 'no-action';
+      }
+    }
+    
+    paidInput.addEventListener('input', calculateDifference);
+    customInput.addEventListener('input', calculateDifference);
+  });
+  
+  function generateEmail() {
+    const orderNumber = document.getElementById('order-number').value;
+    const customerEmail = document.getElementById('customer-email').value;
+    const paidAmount = parseFloat(document.getElementById('paid-amount').value) || 0;
+    const customTotal = parseFloat(document.getElementById('custom-total').value) || 0;
+    const processType = document.getElementById('process-type').value;
+    const difference = Math.abs(customTotal - paidAmount);
+    
+    if (!orderNumber || !customerEmail) {
+      alert('请填写订单号和客户邮箱');
+      return;
+    }
+    
+    let emailContent = '';
+    
+    if (processType === 'collect') {
+      emailContent = `
+主题：订单 ${orderNumber} - 定制服务费用确认
+
+亲爱的客户，
+
+感谢您的订单！我们注意到您选择了定制服务选项。
+
+订单详情：
+- 订单号：${orderNumber}
+- 已支付金额：$${paidAmount.toFixed(2)}
+- 定制服务总价：$${customTotal.toFixed(2)}
+- 需补收金额：$${difference.toFixed(2)}
+
+请通过以下方式完成补款：
+1. PayPal: [您的PayPal邮箱]
+2. 银行转账: [银行信息]
+3. 或回复此邮件选择其他支付方式
+
+收到补款后，我们将立即开始制作您的定制订单。
+
+如有任何疑问，请随时联系我们。
+
+谢谢！
+{{ shop.name }}
+      `;
+    } else if (processType === 'refund') {
+      emailContent = `
+主题：订单 ${orderNumber} - 退款通知
+
+亲爱的客户，
+
+感谢您的订单！
+
+我们将为您退还多收的费用：$${difference.toFixed(2)}
+退款将在1-3个工作日内返回到您的原支付方式。
+
+订单将按照您选择的定制要求进行制作。
+
+谢谢！
+{{ shop.name }}
+      `;
+    } else {
+      emailContent = `
+主题：订单 ${orderNumber} - 订单确认
+
+亲爱的客户，
+
+感谢您的订单！价格确认无误，我们将立即开始制作您的定制订单。
+
+预计制作时间：3-5个工作日
+
+谢谢！
+{{ shop.name }}
+      `;
+    }
+    
+    document.getElementById('generated-email').innerHTML = emailContent.replace(/\n/g, '<br>');
+    document.getElementById('generated-email').style.display = 'block';
+  }
+  
+  function copyToClipboard() {
+    const emailDiv = document.getElementById('generated-email');
+    if (emailDiv.style.display === 'none') {
+      alert('请先生成邮件内容');
+      return;
+    }
+    
+    const emailText = emailDiv.innerText;
+    navigator.clipboard.writeText(emailText).then(function() {
+      alert('邮件内容已复制到剪贴板');
+    }).catch(function() {
+      // 备用复制方法
+      const textArea = document.createElement('textarea');
+      textArea.value = emailText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('邮件内容已复制到剪贴板');
+    });
+  }
+</script>
+{% endif %}

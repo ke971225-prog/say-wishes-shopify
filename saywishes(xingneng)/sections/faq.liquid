@@ -1,0 +1,321 @@
+<div class="faq color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width">
+    {% if section.settings.title != blank %}
+      <div class="title-wrapper-with-link title-wrapper--self-padded-mobile title-wrapper--no-top-margin">
+        <h2 class="title inline-richtext {{ section.settings.heading_size }}">
+          {{ section.settings.title }}
+        </h2>
+      </div>
+    {% endif %}
+    
+    {% if section.settings.description != blank %}
+      <div class="faq__description rte">
+        {{ section.settings.description }}
+      </div>
+    {% endif %}
+    
+    <div class="faq-list">
+      {% for block in section.blocks %}
+        <details class="faq-item" {{ block.shopify_attributes }}>
+          <summary class="faq-question">
+            <h3 class="faq-question-text">{{ block.settings.question | escape }}</h3>
+            <div class="faq-icon">
+              <svg class="icon icon-plus" aria-hidden="true" focusable="false" viewBox="0 0 10 10">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M1 4.51a.5.5 0 000 1h3.5l.01 3.5a.5.5 0 001-.01V5.5l3.5-.01a.5.5 0 00-.01-1H5.5L5.49.99a.5.5 0 00-1 .01v3.5l-3.5.01H1z" fill="currentColor"/>
+              </svg>
+              <svg class="icon icon-minus" aria-hidden="true" focusable="false" viewBox="0 0 10 2">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M.5 1C.5.7.7.5 1 .5h8a.5.5 0 110 1H1A.5.5 0 01.5 1z" fill="currentColor"/>
+              </svg>
+            </div>
+          </summary>
+          <div class="faq-answer">
+            <div class="faq-answer-content rte">
+              {{ block.settings.answer }}
+            </div>
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .faq {
+    padding: 5rem 0;
+  }
+  
+  .faq__description {
+    margin: 2rem 0 3rem;
+    text-align: center;
+    font-size: 1.6rem;
+    color: rgba(var(--color-foreground), 0.75);
+  }
+  
+  .faq-list {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+  
+  .faq-item {
+    border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+    margin-bottom: 0;
+  }
+  
+  .faq-item:last-child {
+    border-bottom: none;
+  }
+  
+  .faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 0;
+    cursor: pointer;
+    list-style: none;
+    transition: all 0.3s ease;
+  }
+  
+  .faq-question::-webkit-details-marker {
+    display: none;
+  }
+  
+  .faq-question:hover {
+    color: rgb(var(--color-link));
+  }
+  
+  .faq-question-text {
+    font-size: 1.8rem;
+    font-weight: 500;
+    margin: 0;
+    flex: 1;
+    text-align: left;
+  }
+  
+  .faq-icon {
+    position: relative;
+    width: 2rem;
+    height: 2rem;
+    margin-left: 2rem;
+    flex-shrink: 0;
+  }
+  
+  .faq-icon svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  .faq-icon .icon-plus {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+  
+  .faq-icon .icon-minus {
+    opacity: 0;
+    transform: rotate(90deg);
+  }
+  
+  .faq-item[open] .faq-icon .icon-plus {
+    opacity: 0;
+    transform: rotate(90deg);
+  }
+  
+  .faq-item[open] .faq-icon .icon-minus {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+  
+  .faq-answer {
+    padding: 0 0 2rem 0;
+    animation: slideDown 0.3s ease;
+  }
+  
+  .faq-answer-content {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    color: rgba(var(--color-foreground), 0.75);
+  }
+  
+  .faq-answer-content p {
+    margin-bottom: 1rem;
+  }
+  
+  .faq-answer-content p:last-child {
+    margin-bottom: 0;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @media screen and (max-width: 749px) {
+    .faq {
+      padding: 3rem 0;
+    }
+    
+    .faq__description {
+      font-size: 1.4rem;
+      margin: 1.5rem 0 2rem;
+    }
+    
+    .faq-question {
+      padding: 1.5rem 0;
+    }
+    
+    .faq-question-text {
+      font-size: 1.6rem;
+    }
+    
+    .faq-icon {
+      width: 1.8rem;
+      height: 1.8rem;
+      margin-left: 1.5rem;
+    }
+    
+    .faq-answer {
+      padding: 0 0 1.5rem 0;
+    }
+    
+    .faq-answer-content {
+      font-size: 1.4rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "default": "Frequently Asked Questions",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Small"
+        },
+        {
+          "value": "h1",
+          "label": "Medium"
+        },
+        {
+          "value": "h0",
+          "label": "Large"
+        }
+      ],
+      "default": "h1",
+      "label": "Heading size"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "default": "<p>Find answers to the most common questions about our products and services.</p>",
+      "label": "Description"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "accent-1",
+          "label": "Accent 1"
+        },
+        {
+          "value": "accent-2",
+          "label": "Accent 2"
+        },
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "background-2",
+          "label": "Background 2"
+        },
+        {
+          "value": "inverse",
+          "label": "Inverse"
+        }
+      ],
+      "default": "background-1",
+      "label": "Color scheme"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "default": "What is your return policy?",
+          "label": "Question"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "default": "<p>We offer a 30-day return policy for all unused items in their original packaging.</p>",
+          "label": "Answer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We offer a 30-day return policy for all unused items in their original packaging. Please contact our customer service team to initiate a return.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Standard shipping typically takes 5-7 business days. Express shipping options are available for faster delivery.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you ship internationally?",
+            "answer": "<p>Yes, we ship to most countries worldwide. International shipping rates and delivery times vary by destination.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How can I track my order?",
+            "answer": "<p>Once your order ships, you'll receive a tracking number via email. You can use this number to track your package on our website or the carrier's website.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

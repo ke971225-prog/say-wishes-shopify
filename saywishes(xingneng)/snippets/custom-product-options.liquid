@@ -1,0 +1,591 @@
+{% comment %}
+  Custom Product Options Snippet
+  完全响应式的视频消息定制表单
+{% endcomment %}
+
+<!-- Hero Section -->
+{% if section.settings.hero_image or section.settings.hero_title %}
+<div class="custom-options-hero">
+  {% if section.settings.hero_image %}
+    <div class="hero-image">
+      <img src="{{ section.settings.hero_image | image_url: width: 800, height: 400 }}" alt="{{ section.settings.hero_title }}" width="800" height="400" loading="lazy">
+    </div>
+  {% endif %}
+  <div class="hero-content">
+    {% if section.settings.hero_title %}
+      <h2 class="hero-title">{{ section.settings.hero_title }}</h2>
+    {% endif %}
+    {% if section.settings.hero_description %}
+      <p class="hero-description">{{ section.settings.hero_description }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Video Message Customization Form -->
+<div class="custom-product-options" style="
+  --primary-color: {{ section.settings.primary_color | default: '#007bff' }};
+  --secondary-color: {{ section.settings.secondary_color | default: '#6c757d' }};
+  --accent-color: {{ section.settings.accent_color | default: '#e74c3c' }};
+  --background-color: {{ section.settings.background_color | default: '#ffffff' }};
+  --text-color: {{ section.settings.text_color | default: '#333333' }};
+  --border-radius: {{ section.settings.border_radius | default: 8 }}px;
+">
+  <h2 class="custom-options-title">{{ section.settings.form_title | default: '🎬 Start Customizing Your Video' }}</h2>
+  
+  <form id="custom-options-form" class="custom-options-form">
+    <!-- Video Message Content -->
+    <div class="option-group">
+      <label class="option-label" for="message-content">{{ section.settings.message_label | default: '📝 Your Message Content' }}</label>
+      <textarea 
+        id="message-content" 
+        name="message_content" 
+        class="option-textarea" 
+        placeholder="{{ section.settings.message_placeholder | default: 'e.g. Happy Birthday Emma!' }}" 
+        maxlength="{{ section.settings.message_max_length | default: 300 }}" 
+        required
+      ></textarea>
+      <div class="char-count">
+        <span id="char-count">0</span>/{{ section.settings.message_max_length | default: 300 }}
+      </div>
+      <div class="help-text">{{ section.settings.message_help_text | default: '💡 Tip: Be specific and personal for the best results!' }}</div>
+    </div>
+
+    <!-- Recipient Name -->
+    <div class="option-group">
+      <label class="option-label" for="recipient-name">{{ section.settings.recipient_label | default: '👤 Recipient\'s Name' }}</label>
+      <input 
+        type="text" 
+        id="recipient-name" 
+        name="recipient_name" 
+        class="option-input" 
+        placeholder="{{ section.settings.recipient_placeholder | default: 'Enter recipient\'s name' }}" 
+        required
+      >
+    </div>
+
+    <!-- Language Selection -->
+    <div class="option-group">
+      <label class="option-label">{{ section.settings.language_label | default: '🌍 Video Language:' }}</label>
+      <div class="radio-group">
+        <div class="radio-option">
+          <input type="radio" id="lang-english" name="video_language" value="english" data-price="0" checked>
+          <label class="radio-label" for="lang-english">{{ section.settings.lang_english_text | default: '🇺🇸 English (Free)' }}</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" id="lang-spanish" name="video_language" value="spanish" data-price="5">
+          <label class="radio-label" for="lang-spanish">{{ section.settings.lang_spanish_text | default: '🇪🇸 Spanish (+$5.00)' }}</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" id="lang-french" name="video_language" value="french" data-price="5">
+          <label class="radio-label" for="lang-french">{{ section.settings.lang_french_text | default: '🇫🇷 French (+$5.00)' }}</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" id="lang-chinese" name="video_language" value="chinese" data-price="3">
+          <label class="radio-label" for="lang-chinese">{{ section.settings.lang_chinese_text | default: '🇨🇳 Chinese (+$3.00)' }}</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Background Music Input (Free) -->
+    <div class="option-group">
+      <label class="option-label">{{ section.settings.music_input_title | default: 'Which song should play in the background (if left empty, we will choose for you):' }}</label>
+      <input type="text" id="background-music-link" name="properties[background_music_link]" class="option-input" placeholder="{{ section.settings.custom_song_placeholder | default: 'Please insert YouTube link to desired song here' }}">
+      <div class="help-text">{{ section.settings.music_input_help | default: 'You can paste any song or link; leave blank and we will choose one for you.' }}</div>
+    </div>
+
+    <!-- Photo Count Selection -->
+    <div class="option-group">
+      <label class="option-label" for="photo-count">{{ section.settings.photo_label | default: '📸 Photo Options' }}</label>
+      <select id="photo-count" name="photo_count" class="option-select">
+        <option value="0" data-price="0">{{ section.settings.photo_none | default: "No Photos (Free)" }}</option>
+        <option value="1" data-price="5">{{ section.settings.photo_one | default: "1 Photo (+$5)" }}</option>
+        <option value="3" data-price="10">{{ section.settings.photo_three | default: "3 Photos (+$10)" }}</option>
+      </select>
+      <div class="help-text">{{ section.settings.photo_help | default: "Photos will be shown in the video" }}</div>
+    </div>
+
+    <!-- Delivery Speed -->
+    <div class="option-group">
+      <label class="option-label">{{ section.settings.delivery_label | default: '⚡ Delivery Speed:' }}</label>
+      <div class="radio-group">
+        <label class="option-radio">
+          <input type="radio" name="delivery_speed" value="standard" data-price="0" checked>
+          <span class="radio-custom"></span>
+          {{ section.settings.delivery_standard | default: "Standard Delivery (Free)" }}
+        </label>
+        
+        <label class="option-radio">
+          <input type="radio" name="delivery_speed" value="express" data-price="15">
+          <span class="radio-custom"></span>
+          {{ section.settings.delivery_express | default: "1 Day Delivery (+$15)" }}
+        </label>
+        <div class="help-text">{{ section.settings.delivery_help | default: "Your order will be done and delivered the next day" }}</div>
+      </div>
+    </div>
+
+    <!-- Special Occasion -->
+    <div class="option-group">
+      <label class="option-label" for="special-occasion">{{ section.settings.occasion_label | default: '🎉 Special Occasion (Optional)' }}</label>
+      <select id="special-occasion" name="special_occasion" class="option-select">
+        <option value="">{{ section.settings.occasion_none | default: "No Special Occasion" }}</option>
+        <option value="birthday">{{ section.settings.occasion_birthday | default: "Birthday" }}</option>
+        <option value="anniversary">{{ section.settings.occasion_anniversary | default: "Anniversary" }}</option>
+        <option value="graduation">{{ section.settings.occasion_graduation | default: "Graduation" }}</option>
+        <option value="wedding">{{ section.settings.occasion_wedding | default: "Wedding" }}</option>
+      </select>
+    </div>
+
+    <!-- Error Message Display Area -->
+    <div class="error-message" style="display: none;"></div>
+
+    <!-- Price Display -->
+    <div class="price-display">
+      <div class="price-breakdown">
+        <div class="price-item">
+          <span class="price-label">{{ section.settings.price_base_label | default: "Base Video:" }}</span>
+          <span class="price-value" id="base-price">${{ section.settings.base_price | default: 35.00 }}</span>
+        </div>
+        
+        <div class="price-item">
+          <span class="price-label">{{ section.settings.price_language_label | default: "Language Fee:" }}</span>
+          <span class="price-value" id="language-cost">$0.00</span>
+        </div>
+        
+        <div class="price-item">
+          <span class="price-label">{{ section.settings.price_music_label | default: "Music Fee:" }}</span>
+          <span class="price-value" id="music-cost">$0.00</span>
+        </div>
+        
+        <div class="price-item">
+          <span class="price-label">{{ section.settings.price_photo_label | default: "Photo Addition:" }}</span>
+          <span class="price-value" id="photo-cost">$0.00</span>
+        </div>
+        
+        <div class="price-item">
+          <span class="price-label">{{ section.settings.price_delivery_label | default: "Delivery Fee:" }}</span>
+          <span class="price-value" id="delivery-cost">$0.00</span>
+        </div>
+        
+        <div class="price-item total">
+          <span class="price-label">{{ section.settings.price_total_label | default: "Total Price:" }}</span>
+          <span class="price-value" id="total-price">${{ section.settings.base_price | default: 35.00 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="custom-options-submit">{{ section.settings.submit_button_text | default: '🛒 Order Your Video Message' }}</button>
+  </form>
+</div>
+
+<style>
+  /* Hero Section Styles */
+  .custom-options-hero {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .hero-image img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .hero-description {
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    margin-bottom: 0;
+  }
+  
+  /* Main Form Styles */
+  .custom-product-options {
+    font-family: {{ section.settings.font_family | default: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }};
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .custom-options-title {
+    color: var(--primary-color);
+    font-size: {{ section.settings.title_font_size | default: 24 }}px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    text-align: center;
+  }
+  
+  .option-group {
+    margin-bottom: 20px;
+  }
+  
+  .option-label {
+    display: block;
+    color: var(--text-color);
+    font-size: {{ section.settings.label_font_size | default: 16 }}px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .option-input, .option-select, .option-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  
+  .option-input:focus, .option-select:focus, .option-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+  
+  .option-textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .radio-option {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .radio-option:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 123, 255, 0.05);
+  }
+  
+  .radio-option input[type="radio"] {
+    margin-right: 10px;
+  }
+  
+  .radio-option input[type="radio"]:checked + .radio-label {
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+  
+  .option-radio {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+  }
+  
+  .option-radio:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 123, 255, 0.05);
+  }
+  
+  .option-radio input[type="radio"] {
+    margin-right: 10px;
+  }
+  
+  .help-text {
+    font-size: 12px;
+    color: var(--secondary-color);
+    margin-top: 5px;
+  }
+  
+  .char-count {
+    font-size: 12px;
+    color: var(--secondary-color);
+    text-align: right;
+    margin-top: 5px;
+  }
+  
+  .price-display {
+    background: var(--background-color);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin: 20px 0;
+  }
+  
+  .price-breakdown {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    border: 1px solid #e0e0e0;
+  }
+  
+  .price-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  
+  .price-item.total {
+    font-weight: bold;
+    font-size: 18px;
+    color: var(--accent-color);
+    border-top: 2px solid var(--accent-color);
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  
+  .custom-options-submit {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    color: {{ section.settings.button_text_color | default: '#ffffff' }};
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: {{ section.settings.button_font_size | default: 18 }}px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .custom-options-submit:hover {
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+  }
+  
+  .error-message {
+    color: var(--accent-color);
+    font-size: 12px;
+    margin-top: 5px;
+    padding: 10px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--accent-color);
+  }
+  
+  .custom-song-group {
+    margin-left: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--primary-color);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .custom-product-options {
+      padding: 20px;
+      margin: 10px;
+    }
+    
+    .custom-options-title {
+      font-size: 20px;
+    }
+    
+    .hero-title {
+      font-size: 1.5rem;
+    }
+    
+    .radio-group {
+      gap: 8px;
+    }
+    
+    .radio-option, .option-radio {
+      padding: 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .custom-product-options {
+      padding: 15px;
+      margin: 5px;
+    }
+    
+    .price-breakdown {
+      padding: 15px;
+    }
+    
+    .price-item {
+      font-size: 12px;
+    }
+    
+    .price-item.total {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('custom-options-form');
+    const messageContent = document.getElementById('message-content');
+    const charCount = document.getElementById('char-count');
+    // Character count for message
+    if (messageContent && charCount) {
+      messageContent.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+        
+        // Update character count color based on limit
+        const maxLength = parseInt('{{ section.settings.message_max_length | default: 300 }}');
+        const currentLength = this.value.length;
+        const percentage = (currentLength / maxLength) * 100;
+        
+        if (percentage > 90) {
+          charCount.style.color = 'var(--accent-color)';
+        } else if (percentage > 75) {
+          charCount.style.color = 'var(--secondary-color)';
+        } else {
+          charCount.style.color = 'var(--text-color)';
+        }
+      });
+    }
+    
+    // Price calculation
+    function updatePrice() {
+      const basePrice = parseFloat('{{ section.settings.base_price | default: 35 }}');
+      let totalPrice = basePrice;
+      
+      // Language fee
+      const selectedLanguage = document.querySelector('input[name="video_language"]:checked');
+      const languageFee = selectedLanguage ? parseFloat(selectedLanguage.dataset.price) : 0;
+      
+      // Music fee (always free)
+      const musicFee = 0;
+      
+      // Photo fee
+      const photoSelect = document.getElementById('photo-count');
+      const photoFee = photoSelect ? parseFloat(photoSelect.selectedOptions[0].dataset.price) : 0;
+      
+      // Delivery fee
+      const selectedDelivery = document.querySelector('input[name="delivery_speed"]:checked');
+      const deliveryFee = selectedDelivery ? parseFloat(selectedDelivery.dataset.price) : 0;
+      
+      totalPrice = basePrice + languageFee + photoFee + deliveryFee;
+      
+      // Update display with animation
+      const elements = {
+        'language-cost': languageFee,
+        'music-cost': musicFee,
+        'photo-cost': photoFee,
+        'delivery-cost': deliveryFee,
+        'total-price': totalPrice
+      };
+      
+      // Hide music-cost line when 0
+      const musicCostEl = document.getElementById('music-cost');
+      if (musicCostEl) {
+        const musicItem = musicCostEl.closest('.price-item');
+        musicItem && (musicItem.style.display = (musicFee === 0 ? 'none' : 'flex'));
+      }
+      
+      Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.style.transition = 'all 0.3s ease';
+          element.textContent = '$' + value.toFixed(2);
+        }
+      });
+    }
+    
+    // Add event listeners for price updates
+    document.querySelectorAll('input[type="radio"], select').forEach(element => {
+      element.addEventListener('change', updatePrice);
+    });
+    
+    // Initial price calculation
+    updatePrice();
+    
+    // Form validation
+    function validateForm() {
+      const messageContent = document.getElementById('message-content').value.trim();
+      const recipientName = document.getElementById('recipient-name').value.trim();
+      const errorMessage = document.querySelector('.error-message');
+      
+      if (!messageContent) {
+        showError('Please enter your message content.');
+        return false;
+      }
+      
+      if (!recipientName) {
+        showError('Please enter the recipient\'s name.');
+        return false;
+      }
+      
+      if (messageContent.length < 10) {
+        showError('Message content should be at least 10 characters long.');
+        return false;
+      }
+      
+      hideError();
+      return true;
+    }
+    
+    function showError(message) {
+      const errorElement = document.querySelector('.error-message');
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+      errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    
+    function hideError() {
+      const errorElement = document.querySelector('.error-message');
+      errorElement.style.display = 'none';
+    }
+    
+    // Form submission
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!validateForm()) {
+          return;
+        }
+        
+        // Collect form data
+        const formData = new FormData(form);
+        const customOptions = {};
+        
+        for (let [key, value] of formData.entries()) {
+          customOptions[key] = value;
+        }
+        
+        // Add total price
+        customOptions.total_price = document.getElementById('total-price').textContent;
+        
+        // Add to cart or process order
+        console.log('Custom options:', customOptions);
+        
+        // Show success message
+        const submitButton = document.querySelector('.custom-options-submit');
+        const originalText = submitButton.textContent;
+        submitButton.textContent = '✅ Added to Cart!';
+        submitButton.style.background = 'var(--accent-color)';
+        
+        setTimeout(() => {
+          submitButton.textContent = originalText;
+          submitButton.style.background = '';
+        }, 2000);
+        
+        // Here you would integrate with Shopify cart API
+        // Example: window.location.href = '/cart';
+      });
+    }
+  });
+</script>

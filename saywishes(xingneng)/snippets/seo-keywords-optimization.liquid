@@ -1,0 +1,134 @@
+{% comment %}
+  Enhanced SEO Keywords Optimization
+  Based on top-performing competitor analysis and best practices
+  Optimized for higher search rankings and organic traffic
+{% endcomment %}
+
+{%- liquid
+  # Enhanced core keyword groups based on TOP competitor analysis (targeting 50K+ monthly traffic)
+  assign primary_keywords = 'personalized video messages,custom video greetings,video messages from africa,african video messages,birthday video messages,anniversary video greetings,custom wishes video,personalized african greetings,video message service,custom video service'
+  assign secondary_keywords = 'african birthday wishes,custom celebration videos,personalized video gifts,video greetings africa,african culture videos,custom video production,personalized video content,video message delivery,african video creators,custom video experiences'
+  assign long_tail_keywords = 'personalized birthday video message from africa,custom anniversary video greeting service,african birthday wishes video message,personalized video greetings for special occasions,custom video messages with african culture,authentic african video birthday wishes,personalized video content from africa,custom video message delivery service'
+  
+  # High-converting keywords from competitor analysis
+  assign conversion_keywords = 'buy video message,order custom video,personalized video gift,video message online,custom video order,african video service,video greeting card,personalized video delivery'
+  assign trending_keywords = 'viral video messages,tiktok video greetings,instagram video wishes,social media video content,shareable video messages,trending african videos'
+  
+  # 根据页面类型生成关键词 - 基于竞争对手高转化策略
+  assign page_keywords = ''
+  
+  case request.page_type
+    when 'index'
+      assign page_keywords = primary_keywords | append: ',' | append: conversion_keywords | append: ',' | append: trending_keywords
+    when 'product'
+      assign product_keywords = product.tags | join: ','
+      assign page_keywords = product_keywords | append: ',' | append: primary_keywords | append: ',' | append: long_tail_keywords | append: ',' | append: conversion_keywords
+    when 'collection'
+      assign collection_keywords = collection.title | append: ' videos,custom ' | append: collection.title | downcase
+      assign page_keywords = collection_keywords | append: ',' | append: secondary_keywords | append: ',' | append: long_tail_keywords | append: ',' | append: trending_keywords
+    when 'article'
+      assign article_keywords = article.tags | join: ','
+      assign page_keywords = article_keywords | append: ',' | append: primary_keywords | append: ',' | append: secondary_keywords
+  endcase
+  
+  # 添加地域关键词 - 针对目标市场和全球用户
+  assign geo_keywords = 'africa,african,nigeria,kenya,ghana,south africa,uganda,tanzania,usa african videos,uk african greetings,canada african messages,australia african gifts,europe african videos,worldwide african greetings'
+  assign page_keywords = page_keywords | append: ',' | append: geo_keywords
+  
+  # 添加场合关键词
+  assign occasion_keywords = 'birthday,anniversary,wedding,graduation,celebration,holiday,christmas,new year'
+  assign page_keywords = page_keywords | append: ',' | append: occasion_keywords
+-%}
+
+<!-- 动态关键词Meta标签（仅在缺失时由JS补充，避免重复） -->
+{%- comment -%}Keywords meta 不再服务端输出，防止与其他来源重复。{%- endcomment -%}
+
+<!-- 增强的页面标题生成 -->
+{%- liquid
+  assign seo_title = ''
+  
+  case request.page_type
+    when 'index'
+      assign seo_title = shop.name | append: ' - Personalized Video Messages & Custom Wishes from Africa'
+    when 'product'
+      assign seo_title = product.title | append: ' - Custom Video Message from Africa | ' | append: shop.name
+    when 'collection'
+      assign seo_title = collection.title | append: ' - Personalized African Video Greetings | ' | append: shop.name
+    when 'article'
+      assign seo_title = article.title | append: ' - Video Message Tips | ' | append: shop.name
+    when 'page'
+      assign seo_title = page.title | append: ' - Custom Video Services | ' | append: shop.name
+    else
+      assign seo_title = page_title | append: ' | ' | append: shop.name
+  endcase
+  
+  # 添加分页信息
+  if current_page > 1
+    assign seo_title = seo_title | append: ' - Page ' | append: current_page
+  endif
+-%}
+
+<!-- 增强的Meta描述生成 -->
+{%- liquid
+  assign seo_description = ''
+  
+  case request.page_type
+    when 'index'
+      assign seo_description = 'Create personalized video messages and custom wishes from Africa. Professional video greetings for birthdays, anniversaries, and special occasions. Order your custom video today!'
+    when 'product'
+      if product.description != blank
+        assign seo_description = product.description | strip_html | truncate: 120 | append: ' Order your personalized video message from Africa today!'
+      else
+        assign seo_description = 'Custom ' | append: product.title | append: ' video message from Africa. Personalized greetings for your special occasion. Professional quality guaranteed.'
+      endif
+    when 'collection'
+      if collection.description != blank
+        assign seo_description = collection.description | strip_html | truncate: 120 | append: ' Browse our collection of personalized African video greetings.'
+      else
+        assign seo_description = 'Discover our ' | append: collection.title | append: ' collection. Custom video messages and personalized wishes from Africa for every occasion.'
+      endif
+    when 'article'
+      if article.summary != blank
+        assign seo_description = article.summary | strip_html | truncate: 155
+      elsif article.content != blank
+        assign seo_description = article.content | strip_html | truncate: 155
+      else
+        assign seo_description = 'Learn about personalized video messages and custom wishes from Africa. Tips, guides, and inspiration for your special occasions.'
+      endif
+  endcase
+-%}
+
+<!-- 应用优化的标题和描述 -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 不覆盖服务器生成的 <title> 与 description；仅在缺失时补充
+  // 仅在缺失时添加描述 meta
+  if ('{{ seo_description }}') {
+    let descriptionMeta = document.querySelector('meta[name="description"]');
+    if (!descriptionMeta) {
+      descriptionMeta = document.createElement('meta');
+      descriptionMeta.name = 'description';
+      descriptionMeta.content = '{{ seo_description | escape }}';
+      document.head.appendChild(descriptionMeta);
+    }
+  }
+  
+  // 添加关键词meta标签
+  if ('{{ page_keywords }}' && !document.querySelector('meta[name="keywords"]')) {
+    const keywordsMeta = document.createElement('meta');
+    keywordsMeta.name = 'keywords';
+    keywordsMeta.content = '{{ page_keywords | split: "," | uniq | join: ", " | escape }}';
+    document.head.appendChild(keywordsMeta);
+  }
+});
+</script>
+
+{%- comment -%}
+Structured data is rendered by 'enhanced-structured-data'.
+To avoid duplication, this snippet no longer outputs JSON-LD here.
+{%- endcomment -%}
+
+{%- comment -%}
+Breadcrumb JSON-LD is provided by 'enhanced-structured-data'.
+This snippet suppresses duplicate breadcrumb schema.
+{%- endcomment -%}

@@ -1,0 +1,201 @@
+{% comment %}
+  Performance and SEO Optimization
+  Improves page loading speed and user experience for better SEO
+{% endcomment %}
+
+<!-- Critical Resource Hints for Performance -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link rel="preconnect" href="https://monorail-edge.shopifysvc.com" crossorigin>
+
+<!-- DNS Prefetch for External Resources -->
+<link rel="dns-prefetch" href="//www.google-analytics.com">
+<link rel="dns-prefetch" href="//www.googletagmanager.com">
+<link rel="dns-prefetch" href="//connect.facebook.net">
+<link rel="dns-prefetch" href="//www.facebook.com">
+
+<!-- Preload Critical CSS -->
+{% if request.page_type == 'index' %}
+  <link rel="preload" href="{{ 'critical.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+{% endif %}
+
+<!-- Optimize Images with WebP Detection -->
+<script>
+(function() {
+  function supportsWebP(callback) {
+    var webP = new Image();
+    webP.onload = webP.onerror = function () {
+      callback(webP.height == 2);
+    };
+    webP.src = "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA";
+  }
+  
+  supportsWebP(function(supported) {
+    if (supported) {
+      document.documentElement.classList.add('webp');
+    } else {
+      document.documentElement.classList.add('no-webp');
+    }
+  });
+})();
+</script>
+
+<!-- Lazy Loading Implementation -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Intersection Observer for lazy loading
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+            img.classList.remove('lazy');
+            observer.unobserve(img);
+          }
+        }
+      });
+    });
+
+    document.querySelectorAll('img[data-src]').forEach(img => {
+      imageObserver.observe(img);
+    });
+  }
+});
+</script>
+
+<!-- Core Web Vitals Optimization -->
+<script>
+// Optimize Largest Contentful Paint (LCP)
+document.addEventListener('DOMContentLoaded', function() {
+  // Preload hero images
+  const heroImages = document.querySelectorAll('.hero img, .banner img');
+  heroImages.forEach(img => {
+    if (img.src) {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = img.src;
+      document.head.appendChild(link);
+    }
+  });
+});
+
+// Optimize First Input Delay (FID)
+function optimizeFID() {
+  // Defer non-critical JavaScript
+  const scripts = document.querySelectorAll('script[data-defer]');
+  scripts.forEach(script => {
+    script.defer = true;
+  });
+}
+
+// Optimize Cumulative Layout Shift (CLS)
+function optimizeCLS() {
+  // Add dimensions to images without them
+  const images = document.querySelectorAll('img:not([width]):not([height])');
+  images.forEach(img => {
+    img.addEventListener('load', function() {
+      if (!this.width || !this.height) {
+        this.style.aspectRatio = 'auto';
+      }
+    });
+  });
+}
+
+// Initialize optimizations
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    optimizeFID();
+    optimizeCLS();
+  });
+} else {
+  optimizeFID();
+  optimizeCLS();
+}
+</script>
+
+<!-- Service Worker for Caching (if supported) -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      console.log('SW registered: ', registration);
+    }).catch(function(registrationError) {
+      console.log('SW registration failed: ', registrationError);
+    });
+  });
+}
+</script>
+
+<!-- Critical CSS Inlining -->
+<style>
+/* Critical above-the-fold styles */
+.hero, .banner, .main-content {
+  display: block;
+}
+
+/* Optimize font loading */
+@font-face {
+  font-family: 'Primary';
+  font-display: swap;
+  src: url('{{ settings.font_primary | font_url }}') format('woff2');
+}
+
+/* Lazy loading placeholder */
+.lazy {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.lazy.loaded {
+  opacity: 1;
+}
+
+/* Skeleton loading for better perceived performance */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+</style>
+
+<!-- Performance Monitoring -->
+<script>
+// Monitor Core Web Vitals
+function sendToAnalytics(metric) {
+  // Send to your analytics service
+  console.log('Core Web Vital:', metric);
+}
+
+// Measure and report Core Web Vitals
+if ('web-vitals' in window) {
+  getCLS(sendToAnalytics);
+  getFID(sendToAnalytics);
+  getFCP(sendToAnalytics);
+  getLCP(sendToAnalytics);
+  getTTFB(sendToAnalytics);
+}
+</script>
+
+<!-- Resource Hints for Next Page Navigation -->
+{% if request.page_type == 'collection' %}
+  {% for product in collection.products limit: 5 %}
+    <link rel="prefetch" href="{{ product.url }}">
+  {% endfor %}
+{% endif %}
+
+{% if request.page_type == 'product' %}
+  <link rel="prefetch" href="{{ routes.cart_url }}">
+  {% if collection %}
+    <link rel="prefetch" href="{{ collection.url }}">
+  {% endif %}
+{% endif %}

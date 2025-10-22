@@ -1,0 +1,3625 @@
+{{ 'component-product-payment-icons.css' | asset_url | stylesheet_tag }}
+
+<div class="video-product-container">
+  <!-- 左侧团队展示区域 -->
+  <div class="team-gallery-section">
+    <div class="main-team-display">
+      <div class="team-carousel">
+        <!-- Team 1 -->
+        {% if section.settings.team1_visible %}
+          <div class="team-slide" data-team="team1" style="display: block;">
+            <div class="image-carousel" data-team="team1">
+              {% comment %} 支持10张图片和2个视频 {% endcomment %}
+              {% assign media_index = 0 %}
+              
+              {% comment %} 视频1 {% endcomment %}
+              {% if section.settings.team1_video1 %}
+                <video class="carousel-media carousel-video active" data-index="{{ media_index }}" data-type="video" controls muted>
+                  <source src="{{ section.settings.team1_video1 }}" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% comment %} 视频2 {% endcomment %}
+              {% if section.settings.team1_video2 %}
+                <video class="carousel-media carousel-video{% unless section.settings.team1_video1 %} active{% endunless %}" data-index="{{ media_index }}" data-type="video" controls muted style="{% if section.settings.team1_video1 %}display: none;{% endif %}">
+                  <source src="{{ section.settings.team1_video2 }}" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% comment %} 图片1-10 {% endcomment %}
+              {% if section.settings.team1_image %}
+                <img src="{{ section.settings.team1_image | image_url: width: 800 }}" alt="Personalized African Video Messages - {{ section.settings.team1_name }} Team for Custom Family Greetings" {% if section.settings.team1_video1 or section.settings.team1_video2 %}loading="lazy"{% endif %} class="carousel-media carousel-image{% unless section.settings.team1_video1 or section.settings.team1_video2 %} active{% endunless %}" data-index="{{ media_index }}" data-type="image" style="{% if section.settings.team1_video1 or section.settings.team1_video2 %}display: none;{% endif %}">
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% if section.settings.team1_thumb %}
+                <img src="{{ section.settings.team1_thumb | image_url: width: 800 }}" alt="Custom African Birthday Video - {{ section.settings.team1_name }} Personalized Greeting Team" loading="lazy" class="carousel-media carousel-image" data-index="{{ media_index }}" data-type="image" style="display: none;">
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% if section.settings.team1_image3 %}
+                <img src="{{ section.settings.team1_image3 | image_url: width: 800 }}" alt="African Video Message Performers - {{ section.settings.team1_name }} Custom Family Celebration Team" loading="lazy" class="carousel-media carousel-image" data-index="{{ media_index }}" data-type="image" style="display: none;">
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% if section.settings.team1_image4 %}
+                <img src="{{ section.settings.team1_image4 | image_url: width: 800 }}" alt="Personalized Video Greetings from Africa - {{ section.settings.team1_name }} Professional Team" loading="lazy" class="carousel-media carousel-image" data-index="{{ media_index }}" data-type="image" style="display: none;">
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% if section.settings.team1_image5 %}
+                <img src="{{ section.settings.team1_image5 | image_url: width: 800 }}" alt="African Team Video Message - {{ section.settings.team1_name }} Custom Celebration" loading="lazy" class="carousel-media carousel-image" data-index="{{ media_index }}" data-type="image" style="display: none;">
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% if section.settings.team1_image6 %}
+                <img src="{{ section.settings.team1_image6 | image_url: width: 800 }}" alt="Personalized African Greetings - {{ section.settings.team1_name }} Team" loading="lazy" class="carousel-media carousel-image" data-index="{{ media_index }}" data-type="image" style="display: none;">
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% if section.settings.team1_image7 %}
+                <img src="{{ section.settings.team1_image7 | image_url: width: 800 }}" alt="Custom Video Messages from Africa - {{ section.settings.team1_name }}" loading="lazy" class="carousel-media carousel-image" data-index="{{ media_index }}" data-type="image" style="display: none;">
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% if section.settings.team1_image8 %}
+                <img src="{{ section.settings.team1_image8 | image_url: width: 800 }}" alt="African Birthday Video Team - {{ section.settings.team1_name }}" loading="lazy" class="carousel-media carousel-image" data-index="{{ media_index }}" data-type="image" style="display: none;">
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% if section.settings.team1_image9 %}
+                <img src="{{ section.settings.team1_image9 | image_url: width: 800 }}" alt="Personalized Greeting Video - {{ section.settings.team1_name }} Team" loading="lazy" class="carousel-media carousel-image" data-index="{{ media_index }}" data-type="image" style="display: none;">
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% if section.settings.team1_image10 %}
+                <img src="{{ section.settings.team1_image10 | image_url: width: 800 }}" alt="African Video Message Team - {{ section.settings.team1_name }}" loading="lazy" class="carousel-media carousel-image" data-index="{{ media_index }}" data-type="image" style="display: none;">
+                {% assign media_index = media_index | plus: 1 %}
+              {% endif %}
+              
+              {% comment %} 如果没有任何媒体文件，显示占位符 {% endcomment %}
+              {% unless section.settings.team1_video1 or section.settings.team1_video2 or section.settings.team1_image or section.settings.team1_thumb or section.settings.team1_image3 or section.settings.team1_image4 or section.settings.team1_image5 or section.settings.team1_image6 or section.settings.team1_image7 or section.settings.team1_image8 or section.settings.team1_image9 or section.settings.team1_image10 %}
+                <div class="placeholder-team">
+                  <div class="team-overlay">
+                    <h3 class="team-name">{{ section.settings.team1_name | default: 'Pink Lovers' }}</h3>
+                  </div>
+                </div>
+              {% endunless %}
+            </div>
+            
+            {% comment %} 计算总媒体数量 {% endcomment %}
+            {% assign total_media_count = 0 %}
+            {% if section.settings.team1_video1 %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_video2 %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_image %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_thumb %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_image3 %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_image4 %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_image5 %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_image6 %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_image7 %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_image8 %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_image9 %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            {% if section.settings.team1_image10 %}{% assign total_media_count = total_media_count | plus: 1 %}{% endif %}
+            
+            {% if total_media_count > 1 %}
+              <div class="carousel-controls">
+                <button class="carousel-btn prev-btn" onclick="changeMedia('team1', -1)">‹</button>
+                <div class="carousel-dots">
+                  {% assign dot_index = 0 %}
+                  {% if section.settings.team1_video1 %}<span class="dot{% if dot_index == 0 %} active{% endif %}" onclick="showMedia('team1', {{ dot_index }})" data-type="video"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_video2 %}<span class="dot{% if dot_index == 0 %} active{% endif %}" onclick="showMedia('team1', {{ dot_index }})" data-type="video"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_image %}<span class="dot{% if dot_index == 0 %} active{% endif %}" onclick="showMedia('team1', {{ dot_index }})" data-type="image"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_thumb %}<span class="dot" onclick="showMedia('team1', {{ dot_index }})" data-type="image"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_image3 %}<span class="dot" onclick="showMedia('team1', {{ dot_index }})" data-type="image"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_image4 %}<span class="dot" onclick="showMedia('team1', {{ dot_index }})" data-type="image"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_image5 %}<span class="dot" onclick="showMedia('team1', {{ dot_index }})" data-type="image"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_image6 %}<span class="dot" onclick="showMedia('team1', {{ dot_index }})" data-type="image"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_image7 %}<span class="dot" onclick="showMedia('team1', {{ dot_index }})" data-type="image"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_image8 %}<span class="dot" onclick="showMedia('team1', {{ dot_index }})" data-type="image"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_image9 %}<span class="dot" onclick="showMedia('team1', {{ dot_index }})" data-type="image"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                  {% if section.settings.team1_image10 %}<span class="dot" onclick="showMedia('team1', {{ dot_index }})" data-type="image"></span>{% assign dot_index = dot_index | plus: 1 %}{% endif %}
+                </div>
+                <button class="carousel-btn next-btn" onclick="changeMedia('team1', 1)">›</button>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+        
+
+      </div>
+    </div>
+    
+>
+    
+    <!-- Single-team mode: removed left-side team selection info display to avoid duplication -->
+    
+    <!-- 订单步骤提示组件：已移除，仅保留左侧轮播图组件 -->
+  </div>
+
+  <!-- 右侧产品定制表单 -->
+  <div class="product-customization-section">
+    <div class="product-header">
+      <h1 class="product-title" style="font-size: {{ section.settings.product_title_font_size | default: 28 }}px; color: {{ section.settings.product_title_color | default: '#333333' }}; font-weight: {{ section.settings.product_title_font_weight | default: 'bold' }};">{{ section.settings.product_title | default: 'Personalized Greeting Video from Africa' }}</h1>
+      
+      <div class="price-section">
+        <span class="current-price" style="font-size: {{ section.settings.current_price_font_size | default: 24 }}px; color: {{ section.settings.current_price_color | default: '#e74c3c' }}; font-weight: {{ section.settings.current_price_font_weight | default: 'bold' }};">${{ section.settings.base_price | default: '46.00' }} USD</span>
+        {% if section.settings.original_price %}
+          <span class="original-price" style="font-size: {{ section.settings.original_price_font_size | default: 18 }}px; color: {{ section.settings.original_price_color | default: '#999999' }};">${{ section.settings.original_price }} USD</span>
+        {% endif %}
+        {% if section.settings.discount_percent %}
+          <span class="discount-badge" style="font-size: {{ section.settings.discount_badge_font_size | default: 12 }}px; color: {{ section.settings.discount_badge_color | default: '#ffffff' }}; background-color: {{ section.settings.discount_badge_bg_color | default: '#e74c3c' }};">{{ section.settings.discount_percent }}% OFF</span>
+        {% endif %}
+      </div>
+      
+      <div class="rating-section">
+        <div class="stars">
+          {% assign rating = section.settings.rating | default: 5.0 | times: 1.0 %}
+          {% assign star_count = section.settings.star_count | default: 5 %}
+          {% for i in (1..star_count) %}
+            <span class="star {% if i <= rating %}filled{% endif %}" style="font-size: {{ section.settings.star_size | default: 18 }}px; color: {% if i <= rating %}{{ section.settings.star_filled_color | default: '#ffc107' }}{% else %}{{ section.settings.star_empty_color | default: '#e0e0e0' }}{% endif %};">★</span>
+          {% endfor %}
+          <span class="rating-text" style="font-size: {{ section.settings.rating_text_font_size | default: 14 }}px; color: {{ section.settings.rating_text_color | default: '#666666' }}; font-weight: {{ section.settings.rating_text_font_weight | default: 'normal' }};">{{ section.settings.rating | default: '5.0' }}/{{ star_count }} based on {{ section.settings.review_count | default: '2576' }} reviews</span>
+        </div>
+      </div>
+    </div>
+
+    <form id="video-customization-form" class="customization-form" enctype="multipart/form-data">
+      {% comment %} 单团队模式：默认选择 team1 {% endcomment %}
+      {% assign default_team = 'team1' %}
+      {% assign default_team_name = section.settings.team1_name | default: 'Pink Lovers' %}
+      
+      <input type="hidden" id="selected-team" name="selected_team" value="{{ default_team }}">
+      
+      <div class="form-section">
+        <h3 style="font-size: {{ section.settings.start_customizing_title_font_size | default: 24 }}px; color: {{ section.settings.start_customizing_title_color | default: '#333333' }}; font-weight: {{ section.settings.start_customizing_title_font_weight | default: 'bold' }};">{{ section.settings.start_customizing_title | default: 'Start customizing your video' }}</h3>
+        
+        <!-- 单团队模式：团队信息仅用于属性写入，移除前端展示块以避免选择误解 -->
+        
+        <div class="form-group no-frame">
+          <label for="photo-count">{{ section.settings.photo_count_label | default: 'How many photos do you want to use?' }}</label>
+          <select id="photo-count" name="photo_count" required>
+            <option value="1">{{ section.settings.photo_option_1 | default: '1 Photo Included' }}</option>
+            <option value="2">{{ section.settings.photo_option_2 | default: '2 Photos (+$5)' }}</option>
+            <option value="3">{{ section.settings.photo_option_3 | default: '3 Photos (+$10)' }}</option>
+            <option value="4">{{ section.settings.photo_option_4 | default: '4 Photos (+$15)' }}</option>
+            <option value="5">{{ section.settings.photo_option_5 | default: '5 Photos (+$20)' }}</option>
+          </select>
+        </div>
+
+        <div class="photo-upload-section">
+          <h4 style="font-weight: bold;">{{ section.settings.upload_text | default: 'Upload photos to be shown in the video' }}</h4>
+          
+          <!-- 图片质量选择 -->
+          <div class="upload-quality-settings">
+            <label>Image Quality:</label>
+            <select id="image-quality">
+              <option value="0.6">High Compression (Faster)</option>
+              <option value="0.8" selected>Balanced</option>
+              <option value="0.95">High Quality (Slower)</option>
+            </select>
+          </div>
+          
+          <div class="upload-area" id="upload-area">
+            <div class="upload-placeholder">
+            <div class="upload-icon">📁</div>
+            <p class="upload-hint">{{ section.settings.upload_hint | default: 'Drag & drop files here or click to browse' }}</p>
+            <button type="button" class="choose-file-btn">{{ section.settings.choose_file | default: 'Choose file' }}</button>
+          </div>
+            <input type="file" id="photo-input" name="properties[uploaded_photos]" multiple accept="image/*" style="display: none;">
+          </div>
+          
+          <div id="uploaded-photos" class="uploaded-photos"></div>
+          
+          
+          <!-- Privacy Protection Notice -->
+          <div class="privacy-protection-notice">
+            <div class="privacy-header">
+              <span class="privacy-icon">🔒</span>
+              <strong>Privacy Protection: Your photos will be permanently deleted within 24 hours after video delivery</strong>
+            </div>
+            <div class="privacy-details">
+              <span class="privacy-check">✓ No backup copies retained</span>
+              <span class="privacy-check">✓ Minimized data storage risk</span>
+              <span class="privacy-check">✓ Complete privacy protection</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group no-frame">
+          <label for="message-text">{{ section.settings.message_label | default: 'Your text on the poster' }}</label>
+          <textarea id="message-text" name="message_text" placeholder="{{ section.settings.message_placeholder | default: 'e.g. Happy Birthday Emma!' }}" maxlength="200" required rows="1"></textarea>
+          <div class="char-counter"><span id="char-count">0</span>/200</div>
+        </div>
+
+        <div class="form-group no-frame">
+          <label for="customer-email">{{ section.settings.email_label | default: 'Your email address' }}</label>
+<input type="email" id="customer-email" name="customer_email" placeholder="{{ section.settings.email_placeholder | default: 'Enter your email to receive the video' }}" required>
+        </div>
+
+        <div class="form-group no-frame">
+          <label class="option-label">{{ section.settings.music_input_title | default: 'Which song should play in the background (if left empty, we will choose for you):' }}</label>
+<input type="text" id="background-music-link" name="background_music_link" placeholder="{{ section.settings.music_input_help | default: 'You can paste any song or link; leave blank and we will choose one for you.' }}">
+        </div>
+
+        <div class="form-group no-frame">
+          <label>{{ section.settings.delivery_label | default: 'Delivery time' }}</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="delivery_speed" value="standard" data-price="0" checked>
+              <span class="radio-text">{{ section.settings.standard_delivery_text | default: 'Standard delivery (3-5 days) - Free' }}</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="delivery_speed" value="express" data-price="{{ section.settings.express_delivery_price | default: 10 }}">
+              <span class="radio-text">{{ section.settings.express_delivery_text | default: 'Express delivery (1-2 days)' }} - ${{ section.settings.express_delivery_price | default: 10 }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group no-frame">
+          <label>{{ section.settings.extras_title | default: 'Extras' }}</label>
+          <div class="checkbox-group">
+            <label class="checkbox-option">
+              <input type="checkbox" name="extras[]" value="party-editing" data-price="{{ section.settings.party_editing_price | default: 15 }}">
+              <span class="checkbox-text">{{ section.settings.party_editing_text | default: 'Party video editing' }} (+${{ section.settings.party_editing_price | default: 15 }})</span>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" name="extras[]" value="birthday-song" data-price="{{ section.settings.birthday_song_price | default: 10 }}">
+              <span class="checkbox-text">{{ section.settings.birthday_song_text | default: 'Sing happy birthday song' }} (+${{ section.settings.birthday_song_price | default: 10 }})</span>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" name="extras[]" value="social-media" data-price="0">
+              <span class="checkbox-text">{{ section.settings.social_media_text | default: 'Allow us to post on social media' }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-summary">
+        <h4>{{ section.settings.order_summary_title | default: 'Order Summary' }}</h4>
+        <div class="price-breakdown">
+          <div class="price-item">
+            <span>{{ section.settings.base_video_text | default: 'Base video' }}</span>
+            <span id="base-price">${{ section.settings.base_price | default: '46.00' }}</span>
+          </div>
+          <div class="price-item" id="photo-price-item" style="display: none;">
+            <span>{{ section.settings.additional_photos_text | default: 'Additional photos' }}</span>
+            <span id="photo-price">$0.00</span>
+          </div>
+          <div class="price-item" id="delivery-price-item" style="display: none;">
+            <span>{{ section.settings.express_delivery_summary_text | default: 'Express delivery' }}</span>
+            <span id="delivery-price">$0.00</span>
+          </div>
+          <div class="price-item" id="extras-price-item" style="display: none;">
+            <span>{{ section.settings.extras_summary_text | default: 'Extras' }}</span>
+            <span id="extras-price">$0.00</span>
+          </div>
+          <div class="price-total">
+            <span>{{ section.settings.total_text | default: 'Total' }}</span>
+            <span id="total-price">${{ section.settings.base_price | default: '46.00' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="add-to-cart-btn">{{ section.settings.add_to_cart_button_text | default: 'Add to cart' }}</button>
+      <button type="button" class="buy-now-btn" id="buy-now-btn">{{ section.settings.buy_now_button_text | default: 'Buy now' }}</button>
+      <div class="payment-icons-below-buy-now" aria-hidden="true">
+        {% render 'payment-icons', show_heading: false, show_note: false, decorative: true %}
+      </div>
+
+      <!-- Secure Info Accordion -->
+      <div id="secure-accordion-{{ section.id }}" class="secure-accordion" role="region" aria-label="Secure info">
+        {% for block in section.blocks %}
+          {% if block.type == 'secure_accordion_item' %}
+            <div class="secure-accordion__item" {{ block.shopify_attributes }}>
+              <button type="button" class="secure-accordion__header" aria-expanded="false">
+                <span class="secure-accordion__title" style="font-size: {{ block.settings.title_font_size | default: 16 }}px; color: {{ block.settings.title_color | default: section.settings.text_color }}; font-weight: {% if block.settings.title_bold %}700{% else %}400{% endif %};">{{ block.settings.title | escape }}</span>
+                <span class="secure-accordion__icon" aria-hidden="true">+</span>
+              </button>
+              <div class="secure-accordion__content">
+                <div class="secure-accordion__content-inner rte">
+                  {{ block.settings.content }}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <style>
+        /* Secure Accordion Styles (scoped by section id) */
+        #secure-accordion-{{ section.id }} {
+          margin-top: 12px;
+          border: 1px solid {{ section.settings.border_color | default: '#e0e0e0' }};
+          border-radius: {{ section.settings.border_radius | default: 8 }}px;
+          background: {{ section.settings.container_background | default: '#ffffff' }};
+        }
+        #secure-accordion-{{ section.id }} .secure-accordion__item:not(:last-child) {
+          border-bottom: 1px solid {{ section.settings.border_color | default: '#e0e0e0' }};
+        }
+        #secure-accordion-{{ section.id }} .secure-accordion__header {
+          width: 100%;
+          padding: 12px 16px;
+          background: transparent;
+          border: 0;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          cursor: pointer;
+          color: {{ section.settings.text_color | default: '#333333' }};
+        }
+        #secure-accordion-{{ section.id }} .secure-accordion__icon {
+          font-size: 20px;
+          line-height: 1;
+          transition: transform 0.25s ease;
+          color: {{ section.settings.text_color | default: '#333333' }};
+        }
+        #secure-accordion-{{ section.id }} .secure-accordion__header[aria-expanded="true"] .secure-accordion__icon {
+          transform: rotate(45deg); /* '+' 旋转为 '×' 视觉效果 */
+        }
+        #secure-accordion-{{ section.id }} .secure-accordion__content {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease, opacity 0.3s ease;
+          opacity: 0;
+        }
+        #secure-accordion-{{ section.id }} .secure-accordion__content.is-open {
+          opacity: 1;
+        }
+        #secure-accordion-{{ section.id }} .secure-accordion__content-inner {
+          padding: 12px 16px;
+          color: {{ section.settings.text_color | default: '#333333' }};
+        }
+        /* 响应式细节 */
+        @media (max-width: 768px) {
+          #secure-accordion-{{ section.id }} { border-radius: 6px; }
+          #secure-accordion-{{ section.id }} .secure-accordion__header { padding: 10px 14px; }
+          #secure-accordion-{{ section.id }} .secure-accordion__content-inner { padding: 10px 14px; }
+        }
+      </style>
+
+      <script>
+        (function() {
+          var accordion = document.getElementById('secure-accordion-{{ section.id }}');
+          if (!accordion) return;
+          var items = accordion.querySelectorAll('.secure-accordion__item');
+
+          // 初始化：确保内容区域处于可动画的初始状态
+          items.forEach(function(item) {
+            var content = item.querySelector('.secure-accordion__content');
+            if (content) { content.style.maxHeight = 0; }
+          });
+
+          function closeAll() {
+            items.forEach(function(i) {
+              var h = i.querySelector('.secure-accordion__header');
+              var c = i.querySelector('.secure-accordion__content');
+              if (h) h.setAttribute('aria-expanded', 'false');
+              if (c) {
+                c.classList.remove('is-open');
+                c.style.maxHeight = 0;
+              }
+            });
+          }
+
+          items.forEach(function(item) {
+            var header = item.querySelector('.secure-accordion__header');
+            var content = item.querySelector('.secure-accordion__content');
+            if (!header || !content) return;
+
+            header.addEventListener('click', function() {
+              var expanded = header.getAttribute('aria-expanded') === 'true';
+              // 手风琴：先关闭其他
+              closeAll();
+              if (!expanded) {
+                header.setAttribute('aria-expanded', 'true');
+                content.classList.add('is-open');
+                content.style.maxHeight = content.scrollHeight + 'px';
+              }
+            });
+          });
+
+          // 自适应：窗口尺寸变化时，更新打开项的高度以适配内容
+          window.addEventListener('resize', function() {
+            var openHeader = accordion.querySelector('.secure-accordion__header[aria-expanded="true"]');
+            if (openHeader) {
+              var openContent = openHeader.parentElement.querySelector('.secure-accordion__content');
+              if (openContent) {
+                openContent.style.maxHeight = openContent.scrollHeight + 'px';
+              }
+            }
+          });
+        })();
+      </script>
+    </form>
+  </div>
+</div>
+
+
+
+<style>
+
+/* 基础容器样式 */
+.video-product-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 40px;
+  padding: 20px;
+  background: {{ section.settings.container_background | default: '#ffffff' }};
+  color: {{ section.settings.text_color | default: '#333333' }};
+}
+
+/* 团队展示区域 */
+.team-gallery-section {
+  flex: 1;
+  max-width: 650px; /* 增加最大宽度 */
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+  height: fit-content;
+}
+
+.main-team-display {
+  margin-bottom: 20px;
+}
+
+.team-carousel {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.team-slide {
+  width: 100%;
+  height: 500px; /* 增加高度 */
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* 移除重复的样式，使用.carousel-image统一控制 */
+
+.placeholder-team {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ff6b9d, #c44569);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.team-overlay {
+  text-align: center;
+  color: white;
+}
+
+.team-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* 轮播控制样式 */
+.image-carousel {
+  position: relative;
+  width: 100%;
+  height: 500px; /* 增加高度 */
+}
+
+/* 统一媒体样式 */
+.carousel-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  transition: opacity 0.3s ease;
+}
+
+/* 图片样式 */
+.carousel-image {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* 视频样式 */
+.carousel-video {
+  object-fit: cover;
+  background: #000;
+}
+
+.carousel-video::-webkit-media-controls-panel {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-controls {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 8px 15px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+}
+
+.carousel-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.carousel-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: white;
+  transform: scale(1.2);
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Single-team mode: removed legacy left-side team selection display styles */
+
+/* 订单步骤提示组件样式 */
+.order-steps-guide {
+  margin-top: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.steps-header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.steps-header h4 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.steps-header p {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.steps-carousel {
+  position: relative;
+  height: 80px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.steps-carousel-inner {
+  display: flex;
+  width: 600%; /* 6个步骤 × 100% */
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.step-slide {
+  min-width: 16.666%; /* 100% / 6 */
+  width: 16.666%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.step-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h5 {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.step-content p {
+  font-size: 11px;
+  color: #666;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.steps-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.step-nav-btn {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #666;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.step-nav-btn:hover {
+  background: #f0f0f0;
+  border-color: #ccc;
+}
+
+.step-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.step-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ddd;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.step-dot.active {
+  background: #ff6b9d;
+  transform: scale(1.2);
+}
+
+.step-dot:hover {
+  background: #bbb;
+}
+
+/* 交付说明样式 */
+.delivery-notice {
+  margin-top: 15px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-radius: 10px;
+  padding: 12px 16px;
+  border: 1px solid #e1bee7;
+}
+
+.delivery-notice-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.delivery-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.delivery-notice p {
+  margin: 0;
+  font-size: 12px;
+  color: #4a4a4a;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* 产品定制区域 */
+.product-customization-section {
+  flex: 1;
+  max-width: 600px;
+}
+
+.product-header {
+  margin-bottom: 4px !important;
+}
+
+.product-title {
+  margin-bottom: 15px;
+  line-height: 1.2;
+}
+
+.price-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px !important;
+}
+
+.current-price {
+  /* 样式通过内联样式动态设置 */
+}
+
+.original-price {
+  text-decoration: line-through;
+  /* 其他样式通过内联样式动态设置 */
+}
+
+.discount-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  /* 背景色、文字颜色、字体大小通过内联样式动态设置 */
+}
+
+.rating-section {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star {
+  /* 颜色和字体大小通过内联样式动态设置 */
+}
+
+.rating-text {
+  margin-left: 8px;
+  /* 字体大小、颜色、粗细通过内联样式动态设置 */
+}
+
+/* 表单样式 */
+.customization-form {
+  background: transparent !important;
+  padding: 8px 0 !important;
+  border-radius: 0 !important;
+}
+
+.form-section h3 {
+  margin-bottom: 6px !important;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 10px !important;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px !important;
+  border: 2px solid {{ section.settings.border_color | default: '#e0e0e0' }};
+  border-radius: 6px !important;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: {{ section.settings.primary_color | default: '#ff6b9d' }};
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.char-counter {
+  display: none !important;
+}
+
+.field-hint {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* Single-team mode: removed legacy team selection button styles (team-selection-group, team-selection-display, selected-team-info, choose-team-btn) */
+
+/* 隐藏状态下的团队信息显示样式 */
+.team-info-display {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: {{ section.settings.border_radius | default: 8 }}px;
+  border: 2px solid {{ section.settings.border_color | default: '#e0e0e0' }};
+}
+
+.selected-team-readonly {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.selected-team-name {
+  font-weight: 500;
+  color: #333;
+  font-size: 15px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+}
+
+/* 响应式设计 */
+/* Single-team mode: removed mobile styles for legacy team selection UI */
+
+.radio-group,
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.radio-option,
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.radio-option:hover,
+.checkbox-option:hover {
+  border-color: transparent;
+  background: transparent;
+}
+
+.radio-option input,
+.checkbox-option input {
+  margin: 0;
+}
+
+.custom-song-group {
+  margin-top: 15px;
+  padding: 15px;
+  background: #fff;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+}
+
+.custom-song-group input {
+  margin-bottom: 10px;
+}
+
+/* 图片上传区域 */
+.photo-upload-section {
+  margin: 8px 0 !important;
+}
+
+.upload-quality-settings {
+  margin-bottom: 10px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.upload-quality-settings label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.upload-quality-settings select {
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.upload-area {
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  padding: 20px 12px !important;
+  text-align: center;
+  background: #fafafa;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-area:hover,
+.upload-area.dragover {
+  border-color: {{ section.settings.primary_color | default: '#ff6b9d' }};
+  background: #fff5f8;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.upload-icon {
+  font-size: 48px;
+  opacity: 0.6;
+}
+
+.upload-hint {
+  color: #666;
+  margin: 0;
+}
+
+.choose-file-btn {
+  background: {{ section.settings.primary_color | default: '#ff6b9d' }};
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: {{ section.settings.button_border_radius | default: 6 }}px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.choose-file-btn:hover {
+  background: {{ section.settings.secondary_color | default: '#e55a87' }};
+}
+
+.uploaded-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* 优化图片预览样式 - 保持宽高比 */
+.photo-preview {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e5e5e5;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.photo-preview:hover {
+  border-color: #007bff;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+/* 桌面端悬停放大效果 */
+@media (min-width: 768px) {
+  .photo-preview {
+    cursor: zoom-in;
+  }
+  
+  .photo-preview:hover img {
+    transform: scale(1.5);
+  }
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.3s ease;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  display: block;
+}
+
+/* 懒加载效果 */
+.photo-preview img[data-loading="true"] {
+  opacity: 0.5;
+  filter: blur(2px);
+}
+
+.photo-preview img[data-loaded="true"] {
+  opacity: 1;
+  filter: none;
+}
+
+/* 高分辨率显示优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .photo-preview img {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+.remove-photo {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 2px 4px;
+  font-size: 10px;
+  text-align: center;
+}
+
+/* 图片预览模态框样式 */
+.image-preview-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+.image-preview-modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  margin: auto;
+  animation: zoomIn 0.3s ease;
+}
+
+.modal-image {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-info {
+  position: absolute;
+  bottom: -50px;
+  left: 0;
+  right: 0;
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 4px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 移动端优化 */
+@media (max-width: 767px) {
+  .modal-content {
+    max-width: 95vw;
+    max-height: 85vh;
+  }
+  
+  .modal-close {
+    top: -35px;
+    font-size: 24px;
+    width: 35px;
+    height: 35px;
+  }
+  
+  .modal-info {
+    bottom: -40px;
+    font-size: 12px;
+    padding: 8px;
+  }
+}
+
+.upload-limit {
+  display: none !important;
+}
+
+/* 隐私保护提示样式 */
+.privacy-protection-notice {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  font-size: 13px;
+}
+
+.privacy-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #28a745;
+}
+
+.privacy-icon {
+  font-size: 16px;
+}
+
+.privacy-header strong {
+  font-weight: 600;
+  color: #495057;
+}
+
+.privacy-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 24px;
+}
+
+/* Compact UI adjustments for photo upload area (visual only, no JS changes) */
+.upload-icon,
+.privacy-icon {
+  display: none !important;
+}
+
+.upload-area {
+  padding: 10px 12px !important;
+  border-width: 1px !important;
+  border-radius: 8px !important;
+}
+
+.upload-placeholder {
+  gap: 4px !important;
+}
+
+.upload-hint {
+  display: none !important;
+}
+
+.choose-file-btn {
+  padding: 6px 14px !important;
+  font-size: 13px !important;
+}
+
+.uploaded-photos {
+  gap: 4px !important;
+  margin-top: 6px !important;
+}
+
+.photo-preview {
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 6px !important;
+  border-width: 1px !important;
+}
+
+.photo-preview img {
+  height: 80px !important;
+}
+
+.privacy-protection-notice {
+  padding: 8px !important;
+  margin-top: 8px !important;
+}
+
+/* Hide entire Image Quality row and Privacy Protection notice in compact mode */
+.upload-quality-settings {
+  display: none !important;
+}
+
+.privacy-protection-notice {
+  display: none !important;
+}
+
+.privacy-header {
+  gap: 4px !important;
+  margin-bottom: 4px !important;
+}
+
+.privacy-check {
+  color: #6c757d;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.privacy-check::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background: #28a745;
+  border-radius: 50%;
+  margin-right: 3px;
+}
+
+.upload-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  background: rgba(255, 107, 157, 0.1);
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.progress-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ff6b9d;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Global compact form adjustments to fit the whole order form in one page */
+.video-product-container {
+  gap: 12px !important; /* 页面主容器间距更紧凑 */
+  padding: 12px !important; /* 页面主容器内边距更紧凑 */
+}
+
+.customization-form {
+  padding: 8px 0 !important; /* 表单外层内边距更紧凑 */
+}
+
+.form-section h3 {
+  margin-bottom: 3px !important; /* 标题与内容更紧凑 */
+}
+
+/* 统一信息框容器视觉样式（与上传框同风格）：背景、边框、圆角、内边距与最小高度 */
+.form-group {
+  margin-bottom: 3px !important; /* 区块间距统一更小 */
+  background: #fafafa !important;
+  border: 1px solid {{ section.settings.border_color | default: '#e0e0e0' }} !important; /* 边框略薄更轻 */
+  border-radius: 10px !important; /* 圆角略小统一 */
+  padding: 6px !important; /* 容器内边距统一更紧凑 */
+  min-height: 44px !important; /* 最小高度再降 */
+}
+
+.form-group label {
+  margin-bottom: 2px !important; /* 标签与输入框更紧凑 */
+  font-size: 13px !important;
+}
+
+/* 无外框样式：用于邮箱输入块等去框场景 */
+.form-group.no-frame {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 2px 0 !important;
+  margin-bottom: 4px !important;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group select,
+.form-group textarea {
+  padding: 8px !important;
+  font-size: 13px !important;
+  border-width: 2px !important;
+  border-radius: 12px !important; /* 与上传框一致的圆角 */
+  width: 100% !important;
+  min-height: 36px !important; /* 再降最小高度以压缩整体 */
+}
+
+.form-group textarea {
+  min-height: 36px !important; /* 与邮箱输入框一致高度 */
+  height: 36px !important;
+  resize: none !important; /* 禁止用户拖拽改变高度，保持布局统一 */
+}
+
+.char-counter,
+.field-hint {
+  font-size: 11px !important;
+  margin-top: 2px !important;
+  line-height: 1.3 !important;
+}
+
+/* 无外框容器：用于 Delivery/Extras 去除外部方框 */
+.form-group.no-frame {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 2px 0 !important; /* 再压缩上下内边距，贴近示例红框要求 */
+  margin-bottom: 6px !important; /* 无外框组之间更紧凑 */
+}
+
+/* 分组容器统一风格 */
+.radio-group,
+.checkbox-group {
+  gap: 3px !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 4px 0 !important;
+}
+
+/* 让配送选项横向排列并更紧凑 */
+.radio-group {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+}
+
+.radio-option {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+/* Extras 复选项更紧凑 */
+.checkbox-group {
+  display: flex !important;
+  flex-direction: column !important; /* 保持纵向，但压缩间距 */
+  gap: 4px !important;
+}
+
+.radio-option,
+.checkbox-option {
+  padding: 4px 6px !important;
+  gap: 4px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.radio-text,
+.checkbox-text {
+  font-size: 13px !important;
+}
+
+.custom-song-group {
+  margin-top: 8px !important;
+  padding: 12px !important;
+  border: 2px solid {{ section.settings.border_color | default: '#e0e0e0' }} !important;
+  border-radius: 12px !important;
+  background: #fafafa !important;
+}
+
+.custom-song-group input {
+  margin-bottom: 6px !important;
+}
+
+.order-summary {
+  padding: 12px !important;
+  margin: 6px 0 !important;
+}
+
+.price-breakdown {
+  gap: 4px !important;
+}
+
+.price-item {
+  padding: 4px 0 !important;
+}
+
+.price-total {
+  padding: 4px 0 !important;
+  font-size: 16px !important;
+}
+
+.add-to-cart-btn {
+  padding: 12px !important;
+  font-size: 14px !important;
+}
+
+/* 桌面端布局：不改变DOM顺序，保持订单摘要在表单内部（添加到购物车上方） */
+@media (min-width: 992px) {
+  .customization-form {
+    /* 取消强制两列Grid，恢复默认流式布局 */
+    display: block !important;
+    gap: 0 !important;
+  }
+  /* 去除区域分配与粘性定位 */
+  .customization-form .form-section { }
+  .customization-form .order-summary {
+    margin: 6px 0 !important;
+    position: static !important;
+    top: auto !important;
+  }
+}
+
+/* Extras 复选框在中等以上屏幕两列展示 */
+@media (min-width: 768px) {
+  .checkbox-group {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+  }
+}
+
+/* 订单汇总（与上传框统一风格） */
+.order-summary {
+  background: #fafafa !important;
+  padding: 10px !important;
+  border-radius: 12px !important;
+  margin: 4px 0 !important;
+  border: 2px solid #e0e0e0 !important;
+}
+
+.order-summary h4 {
+  margin-bottom: 8px !important;
+  color: #333 !important;
+}
+
+.price-breakdown {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.price-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.price-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-weight: bold;
+  font-size: 18px;
+  border-top: 2px solid {{ section.settings.primary_color | default: '#ff6b9d' }};
+  color: {{ section.settings.primary_color | default: '#ff6b9d' }};
+}
+
+.add-to-cart-btn {
+  width: 100%;
+  background: {{ section.settings.primary_color | default: '#ff6b9d' }};
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: {{ section.settings.button_border_radius | default: 8 }}px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+  background: {{ section.settings.secondary_color | default: '#e55a87' }};
+  transform: translateY(-2px);
+}
+
+.add-to-cart-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Buy Now button styles */
+.buy-now-btn {
+  width: 100%;
+  background: {{ section.settings.buy_now_color | default: '#5c3efb' }}; /* configurable */
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: {{ section.settings.button_border_radius | default: 8 }}px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 8px; /* small spacing below Add to cart */
+}
+.buy-now-btn:hover {
+  background: {{ section.settings.buy_now_color_hover | default: '#4a2de0' }};
+}
+.buy-now-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Payment icons aligned below Buy now button */
+.payment-icons-below-buy-now {
+  width: 100%;
+  margin-top: 8px;
+}
+.payment-icons-below-buy-now .list-payment {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.payment-icons-below-buy-now .list-payment__item {
+  margin: 0;
+}
+
+.add-to-cart-btn.loading {
+  position: relative;
+  color: transparent;
+}
+
+.add-to-cart-btn.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .video-product-container {
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px;
+  }
+  
+  .team-gallery-section {
+    max-width: 100%;
+    position: static; /* 移除sticky定位 */
+    align-self: auto;
+    height: auto;
+  }
+  
+  .product-customization-section {
+    max-width: 100%;
+  }
+  
+  .team-slide {
+    height: 250px;
+  }
+  
+  .image-carousel {
+    height: 250px;
+  }
+  
+  .product-title {
+    font-size: 24px;
+  }
+  
+  .customization-form {
+    padding: 12px;
+  }
+  
+  .radio-group,
+  .checkbox-group {
+    gap: 4px;
+  }
+  
+  .uploaded-photos {
+    justify-content: center;
+  }
+}
+</style>
+
+<script>
+  let uploadedPhotos = [];
+  let maxPhotos = 1;
+  let imageQuality = 0.8;
+  let currentTeam = 'team1';
+  
+  // 团队轮播初始化（单团队）
+   function initTeamCarousel() {
+     const teamSlides = document.querySelectorAll('.team-slide');
+     const selectedTeamInput = document.getElementById('selected-team');
+     currentTeam = 'team1';
+     if (selectedTeamInput) {
+       selectedTeamInput.value = currentTeam;
+     }
+     // 隐藏所有并显示 team1
+     teamSlides.forEach(slide => {
+       slide.style.display = 'none';
+       slide.classList.remove('active');
+     });
+     const firstSlide = document.querySelector('.team-slide[data-team="team1"]');
+     if (firstSlide) {
+       firstSlide.style.display = 'block';
+       firstSlide.classList.add('active');
+     }
+     // 单团队模式：团队名称直接使用 schema 配置，无需更新前端展示元素
+   }
+  
+
+  
+  // 轮播控制函数 - 支持视频和图片混合
+  function changeMedia(teamId, direction) {
+    const carousel = document.querySelector(`[data-team="${teamId}"] .image-carousel`);
+    if (!carousel) return;
+    
+    const mediaElements = carousel.querySelectorAll('.carousel-media');
+    const dots = carousel.parentElement.querySelectorAll('.dot');
+    
+    if (mediaElements.length <= 1) return;
+    
+    let currentIndex = 0;
+    mediaElements.forEach((media, index) => {
+      if (media.classList.contains('active')) {
+        currentIndex = index;
+      }
+    });
+    
+    let newIndex = currentIndex + direction;
+    if (newIndex >= mediaElements.length) newIndex = 0;
+    if (newIndex < 0) newIndex = mediaElements.length - 1;
+    
+    showMedia(teamId, newIndex);
+  }
+  
+  function showMedia(teamId, index) {
+    const carousel = document.querySelector(`[data-team="${teamId}"] .image-carousel`);
+    if (!carousel) return;
+    
+    const mediaElements = carousel.querySelectorAll('.carousel-media');
+    const dots = carousel.parentElement.querySelectorAll('.dot');
+    
+    if (index >= mediaElements.length || index < 0) return;
+    
+    // 停止所有视频播放
+    mediaElements.forEach(media => {
+      if (media.tagName === 'VIDEO') {
+        media.pause();
+        media.currentTime = 0;
+      }
+      media.classList.remove('active');
+      media.style.display = 'none';
+    });
+    
+    // 显示选中的媒体
+    const selectedMedia = mediaElements[index];
+    selectedMedia.classList.add('active');
+    selectedMedia.style.display = 'block';
+    
+    // 如果是视频，自动播放
+    if (selectedMedia.tagName === 'VIDEO') {
+      selectedMedia.play().catch(e => {
+        console.log('视频自动播放失败，可能需要用户交互:', e);
+      });
+    }
+    
+    // 更新指示点
+    dots.forEach(dot => dot.classList.remove('active'));
+    if (dots[index]) dots[index].classList.add('active');
+  }
+  
+  function resetCarousel(teamId) {
+    // 重置轮播到第一个媒体
+    showMedia(teamId, 0);
+  }
+  
+  // 兼容旧函数名
+  function changeImage(teamId, direction) {
+    changeMedia(teamId, direction);
+  }
+  
+  function showImage(teamId, index) {
+    showMedia(teamId, index);
+  }
+  
+  // 视频控制功能
+  function initVideoControls() {
+    // 为所有视频添加点击事件监听器
+    document.addEventListener('click', function(e) {
+      if (e.target.tagName === 'VIDEO' && e.target.classList.contains('carousel-video')) {
+        e.preventDefault();
+        toggleVideoPlayback(e.target);
+      }
+    });
+    
+    // 监听视频播放状态变化
+    document.addEventListener('play', function(e) {
+      if (e.target.tagName === 'VIDEO' && e.target.classList.contains('carousel-video')) {
+        // 暂停其他所有视频
+        const allVideos = document.querySelectorAll('.carousel-video');
+        allVideos.forEach(video => {
+          if (video !== e.target) {
+            video.pause();
+          }
+        });
+      }
+    }, true);
+  }
+  
+  function toggleVideoPlayback(video) {
+    if (video.paused) {
+      video.play().catch(e => {
+        console.log('视频播放失败:', e);
+      });
+    } else {
+      video.pause();
+    }
+  }
+  
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('upload-area');
+    const photoInput = document.getElementById('photo-input');
+    const chooseFileBtn = document.querySelector('.choose-file-btn');
+    const photoCountSelect = document.getElementById('photo-count');
+    const imageQualitySelect = document.getElementById('image-quality');
+    
+    // 初始化照片上传设置
+    maxPhotos = parseInt(photoCountSelect.value) || 5;
+    imageQuality = parseFloat(imageQualitySelect.value) || 0.8;
+    
+    // 初始化上传区域文本
+    updateUploadAreaText();
+    
+    // 团队轮播功能
+    initTeamCarousel();
+    
+    // 初始化视频点击控制
+    initVideoControls();
+    
+
+
+    // 图片质量选择
+    imageQualitySelect.addEventListener('change', (e) => {
+      imageQuality = parseFloat(e.target.value);
+    });
+
+    // 照片数量变化
+    photoCountSelect.addEventListener('change', (e) => {
+      maxPhotos = parseInt(e.target.value);
+      // 如果当前上传的照片超过新的限制，移除多余的
+      if (uploadedPhotos.length > maxPhotos) {
+        uploadedPhotos = uploadedPhotos.slice(0, maxPhotos);
+        updateUploadedPhotosDisplay();
+      }
+      // 更新上传区域文本
+      updateUploadAreaText();
+      // 更新价格计算
+      updatePricing();
+    });
+
+    // 点击选择文件
+    chooseFileBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      photoInput.click();
+    });
+
+    uploadArea.addEventListener('click', (e) => {
+      // 只有当点击的不是按钮时才触发
+      if (!e.target.closest('.choose-file-btn')) {
+        photoInput.click();
+      }
+    });
+
+    // 拖拽上传
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    photoInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
+
+    // 字符计数器
+    const messageText = document.getElementById('message-text');
+    const charCount = document.getElementById('char-count');
+
+    messageText.addEventListener('input', () => {
+      charCount.textContent = messageText.value.length;
+    });
+
+    // 背景音乐：改为一个可选输入框，不再使用单选按钮逻辑
+    // 保留占位以防后续扩展，无需显示/隐藏处理
+
+    // 价格计算
+    updatePricing();
+
+    // 监听价格变化
+    document.querySelectorAll('input[name="delivery_speed"], input[name="extras[]"]').forEach((input) => {
+      input.addEventListener('change', updatePricing);
+    });
+    
+    // 监听照片数量变化的价格更新
+    photoCountSelect.addEventListener('change', updatePricing);
+
+    // 性能监控
+    monitorImagePerformance();
+    preloadTeamImages();
+  });
+
+  // 图片压缩函数
+  function compressImage(file, quality = 0.8, maxWidth = 1200, maxHeight = 1200) {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // 计算新尺寸，保持宽高比
+        let { width, height } = img;
+        
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width *= ratio;
+          height *= ratio;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // 绘制并压缩图片
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob((blob) => {
+          resolve(blob);
+        }, file.type, quality);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  // 显示上传进度
+  function showUploadProgress() {
+    const uploadArea = document.querySelector('.upload-area');
+    if (!document.querySelector('.upload-progress')) {
+      const progressDiv = document.createElement('div');
+      progressDiv.className = 'upload-progress';
+      progressDiv.innerHTML = `
+        <div class="progress-spinner"></div>
+        <span>Processing image...</span>
+      `;
+      uploadArea.appendChild(progressDiv);
+    }
+  }
+
+  function hideUploadProgress() {
+    const progress = document.querySelector('.upload-progress');
+    if (progress) {
+      progress.remove();
+    }
+  }
+
+  // 处理文件上传
+  async function handleFiles(files) {
+    const remainingSlots = maxPhotos - uploadedPhotos.length;
+    
+    if (remainingSlots <= 0) {
+      alert(`You have already uploaded ${maxPhotos} photos. Please remove some photos if you want to upload new ones.`);
+      return;
+    }
+
+    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+    
+    if (files.length > remainingSlots) {
+      alert(`You can only upload ${remainingSlots} more photos. Only the first ${remainingSlots} files will be processed.`);
+    }
+
+    for (const file of filesToProcess) {
+      // 验证文件类型
+      if (!file.type.startsWith('image/')) {
+        alert(`File "${file.name}" is not an image. Please upload only image files.`);
+        continue;
+      }
+
+      // 验证文件大小 (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert(`File "${file.name}" is too large. File size must be less than 10MB.`);
+        continue;
+      }
+
+      try {
+        // 显示加载状态
+        showUploadProgress();
+        
+        // 压缩图片
+        const compressedFile = await compressImage(file, imageQuality, 1200, 1200);
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const photoData = {
+            file: compressedFile,
+            originalFile: file,
+            url: e.target.result,
+            name: file.name,
+            size: compressedFile.size
+          };
+          uploadedPhotos.push(photoData);
+          
+          window.uploadedPhotos = uploadedPhotos;
+          
+          updateUploadedPhotosDisplay();
+          updateUploadAreaText();
+          hideUploadProgress();
+        };
+        reader.readAsDataURL(compressedFile);
+      } catch (error) {
+        console.error('Image compression failed:', error);
+        alert(`Failed to process image "${file.name}". Please try again.`);
+        hideUploadProgress();
+      }
+    }
+    
+    // 清空文件输入，允许重复选择相同文件
+    photoInput.value = '';
+  }
+
+  function updateUploadedPhotosDisplay() {
+    const container = document.getElementById('uploaded-photos');
+    container.innerHTML = '';
+
+    uploadedPhotos.forEach((photo, index) => {
+      const photoDiv = document.createElement('div');
+      photoDiv.className = 'photo-preview';
+      
+      // 添加图片信息显示
+      const sizeKB = (photo.size / 1024).toFixed(1);
+      const originalSizeKB = (photo.originalFile.size / 1024).toFixed(1);
+      const compressionRatio = ((1 - photo.size / photo.originalFile.size) * 100).toFixed(0);
+      
+      photoDiv.innerHTML = `
+        <img src="${photo.url}" alt="${photo.name}" loading="lazy"
+             data-loading="true" 
+             data-photo-index="${index}"
+             onclick="openImagePreview('${photo.url}', '${photo.name}', '${sizeKB}KB (${compressionRatio}% compressed)')"
+             onload="this.setAttribute('data-loaded', 'true'); this.removeAttribute('data-loading')">
+        <button type="button" class="remove-photo" onclick="removePhoto(${index})">×</button>
+        <div class="photo-info">
+          <small>${sizeKB}KB (${compressionRatio}% compressed)</small>
+        </div>
+      `;
+      container.appendChild(photoDiv);
+    });
+  }
+
+  function removePhoto(index) {
+    uploadedPhotos.splice(index, 1);
+    
+    window.uploadedPhotos = uploadedPhotos;
+    
+    updateUploadedPhotosDisplay();
+    updateUploadAreaText();
+  }
+
+  // 更新上传区域文本
+  function updateUploadAreaText() {
+    const uploadText = document.querySelector('.upload-area p');
+    const remainingSlots = maxPhotos - uploadedPhotos.length;
+    
+    if (uploadedPhotos.length === 0) {
+      uploadText.textContent = `Drag & drop files here or click to browse (Max ${maxPhotos} photos)`;
+    } else if (remainingSlots > 0) {
+      uploadText.textContent = `${uploadedPhotos.length}/${maxPhotos} photos uploaded. You can upload ${remainingSlots} more.`;
+    } else {
+      uploadText.textContent = `${uploadedPhotos.length}/${maxPhotos} photos uploaded. Maximum reached.`;
+    }
+  }
+
+  // 价格计算
+  function updatePricing() {
+    // 直接使用Liquid变量获取基础价格
+    const basePrice = {{ section.settings.base_price | default: 46.00 }};
+    let totalPrice = basePrice;
+
+    // 照片费用计算
+    const photoCount = parseInt(document.getElementById('photo-count').value);
+    const photoUnitPrice = {{ section.settings.additional_photo_unit_price | default: 5 }};
+    const photoPrice = Math.max(0, (photoCount - 1)) * photoUnitPrice; // 第一张免费，之后每张使用可配置单价
+
+    // 快递费用
+    const deliveryRadio = document.querySelector('input[name="delivery_speed"]:checked');
+    const deliveryPrice = parseFloat(deliveryRadio.dataset.price || 0);
+
+    // 附加服务费用
+    const extrasCheckboxes = document.querySelectorAll('input[name="extras[]"]:checked');
+    let extrasPrice = 0;
+    extrasCheckboxes.forEach((checkbox) => {
+      extrasPrice += parseFloat(checkbox.dataset.price || 0);
+    });
+
+    // 更新显示
+    const photoPriceItem = document.getElementById('photo-price-item');
+    const deliveryPriceItem = document.getElementById('delivery-price-item');
+    const extrasPriceItem = document.getElementById('extras-price-item');
+
+    // 显示照片费用
+    if (photoPrice > 0) {
+      photoPriceItem.style.display = 'flex';
+      document.getElementById('photo-price').textContent = `$${photoPrice.toFixed(2)}`;
+      totalPrice += photoPrice;
+    } else {
+      photoPriceItem.style.display = 'none';
+    }
+
+    if (deliveryPrice > 0) {
+      deliveryPriceItem.style.display = 'flex';
+      document.getElementById('delivery-price').textContent = `$${deliveryPrice.toFixed(2)}`;
+      totalPrice += deliveryPrice;
+    } else {
+      deliveryPriceItem.style.display = 'none';
+    }
+
+    if (extrasPrice > 0) {
+      extrasPriceItem.style.display = 'flex';
+      document.getElementById('extras-price').textContent = `$${extrasPrice.toFixed(2)}`;
+      totalPrice += extrasPrice;
+    } else {
+      extrasPriceItem.style.display = 'none';
+    }
+
+    document.getElementById('total-price').textContent = `$${totalPrice.toFixed(2)}`;
+  }
+
+  // 性能监控
+  function monitorImagePerformance() {
+    if ('PerformanceObserver' in window) {
+      const observer = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          if (entry.name.includes('blob:')) {
+            console.log(`Image load time: ${entry.duration}ms`);
+          }
+        });
+      });
+      observer.observe({ entryTypes: ['resource'] });
+    }
+  }
+
+  // 图片预加载优化
+  function preloadTeamImages() {
+    const teamImages = document.querySelectorAll('.team-carousel img');
+    teamImages.forEach((img) => {
+      if (img.dataset.src) {
+        const preloadImg = new Image();
+        preloadImg.src = img.dataset.src;
+      }
+    });
+  }
+
+  // 表单提交处理
+  document.getElementById('video-customization-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // 验证必填字段
+    const messageText = document.getElementById('message-text').value.trim();
+    if (!messageText) {
+      alert('Please enter your message text.');
+      return;
+    }
+
+    // 验证邮箱字段
+    const customerEmail = document.getElementById('customer-email').value.trim();
+    if (!customerEmail) {
+      alert('Please enter your email address.');
+      return;
+    }
+    
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(customerEmail)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    // 验证图片上传
+    const photoCount = parseInt(document.getElementById('photo-count').value);
+    if (photoCount > 0 && uploadedPhotos.length !== photoCount) {
+      alert(`Please upload exactly ${photoCount} photos.`);
+      return;
+    }
+
+
+
+    // 禁用提交按钮，显示加载状态
+    const submitButton = document.querySelector('.add-to-cart-btn');
+    const originalText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Adding to cart...';
+    submitButton.classList.add('loading');
+
+    // 创建Shopify标准FormData
+    const formData = new FormData();
+    
+    // 必需的产品ID和变体ID（优先使用product设置，备选使用product_variant_id）
+    {% if section.settings.product %}
+      formData.append('id', '{{ section.settings.product.selected_or_first_available_variant.id }}');
+    {% elsif section.settings.product_variant_id != blank %}
+      formData.append('id', '{{ section.settings.product_variant_id }}');
+    {% else %}
+      console.error('No product or variant ID configured in section settings');
+      alert('Product configuration error. Please contact support.');
+      submitButton.disabled = false;
+      submitButton.textContent = originalText;
+      submitButton.classList.remove('loading');
+      return;
+    {% endif %}
+    formData.append('quantity', '1');
+    
+    // 订单属性 - 保存所有定制信息
+    // 获取实际显示的团队名称而不是团队ID
+    const selectedTeamNameEl = document.getElementById('selected-team-name');
+const selectedTeamName = selectedTeamNameEl ? selectedTeamNameEl.textContent : '{{ section.settings.team1_name | default: "Muscle Man" }}';
+    formData.append('properties[Team]', selectedTeamName);
+    formData.append('properties[Message]', messageText);
+    formData.append('properties[Photo Count]', photoCount);
+    formData.append('properties[Customer Email]', document.getElementById('customer-email').value);
+    
+    // 背景音乐（可选）：客户填写链接或歌名
+    const backgroundMusic = document.getElementById('background-music-link') ? document.getElementById('background-music-link').value.trim() : '';
+    if (backgroundMusic) {
+      formData.append('properties[Background Music]', backgroundMusic);
+    }
+    
+    // 交付选项
+    const deliverySpeed = document.querySelector('input[name="delivery_speed"]:checked').value;
+    formData.append('properties[Delivery Speed]', deliverySpeed);
+    
+    // 附加服务
+    const selectedExtras = [];
+    document.querySelectorAll('input[name="extras[]"]:checked').forEach((checkbox) => {
+      selectedExtras.push(checkbox.value);
+    });
+    if (selectedExtras.length > 0) {
+      formData.append('properties[Extras]', selectedExtras.join(', '));
+    }
+    
+    // 移除总价格属性，让Shopify使用标准价格计算
+    // formData.append('properties[Total Price]', document.getElementById('total-price').textContent);
+    
+    // 处理图片上传 - 将实际文件添加到FormData
+    if (uploadedPhotos.length > 0) {
+      // 添加文件名信息到订单属性
+      const photoNames = uploadedPhotos.map((photo, index) => `Photo ${index + 1}: ${photo.file.name}`).join(', ');
+      formData.append('properties[Uploaded Photos]', photoNames);
+      
+      // 添加实际文件到FormData
+      uploadedPhotos.forEach((photo, index) => {
+        formData.append(`properties[photo_${index + 1}]`, photo.file, photo.file.name);
+      });
+    }
+    
+    // 获取购物车相关元素
+    const cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
+    let sectionsToRender = [];
+    if (cart) {
+      sectionsToRender = cart.getSectionsToRender().map((section) => section.id);
+    }
+
+    // 准备要添加到购物车的商品数组
+    const itemsToAdd = [];
+    
+    // 主产品（基础视频）- 只保留基础价格，不包含附加费用
+    const mainProduct = {
+      {% if section.settings.product %}
+        id: '{{ section.settings.product.selected_or_first_available_variant.id }}',
+      {% elsif section.settings.product_variant_id != blank %}
+        id: '{{ section.settings.product_variant_id }}',
+      {% endif %}
+      quantity: 1,
+      properties: {
+        'Team': selectedTeamName,
+        'Message': messageText,
+        'Photo Count': photoCount,
+        'Customer Email': document.getElementById('customer-email').value,
+        'Delivery Speed': deliverySpeed
+        // 移除 'Total Price' 属性，让Shopify使用标准价格计算
+      }
+    };
+    
+    // 添加背景音乐到主产品属性（如果用户填写）
+    if (backgroundMusic) {
+      mainProduct.properties['Background Music'] = backgroundMusic;
+    }
+    
+    // 添加附加服务信息
+    if (selectedExtras.length > 0) {
+      mainProduct.properties['Extras'] = selectedExtras.join(', ');
+    }
+    
+    // 添加图片信息（只添加文件名，不添加文件对象）
+    if (uploadedPhotos.length > 0) {
+      const photoNames = uploadedPhotos.map((photo, index) => `Photo ${index + 1}: ${photo.file.name}`).join(', ');
+      mainProduct.properties['Uploaded Photos'] = photoNames;
+      // 注意：文件对象将在FormData中单独处理，不能添加到properties中
+    }
+    
+    itemsToAdd.push(mainProduct);
+    
+    // 添加附加照片服务（如果选择了超过1张照片）
+    const additionalPhotoVariantId = {{ section.settings.additional_photo_variant_id | default: 44965572706483 }};
+    if (photoCount > 1 && additionalPhotoVariantId) {
+      const additionalPhotos = photoCount - 1;
+      for (let i = 0; i < additionalPhotos; i++) {
+        itemsToAdd.push({
+          id: additionalPhotoVariantId,
+          quantity: 1,
+          properties: {
+            'Related to': selectedTeamName + ' - ' + messageText.substring(0, 20) + '...',
+            'Additional Photo': `Photo ${i + 2}`
+          }
+        });
+      }
+    }
+    
+    // 添加快递服务（如果选择了快递）
+    const expressDeliveryVariantId = {{ section.settings.express_delivery_variant_id | default: 44965584109747 }};
+    if (deliverySpeed === 'express' && expressDeliveryVariantId) {
+      itemsToAdd.push({
+        id: expressDeliveryVariantId,
+        quantity: 1,
+        properties: {
+          'Related to': selectedTeamName + ' - ' + messageText.substring(0, 20) + '...',
+          'Service': 'Express Delivery (24 hours)'
+        }
+      });
+    }
+    
+    // 添加选中的附加服务
+    selectedExtras.forEach((extra) => {
+      let variantId = '';
+      let serviceName = '';
+      
+      switch(extra) {
+        case 'birthday-song':
+          variantId = {{ section.settings.birthday_song_variant_id | default: 44965585060019 }}; // Birthday Song Service
+          serviceName = 'Birthday Song Service';
+          break;
+        case 'party-editing':
+          variantId = {{ section.settings.party_editing_variant_id | default: 44965585289395 }}; // Party Video Editing
+          serviceName = 'Party Video Editing';
+          break;
+        // 可以根据需要添加更多服务
+      }
+      
+      if (variantId && variantId > 0) {
+        itemsToAdd.push({
+          id: variantId,
+          quantity: 1,
+          properties: {
+            'Related to': selectedTeamName + ' - ' + messageText.substring(0, 20) + '...',
+            'Service': serviceName
+          }
+        });
+      }
+    });
+    
+    // 检查是否有文件上传
+    const hasFileUploads = uploadedPhotos.length > 0;
+    
+    if (hasFileUploads) {
+      // 如果有文件上传，使用FormData逐个添加产品
+      // 先添加主产品（包含文件）
+      const mainFormData = new FormData();
+      mainFormData.append('id', mainProduct.id);
+      mainFormData.append('quantity', mainProduct.quantity);
+      
+      // 添加主产品属性（除了文件）
+      Object.keys(mainProduct.properties).forEach(key => {
+        if (!key.startsWith('photo_')) {
+          mainFormData.append(`properties[${key}]`, mainProduct.properties[key]);
+        }
+      });
+      
+      // 添加文件
+      uploadedPhotos.forEach((photo, index) => {
+        mainFormData.append(`properties[photo_${index + 1}]`, photo.file);
+      });
+      
+      // 先添加主产品
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: mainFormData
+      })
+      .then(response => response.json())
+      .then(response => {
+        if (response.status) {
+          throw new Error(response.description || 'Error adding main product');
+        }
+        
+        // 如果有附加服务，继续添加（使用JSON格式）
+        const additionalItems = itemsToAdd.slice(1); // 除了主产品的其他项目
+        if (additionalItems.length > 0) {
+          return fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: additionalItems })
+          });
+        }
+        return response;
+      })
+      .then(response => {
+        if (response && response.json) {
+          return response.json();
+        }
+        return response;
+      })
+      .then(response => {
+        if (response && response.status) {
+          throw new Error(response.description || 'Error adding additional services');
+        }
+        
+        console.log('All products added successfully');
+        
+        // If Buy Now mode, go straight to checkout
+        if (window.buyNowMode) {
+          window.buyNowMode = false;
+          window.location = '/checkout';
+          return;
+        }
+        
+        // 调用产品预览弹窗显示购物车内容
+        const productPreviewModal = document.querySelector('product-preview-modal');
+        if (productPreviewModal) {
+          // 重新获取购物车内容并显示弹窗
+          fetch('/cart.js')
+            .then(res => res.json())
+            .then(cartData => {
+              productPreviewModal.renderContents(cartData);
+              productPreviewModal.open();
+            })
+            .catch(error => {
+              console.error('Error fetching cart data:', error);
+              // 如果获取购物车数据失败，仍然显示弹窗
+              productPreviewModal.open();
+            });
+        } else {
+          // 如果ProductPreviewModal不可用，使用传统方式
+          if (cart) {
+            fetch('/cart.js')
+              .then(res => res.json())
+              .then(cartData => {
+                if (cart.renderContents) {
+                  cart.renderContents(cartData);
+                }
+              });
+          } else {
+            window.location = window.routes.cart_url;
+          }
+          alert('Products added to cart successfully!');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding products to cart: ' + error.message);
+      })
+      .finally(() => {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+        submitButton.classList.remove('loading');
+      });
+      
+      return; // 退出函数，不执行下面的代码
+    }
+    
+    // 如果没有文件上传，采用两步添加：先主产品(携带 sections)，再附加项(不携带 sections)
+    const cartSections = cart ? cart.getSectionsToRender().map((section) => section.id) : [];
+    const firstPayload = { items: [mainProduct] };
+    if (cartSections.length > 0) {
+      firstPayload.sections = cartSections;
+      firstPayload.sections_url = window.location.pathname;
+    }
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(firstPayload)
+    })
+      .then((res) => res.json())
+      .then((resp) => {
+        if (resp.status) {
+          // 主产品添加失败
+          console.error('Cart add error (main):', resp);
+          throw new Error(resp.description || 'Error adding main product');
+        }
+        const additionalItems = itemsToAdd.slice(1);
+        if (additionalItems.length > 0) {
+          return fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: additionalItems })
+          });
+        }
+        return resp;
+      })
+      .then((res) => (res && res.json ? res.json() : res))
+      .then((resp) => {
+        if (resp && resp.status) {
+          console.error('Cart add error (extras):', resp);
+          throw new Error(resp.description || 'Error adding additional services');
+        }
+        
+        // 校验购物车包含所有待添加的变体
+        const expectedVariantIds = itemsToAdd.map((i) => Number(i.id));
+        return fetch('/cart.js')
+          .then((r) => r.json())
+          .then((cartData) => {
+            const cartVariantIds = (cartData.items || []).map((li) => Number(li.variant_id));
+            const allPresent = expectedVariantIds.every((id) => cartVariantIds.includes(id));
+
+            // Buy Now：仅在全部项存在时跳转结账
+            if (window.buyNowMode) {
+              window.buyNowMode = false;
+              if (allPresent) {
+                window.location = '/checkout';
+                return;
+              } else {
+                alert('Not all items were added. Please try again.');
+              }
+            }
+
+            // 显示购物车预览
+            const productPreviewModal = document.querySelector('product-preview-modal');
+            if (productPreviewModal) {
+              productPreviewModal.renderContents(cartData);
+              productPreviewModal.open();
+            } else {
+              const cartElement = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
+              if (cartElement && cartElement.renderContents) {
+                cartElement.renderContents(cartData);
+              } else {
+                window.location = window.routes.cart_url;
+              }
+            }
+
+            alert('Products added to cart successfully!');
+          });
+      })
+      .catch((error) => {
+        console.error('Network error:', error);
+        alert('Network error. Please try again.');
+      })
+      .finally(() => {
+        // 恢复提交按钮
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+        submitButton.classList.remove('loading');
+      });
+  });
+
+
+
+  // 订单步骤轮播功能
+  function initOrderStepsCarousel() {
+    const carouselInner = document.querySelector('.steps-carousel-inner');
+    const slides = document.querySelectorAll('.step-slide');
+    const prevBtn = document.querySelector('.step-nav-btn.prev');
+    const nextBtn = document.querySelector('.step-nav-btn.next');
+    const dots = document.querySelectorAll('.step-dot');
+    
+    if (!carouselInner || slides.length === 0) return;
+    
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+    
+    function updateCarousel() {
+      // 更新轮播位置 - 操作内部容器
+      carouselInner.style.transform = `translateX(-${currentSlide * (100 / totalSlides)}%)`;
+      
+      // 更新指示点
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlide);
+      });
+      
+      // 更新导航按钮状态
+      if (prevBtn) prevBtn.disabled = currentSlide === 0;
+      if (nextBtn) nextBtn.disabled = currentSlide === totalSlides - 1;
+    }
+    
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateCarousel();
+      }
+    }
+    
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateCarousel();
+      }
+    }
+    
+    function goToSlide(index) {
+      if (index >= 0 && index < totalSlides) {
+        currentSlide = index;
+        updateCarousel();
+      }
+    }
+    
+    // 绑定事件监听器
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        goToSlide(index); // 直接使用索引，不需要解析dataset
+      });
+    });
+    
+    // 自动轮播（可选）
+    let autoPlayInterval;
+    function startAutoPlay() {
+      autoPlayInterval = setInterval(() => {
+        if (currentSlide < totalSlides - 1) {
+          nextSlide();
+        } else {
+          currentSlide = 0;
+          updateCarousel();
+        }
+      }, 4000); // 4秒切换一次
+    }
+    
+    function stopAutoPlay() {
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+      }
+    }
+    
+    // 鼠标悬停时停止自动播放
+    const orderStepsGuide = document.querySelector('.order-steps-guide');
+    if (orderStepsGuide) {
+      orderStepsGuide.addEventListener('mouseenter', stopAutoPlay);
+      orderStepsGuide.addEventListener('mouseleave', startAutoPlay);
+    }
+    
+    // 初始化
+    updateCarousel();
+    startAutoPlay();
+  }
+  
+  // 页面加载完成后初始化订单步骤轮播
+  document.addEventListener('DOMContentLoaded', function() {
+    initOrderStepsCarousel();
+    // Register Buy Now click -> set mode and trigger form submit to reuse validation and add logic
+    const buyNowBtn = document.getElementById('buy-now-btn');
+    if (buyNowBtn) {
+      buyNowBtn.addEventListener('click', function() {
+        window.buyNowMode = true;
+        const formEl = document.getElementById('video-customization-form');
+        if (formEl) {
+          // Dispatch submit event to reuse logic
+          formEl.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
+      });
+    }
+  });
+
+  // 图片预览功能
+  function openImagePreview(imageUrl, imageName, imageInfo) {
+    const modal = document.getElementById('imagePreviewModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalInfo = document.getElementById('modalInfo');
+    
+    modalImage.src = imageUrl;
+    modalImage.alt = imageName;
+    modalInfo.textContent = `${imageName} - ${imageInfo}`;
+    
+    modal.style.display = 'flex';
+    
+    // 添加动画类
+    setTimeout(() => {
+      modal.classList.add('show');
+    }, 10);
+    
+    // 阻止背景滚动
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeImagePreview() {
+    const modal = document.getElementById('imagePreviewModal');
+    
+    modal.classList.remove('show');
+    
+    setTimeout(() => {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }, 300);
+  }
+
+  // 点击模态框背景关闭
+  document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('imagePreviewModal');
+    
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        closeImagePreview();
+      }
+    });
+    
+    // ESC键关闭
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.style.display === 'flex') {
+        closeImagePreview();
+      }
+    });
+  });
+
+</script>
+
+{% schema %}
+{
+  "name": "Custom Product Options",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "Enable Gradient Background",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "Gradient Direction",
+      "options": [
+        { "value": "45deg", "label": "45°" },
+        { "value": "90deg", "label": "90° (Top to Bottom)" },
+        { "value": "135deg", "label": "135°" },
+        { "value": "180deg", "label": "180° (Left to Right)" },
+        { "value": "to right", "label": "Left to Right" },
+        { "value": "to bottom", "label": "Top to Bottom" }
+      ],
+      "default": "135deg"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "渐变开始颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "渐变结束颜色",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "纯色背景颜色",
+      "default": "#ffffff",
+      "info": "当渐变禁用时使用"
+    },
+    {
+      "type": "range",
+      "id": "container_padding",
+      "label": "容器内边距",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "container_border_radius",
+      "label": "容器边框圆角",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Shopify产品设置"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "选择产品"
+    },
+    {
+      "type": "text",
+      "id": "product_variant_id",
+      "label": "产品变体ID",
+      "info": "输入基础产品的变体ID"
+    },
+    {
+      "type": "header",
+      "content": "产品信息"
+    },
+    {
+      "type": "text",
+      "id": "product_title",
+      "label": "产品标题",
+      "default": "Personalized Greeting Video from Africa"
+    },
+    {
+      "type": "text",
+      "id": "base_price",
+      "label": "基础价格",
+      "default": "46.00"
+    },
+    {
+      "type": "text",
+      "id": "original_price",
+      "label": "原价",
+      "default": "83.00"
+    },
+    {
+      "type": "text",
+      "id": "discount_percent",
+      "label": "折扣百分比",
+      "default": "38"
+    },
+    {
+      "type": "text",
+      "id": "rating",
+      "label": "评分",
+      "default": "5.0"
+    },
+    {
+      "type": "text",
+      "id": "review_count",
+      "label": "评论数量",
+      "default": "2576"
+    },
+    {
+      "type": "header",
+      "content": "产品信息样式设置"
+    },
+    {
+      "type": "header",
+      "content": "产品标题样式"
+    },
+    {
+      "type": "range",
+      "id": "product_title_font_size",
+      "label": "产品标题字体大小",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "color",
+      "id": "product_title_color",
+      "label": "产品标题颜色",
+      "default": "#333333"
+    },
+    {
+      "type": "select",
+      "id": "product_title_font_weight",
+      "label": "产品标题字体粗细",
+      "options": [
+        {
+          "value": "normal",
+          "label": "正常"
+        },
+        {
+          "value": "bold",
+          "label": "加粗"
+        },
+        {
+          "value": "600",
+          "label": "半粗"
+        },
+        {
+          "value": "700",
+          "label": "粗体"
+        },
+        {
+          "value": "800",
+          "label": "特粗"
+        }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "header",
+      "content": "价格显示样式"
+    },
+    {
+      "type": "range",
+      "id": "current_price_font_size",
+      "label": "当前价格字体大小",
+      "min": 14,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "current_price_color",
+      "label": "当前价格颜色",
+      "default": "#e74c3c"
+    },
+    {
+      "type": "select",
+      "id": "current_price_font_weight",
+      "label": "当前价格字体粗细",
+      "options": [
+        {
+          "value": "normal",
+          "label": "正常"
+        },
+        {
+          "value": "bold",
+          "label": "加粗"
+        },
+        {
+          "value": "600",
+          "label": "半粗"
+        },
+        {
+          "value": "700",
+          "label": "粗体"
+        }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "range",
+      "id": "original_price_font_size",
+      "label": "原价字体大小",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "original_price_color",
+      "label": "原价颜色",
+      "default": "#999999"
+    },
+    {
+      "type": "range",
+      "id": "discount_badge_font_size",
+      "label": "折扣标签字体大小",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_color",
+      "label": "折扣标签文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_bg_color",
+      "label": "折扣标签背景颜色",
+      "default": "#e74c3c"
+    },
+    {
+      "type": "header",
+      "content": "星级评分样式"
+    },
+    {
+      "type": "range",
+      "id": "star_count",
+      "label": "星星数量",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5,
+      "info": "设置显示的星星总数"
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "星星大小",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "star_filled_color",
+      "label": "已填充星星颜色",
+      "default": "#ffc107"
+    },
+    {
+      "type": "color",
+      "id": "star_empty_color",
+      "label": "空星星颜色",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "range",
+      "id": "rating_text_font_size",
+      "label": "评分文字大小",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "rating_text_color",
+      "label": "评分文字颜色",
+      "default": "#666666"
+    },
+    {
+      "type": "select",
+      "id": "rating_text_font_weight",
+      "label": "评分文字粗细",
+      "options": [
+        {
+          "value": "normal",
+          "label": "正常"
+        },
+        {
+          "value": "bold",
+          "label": "加粗"
+        },
+        {
+          "value": "600",
+          "label": "半粗"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "header",
+      "content": "附加定价设置"
+    },
+    {
+      "type": "number",
+      "id": "express_delivery_price",
+      "label": "快递配送价格 (USD)",
+      "default": 10,
+      "info": "快递配送价格（24小时内）"
+    },
+    {
+      "type": "number",
+      "id": "birthday_song_price",
+      "label": "生日歌价格 (USD)",
+      "default": 10,
+      "info": "唱生日快乐歌的价格"
+    },
+    {
+      "type": "number",
+      "id": "party_editing_price",
+      "label": "派对视频编辑价格 (USD)",
+      "default": 5,
+      "info": "派对视频编辑的价格"
+    },
+    {
+      "type": "number",
+      "id": "additional_photo_unit_price",
+      "label": "额外照片单价 (USD)",
+      "default": 5,
+      "info": "第一张之后每张额外照片的价格"
+    },
+    {
+      "type": "header",
+      "content": "服务变体ID"
+    },
+    {
+      "type": "text",
+      "id": "additional_photo_variant_id",
+      "label": "额外照片变体ID",
+      "info": "额外照片服务的变体ID"
+    },
+    {
+      "type": "text",
+      "id": "express_delivery_variant_id",
+      "label": "快递配送变体ID",
+      "info": "快递配送服务的变体ID"
+    },
+    {
+      "type": "text",
+      "id": "birthday_song_variant_id",
+      "label": "生日歌变体ID",
+      "info": "生日歌服务的变体ID"
+    },
+    {
+      "type": "text",
+      "id": "party_editing_variant_id",
+      "label": "派对编辑变体ID",
+      "info": "派对视频编辑服务的变体ID"
+    },
+    {
+      "type": "header",
+      "content": "团队1设置"
+    },
+    {
+      "type": "image_picker",
+      "id": "team1_image",
+      "label": "团队1主图片"
+    },
+    {
+      "type": "image_picker",
+      "id": "team1_thumb",
+      "label": "团队1缩略图"
+    },
+    {
+      "type": "image_picker",
+      "id": "team1_image3",
+      "label": "团队1图片3"
+    },
+    {
+      "type": "image_picker",
+      "id": "team1_image4",
+      "label": "团队1图片4"
+    },
+    {
+      "type": "image_picker",
+      "id": "team1_image5",
+      "label": "团队1图片5"
+    },
+    {
+      "type": "image_picker",
+      "id": "team1_image6",
+      "label": "团队1图片6"
+    },
+    {
+      "type": "image_picker",
+      "id": "team1_image7",
+      "label": "团队1图片7"
+    },
+    {
+      "type": "image_picker",
+      "id": "team1_image8",
+      "label": "团队1图片8"
+    },
+    {
+      "type": "image_picker",
+      "id": "team1_image9",
+      "label": "团队1图片9"
+    },
+    {
+      "type": "image_picker",
+      "id": "team1_image10",
+      "label": "团队1图片10"
+    },
+    {
+      "type": "url",
+      "id": "team1_video1",
+      "label": "团队1视频1链接",
+      "info": "将视频上传到Shopify文件并在此粘贴链接"
+    },
+    {
+      "type": "url",
+      "id": "team1_video2",
+      "label": "团队1视频2链接",
+      "info": "将视频上传到Shopify文件并在此粘贴链接"
+    },
+    {
+      "type": "text",
+      "id": "team1_name",
+      "label": "团队1名称",
+      "default": "Muscle man"
+    },
+    {
+      "type": "text",
+      "id": "team1_description",
+      "label": "团队1描述",
+      "default": "Professional team with vibrant energy"
+    },
+    {
+      "type": "checkbox",
+      "id": "team1_visible",
+      "label": "显示团队1",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "表单标签"
+    },
+    {
+      "type": "text",
+      "id": "team_selection_title",
+      "label": "团队信息标题",
+      "default": "Team:"
+    },
+
+    {
+      "type": "text",
+      "id": "start_customizing_title",
+      "label": "开始定制标题",
+      "default": "Start customizing your video"
+    },
+    {
+      "type": "header",
+      "content": "定制标题样式设置"
+    },
+    {
+      "type": "range",
+      "id": "start_customizing_title_font_size",
+      "label": "定制标题字体大小",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "start_customizing_title_color",
+      "label": "定制标题颜色",
+      "default": "#333333"
+    },
+    {
+      "type": "select",
+      "id": "start_customizing_title_font_weight",
+      "label": "定制标题字体粗细",
+      "options": [
+        {
+          "value": "normal",
+          "label": "正常"
+        },
+        {
+          "value": "bold",
+          "label": "加粗"
+        },
+        {
+          "value": "600",
+          "label": "半粗"
+        },
+        {
+          "value": "700",
+          "label": "粗体"
+        },
+        {
+          "value": "800",
+          "label": "特粗"
+        }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "text",
+      "id": "photo_count_label",
+      "label": "照片数量标签",
+      "default": "How many photos do you want to use?"
+    },
+    {
+      "type": "text",
+      "id": "message_label",
+      "label": "消息标签",
+      "default": "Your text on the poster"
+    },
+    {
+      "type": "text",
+      "id": "message_placeholder",
+      "label": "消息占位符",
+      "default": "e.g. Happy Birthday Emma!"
+    },
+    {
+      "type": "text",
+      "id": "email_label",
+      "label": "邮箱标签",
+      "default": "Your email address"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "邮箱占位符",
+      "default": "Enter your email to receive the video"
+    },
+    {
+      "type": "text",
+      "id": "song_label",
+      "label": "歌曲标签",
+      "default": "Choose song"
+    },
+    {
+      "type": "text",
+      "id": "delivery_label",
+      "label": "配送标签",
+      "default": "Delivery time"
+    },
+    {
+      "type": "text",
+      "id": "extras_title",
+      "label": "附加服务标题",
+      "default": "Extras"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_button_text",
+      "label": "添加到购物车按钮文字",
+      "default": "Add to cart"
+    },
+    {
+      "type": "header",
+      "content": "上传设置"
+    },
+    {
+      "type": "text",
+      "id": "upload_text",
+      "label": "上传文字",
+      "default": "Upload photos to be shown in the video"
+    },
+    {
+      "type": "text",
+      "id": "upload_hint",
+      "label": "上传提示",
+      "default": "Drag & drop files here or click to browse"
+    },
+    {
+      "type": "text",
+      "id": "choose_file",
+      "label": "选择文件按钮",
+      "default": "Choose file"
+    },
+    {
+      "type": "header",
+      "content": "配送时间设置"
+    },
+    {
+      "type": "text",
+      "id": "standard_delivery_text",
+      "label": "标准配送文字",
+      "default": "Standard delivery (1-2 days) - Free"
+    },
+    {
+      "type": "text",
+      "id": "express_delivery_text",
+      "label": "快速配送文字",
+      "default": "Express delivery (24 hours)"
+    },
+    {
+      "type": "header",
+      "content": "附加服务设置"
+    },
+    {
+      "type": "text",
+      "id": "party_editing_text",
+      "label": "聚会视频编辑文字",
+      "default": "Party video editing"
+    },
+    {
+      "type": "text",
+      "id": "birthday_song_text",
+      "label": "生日歌文字",
+      "default": "Sing happy birthday song"
+    },
+    {
+      "type": "text",
+      "id": "social_media_text",
+      "label": "社交媒体文字",
+      "default": "Allow us to post on social media"
+    },
+    {
+      "type": "header",
+      "content": "背景音乐设置"
+    },
+    {
+      "type": "text",
+      "id": "music_input_title",
+      "label": "背景音乐输入标题",
+      "default": "Which song should play in the background (if left empty, we will choose for you):"
+    },
+    {
+      "type": "text",
+      "id": "music_input_help",
+      "label": "背景音乐占位符",
+      "default": "You can paste any song or link; leave blank and we will choose one for you."
+    },
+    {
+      "type": "text",
+      "id": "price_music_label",
+      "label": "价格摘要音乐标签",
+      "default": "Background music:"
+    },
+    {
+      "type": "header",
+      "content": "订单摘要设置"
+    },
+    {
+      "type": "text",
+      "id": "order_summary_title",
+      "label": "订单摘要标题",
+      "default": "Order Summary"
+    },
+    {
+      "type": "text",
+      "id": "base_video_text",
+      "label": "基础视频文字",
+      "default": "Base video"
+    },
+    {
+      "type": "text",
+      "id": "additional_photos_text",
+      "label": "附加照片文字",
+      "default": "Additional photos"
+    },
+    {
+      "type": "text",
+      "id": "express_delivery_summary_text",
+      "label": "快速配送摘要文字",
+      "default": "Express delivery"
+    },
+    {
+      "type": "text",
+      "id": "extras_summary_text",
+      "label": "附加服务摘要文字",
+      "default": "Extras"
+    },
+    {
+      "type": "text",
+      "id": "total_text",
+      "label": "总计文字",
+      "default": "Total"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_text",
+      "label": "添加到购物车文字",
+      "default": "Add to cart"
+    },
+    {
+      "type": "header",
+      "content": "样式设置"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "主要颜色（按钮、链接）",
+      "default": "#ff6b9d"
+    },
+    {
+      "type": "color",
+      "id": "secondary_color",
+      "label": "次要颜色（悬停状态）",
+      "default": "#e55a87"
+    },
+    {
+      "type": "color",
+      "id": "form_background_color",
+      "label": "表单背景颜色",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "边框颜色",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "边框圆角（像素）",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "按钮边框圆角（像素）",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "文字颜色",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "container_background",
+      "label": "容器背景颜色",
+      "default": "#ffffff"
+    },
+
+    {
+      "type": "header",
+      "content": "立即购买按钮设置"
+    },
+    {
+      "type": "text",
+      "id": "buy_now_button_text",
+      "label": "立即购买按钮文字",
+      "default": "Buy now"
+    },
+    {
+      "type": "color",
+      "id": "buy_now_color",
+      "label": "立即购买按钮颜色",
+      "default": "#5c3efb"
+    },
+    {
+      "type": "color",
+      "id": "buy_now_color_hover",
+      "label": "立即购买按钮悬停颜色",
+      "default": "#4a2de0"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "secure_accordion_item",
+      "name": "Secure accordion item",
+      "settings": [
+        { "type": "text", "id": "title", "label": "标题" },
+        { "type": "range", "id": "title_font_size", "label": "标题字体大小", "min": 12, "max": 32, "step": 1, "unit": "px", "default": 16 },
+        { "type": "color", "id": "title_color", "label": "标题颜色", "default": "#333333" },
+        { "type": "checkbox", "id": "title_bold", "label": "标题加粗", "default": true },
+        { "type": "richtext", "id": "content", "label": "内容", "default": "<p>请在此输入说明文字，支持基础富文本排版。</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video Product",
+      "blocks": [
+        { "type": "secure_accordion_item", "settings": { "title": "标注", "title_font_size": 16, "title_color": "#333333", "title_bold": true, "content": "<p>在此添加你的说明文本。</p>" } },
+        { "type": "secure_accordion_item", "settings": { "title": "材料与结构", "title_font_size": 16, "title_color": "#333333", "title_bold": true, "content": "<p>在此添加你的材料说明。</p>" } },
+        { "type": "secure_accordion_item", "settings": { "title": "退回", "title_font_size": 16, "title_color": "#333333", "title_bold": true, "content": "<p>退货说明内容。</p>" } },
+        { "type": "secure_accordion_item", "settings": { "title": "其他", "title_font_size": 16, "title_color": "#333333", "title_bold": true, "content": "<p>其他说明。</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<!-- 图片预览模态框 -->
+<div id="imagePreviewModal" class="image-preview-modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeImagePreview()">&times;</button>
+    <img id="modalImage" class="modal-image" src="" alt="" loading="lazy">
+    <div id="modalInfo" class="modal-info"></div>
+  </div>
+</div>
+
+<!-- 引入产品预览弹窗组件 -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    try {
+      var carouselImages = document.querySelectorAll('.image-carousel img.carousel-image');
+      carouselImages.forEach(function(img) {
+        if (!img.classList.contains('active')) {
+          img.setAttribute('loading', 'lazy');
+        }
+      });
+    } catch (e) {
+      console.warn('Carousel lazy init failed:', e);
+    }
+  });
+</script>
+{% render 'product-preview-modal' %}

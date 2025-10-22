@@ -1,0 +1,124 @@
+.cart-timer {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: pulse-border 2s infinite;
+}
+
+.cart-timer__content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.cart-timer__icon {
+  display: flex;
+  align-items: center;
+  animation: tick 1s infinite;
+}
+
+.cart-timer__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.cart-timer__message {
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.cart-timer__countdown {
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
+/* 紧急状态样式 */
+.cart-timer--urgent {
+  animation: urgent-pulse 0.5s infinite alternate;
+}
+
+.cart-timer--urgent .cart-timer__countdown {
+  color: #dc2626 !important;
+  animation: urgent-blink 1s infinite;
+}
+
+/* 动画效果 */
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+@keyframes tick {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes urgent-pulse {
+  0% {
+    background-color: var(--timer-bg-color, #fef3c7);
+  }
+  100% {
+    background-color: #fee2e2;
+  }
+}
+
+@keyframes urgent-blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.7;
+  }
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 749px) {
+  .cart-timer {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+  }
+  
+  .cart-timer__content {
+    gap: 0.75rem;
+  }
+  
+  .cart-timer__text {
+    gap: 0.125rem;
+  }
+  
+  .cart-timer__message {
+    font-size: calc(var(--timer-font-size, 16px) * 0.9) !important;
+  }
+  
+  .cart-timer__countdown {
+    font-size: calc(var(--timer-countdown-size, 20px) * 0.9) !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .cart-timer__content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .cart-timer__icon svg {
+    width: 16px;
+    height: 16px;
+  }
+}

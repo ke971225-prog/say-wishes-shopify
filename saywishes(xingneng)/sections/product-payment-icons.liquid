@@ -1,0 +1,190 @@
+{%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
+  <div class="product-payment-section page-width">
+    <div class="product-payment-icons">
+      {% render 'payment-icons', 
+        show_heading: section.settings.show_heading, 
+        heading_text: section.settings.heading, 
+        show_note: section.settings.show_security_note, 
+        note_text: section.settings.security_note,
+        show_icon: section.settings.show_security_icon %}
+    </div>
+  </div>
+{%- endif -%}
+
+<style>
+  .product-payment-section {
+    margin: 2rem 0;
+  }
+  
+  .product-payment-icons {
+    background: rgb(var(--color-background));
+    border: 1px solid rgba(var(--color-foreground), 0.08);
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  
+  .payment-icons-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: rgb(var(--color-foreground));
+  }
+  
+  .payment-security-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    color: rgb(var(--color-base-accent-1));
+  }
+  
+  .list-payment {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  
+  .list-payment__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 0.8rem;
+    background: rgb(var(--color-background));
+    border: 1px solid rgba(var(--color-foreground), 0.1);
+    border-radius: 0.6rem;
+    transition: all 0.3s ease;
+  }
+  
+  .list-payment__item:hover {
+    border-color: rgb(var(--color-base-accent-1));
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(var(--color-base-accent-1), 0.15);
+  }
+  
+  .list-payment__item .icon {
+    max-width: 40px;
+    max-height: 26px;
+    width: auto;
+    height: auto;
+  }
+  
+  .payment-security-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: rgba(var(--color-foreground), 0.7);
+  }
+  
+  @media screen and (max-width: 749px) {
+    .product-payment-section {
+      margin: 1.5rem 0;
+    }
+    
+    .product-payment-icons {
+      padding: 1.2rem;
+      border-radius: 1rem;
+    }
+    
+    .payment-icons-heading {
+      font-size: 1.1rem;
+    }
+    
+    .list-payment {
+      gap: 0.6rem;
+    }
+    
+    .list-payment__item {
+      padding: 0.5rem 0.6rem;
+    }
+    
+    .list-payment__item .icon {
+      max-width: 36px;
+      max-height: 24px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Product Payment Icons",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "default": true,
+      "label": "Show payment icons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "default": true,
+      "label": "Show heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Secure Payment Methods",
+      "label": "Heading text"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_security_icon",
+      "default": true,
+      "label": "Show security icon"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_security_note",
+      "default": true,
+      "label": "Show security note"
+    },
+    {
+      "type": "text",
+      "id": "security_note",
+      "default": "Your payment information is secure and protected",
+      "label": "Security note text"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Payment Icons"
+    }
+  ]
+}
+{% endschema %}

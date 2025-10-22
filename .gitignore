@@ -1,0 +1,22 @@
+﻿# OS
+Thumbs.db
+desktop.ini
+
+# Node
+node_modules/
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+
+# Build / temp
+dist/
+.tmp/
+*.log
+
+# Archives
+saywishes(xingneng).zip
+
+# Deliverable artifacts (optional)
+交付物/*.zip

@@ -1,0 +1,834 @@
+<style>
+  .order-steps {
+    padding: 60px 20px;
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start }} 0%, {{ section.settings.gradient_color_end }} 100%);
+    {% else %}
+      background: {{ section.settings.section_bg_color | default: '#f8f9fa' }};
+    {% endif %}
+  }
+  
+  .order-steps__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .order-steps__header {
+    margin-bottom: 50px;
+  }
+  
+  .order-steps__title {
+    font-size: {{ section.settings.title_font_size | default: 2.5 }}rem;
+    font-weight: {{ section.settings.title_font_weight | default: 'bold' }};
+    color: {{ section.settings.title_color | default: '#333' }};
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  
+  .order-steps__subtitle {
+    font-size: {{ section.settings.subtitle_font_size | default: 1.1 }}rem;
+    font-weight: {{ section.settings.subtitle_font_weight | default: 'normal' }};
+    color: {{ section.settings.subtitle_color | default: '#666' }};
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  .order-steps__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-bottom: 50px;
+  }
+  
+  .order-step {
+    background: {{ section.settings.step_bg_color | default: 'white' }};
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .order-step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .order-step::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: {{ section.settings.step_accent_color | default: 'linear-gradient(135deg, #e91e63, #f06292)' }};
+  }
+  
+  .order-step__icon {
+    font-size: {{ section.settings.icon_font_size | default: 3 }}rem;
+    margin-bottom: 20px;
+    color: {{ section.settings.icon_color | default: '#e91e63' }};
+  }
+  
+  .order-step__title {
+    font-size: {{ section.settings.step_title_font_size | default: 1.5 }}rem;
+    font-weight: {{ section.settings.step_title_font_weight | default: '600' }};
+    color: {{ section.settings.step_title_color | default: '#333' }};
+    margin-bottom: 15px;
+    line-height: 1.3;
+  }
+  
+  .order-step__description {
+    font-size: {{ section.settings.step_desc_font_size | default: 1 }}rem;
+    font-weight: {{ section.settings.step_desc_font_weight | default: 'normal' }};
+    color: {{ section.settings.step_desc_color | default: '#666' }};
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+  
+  .order-step__number {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: {{ section.settings.number_bg_color | default: 'linear-gradient(135deg, #e91e63, #f06292)' }};
+    color: {{ section.settings.number_text_color | default: 'white' }};
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: {{ section.settings.number_font_weight | default: '600' }};
+    font-size: {{ section.settings.number_font_size | default: 0.9 }}rem;
+  }
+  
+  .order-steps__cta {
+    margin-top: 40px;
+  }
+  
+  .order-steps__button {
+    background: {{ section.settings.button_bg_color | default: 'linear-gradient(135deg, #e91e63, #f06292)' }};
+    color: {{ section.settings.button_text_color | default: 'white' }};
+    padding: {{ section.settings.button_padding_vertical | default: 18 }}px {{ section.settings.button_padding_horizontal | default: 40 }}px;
+    border: {{ section.settings.button_border_width | default: 0 }}px solid {{ section.settings.button_border_color | default: 'transparent' }};
+    border-radius: {{ section.settings.button_border_radius | default: 25 }}px;
+    font-size: {{ section.settings.button_font_size | default: 1.1 }}rem;
+    font-weight: {{ section.settings.button_font_weight | default: '600' }};
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-transform: {{ section.settings.button_text_transform | default: 'uppercase' }};
+    letter-spacing: 1px;
+  }
+  
+  .order-steps__button:hover {
+    transform: translateY(-2px);
+    background: {{ section.settings.button_hover_bg_color | default: 'linear-gradient(135deg, #c2185b, #e91e63)' }};
+    color: {{ section.settings.button_hover_text_color | default: 'white' }};
+    box-shadow: 0 8px 20px rgba(233, 30, 99, 0.3);
+  }
+  
+  /* Compact layout overrides */
+  .order-steps--compact {
+    padding: 30px 20px;
+  }
+  .order-steps--compact .order-steps__header { margin-bottom: 20px; }
+  .order-steps--compact .order-steps__title { font-size: {{ section.settings.title_font_size | default: 2.2 }}rem; }
+  .order-steps--compact .order-steps__subtitle { font-size: {{ section.settings.subtitle_font_size | default: 1.0 }}rem; margin-bottom: 16px; }
+  .order-steps--compact .order-steps__grid { grid-template-columns: repeat(5, minmax(160px, 1fr)); gap: 16px; margin-bottom: 16px; }
+  .order-steps--compact .order-step { background: transparent; box-shadow: none; border-radius: 0; padding: 0; }
+  .order-steps--compact .order-step::before { display: none; }
+  .order-steps--compact .order-step__number { display: none; }
+  .order-steps--compact .order-step__icon { font-size: {{ section.settings.icon_font_size | default: 2.4 }}rem; color: {{ section.settings.icon_color | default: '#6a0dad' }}; margin-bottom: 10px; }
+  .order-steps--compact .order-step__title { font-size: {{ section.settings.step_title_font_size | default: 1.3 }}rem; margin-bottom: 6px; }
+  .order-steps--compact .order-step__description { font-size: {{ section.settings.step_desc_font_size | default: 0.95 }}rem; }
+  .order-steps--compact .order-steps__cta { margin-top: 16px; }
+  
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .order-steps {
+      padding: 40px 15px;
+    }
+    
+    .order-steps__title {
+      font-size: {{ section.settings.mobile_title_font_size | default: 2 }}rem;
+    }
+    
+    .order-steps__subtitle {
+      font-size: {{ section.settings.mobile_subtitle_font_size | default: 1 }}rem;
+    }
+    
+    .order-steps__grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+    
+    .order-step {
+      padding: 30px 20px;
+    }
+    
+    .order-step__icon {
+      font-size: {{ section.settings.mobile_icon_font_size | default: 2.5 }}rem;
+    }
+    
+    .order-step__title {
+      font-size: {{ section.settings.mobile_step_title_font_size | default: 1.3 }}rem;
+    }
+    
+    .order-step__description {
+      font-size: {{ section.settings.mobile_step_desc_font_size | default: 0.9 }}rem;
+    }
+    
+    .order-step__number {
+      font-size: {{ section.settings.mobile_number_font_size | default: 0.8 }}rem;
+    }
+    
+    .order-steps__button {
+      padding: {{ section.settings.mobile_button_padding_vertical | default: 15 }}px {{ section.settings.mobile_button_padding_horizontal | default: 30 }}px;
+      font-size: {{ section.settings.mobile_button_font_size | default: 1 }}rem;
+    }
+    
+    .order-steps--compact .order-steps__grid { grid-template-columns: 1fr; gap: 16px; }
+    .order-steps--compact { padding: 24px 15px; }
+  }
+  
+  @media (max-width: 480px) {
+    .order-steps__title {
+      font-size: {{ section.settings.mobile_title_font_size | default: 1.8 }}rem;
+    }
+    
+    .order-step {
+      padding: 25px 15px;
+    }
+    
+    .order-step__icon {
+      font-size: {{ section.settings.mobile_icon_font_size | default: 2 }}rem;
+    }
+    
+    .order-step__title {
+      font-size: {{ section.settings.mobile_step_title_font_size | default: 1.2 }}rem;
+    }
+  }
+</style>
+
+<div class="order-steps {% if section.settings.layout_style == 'compact' %}order-steps--compact{% endif %}">
+  <div class="order-steps__container">
+    {% if section.settings.heading != blank or section.settings.subtitle != blank %}
+      <div class="order-steps__header">
+        {% if section.settings.heading != blank %}
+          <h2 class="order-steps__title">{{ section.settings.heading }}</h2>
+        {% endif %}
+        
+        {% if section.settings.subtitle != blank %}
+          <p class="order-steps__subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+    
+    {% if section.blocks.size > 0 %}
+      <div class="order-steps__grid">
+        {% assign steps_limit = section.blocks.size %}
+        {% if section.settings.layout_style == 'compact' and section.settings.compact_steps_limit > 0 %}
+          {% assign steps_limit = section.settings.compact_steps_limit %}
+        {% endif %}
+        {% for block in section.blocks limit: steps_limit %}
+          {% case block.type %}
+            {% when 'order_step' %}
+              <div class="order-step" {{ block.shopify_attributes }}>
+                {% if section.settings.layout_style != 'compact' %}
+                  <div class="order-step__number">{{ forloop.index }}</div>
+                {% endif %}
+                
+                {% if block.settings.icon != blank %}
+                  <div class="order-step__icon">{{ block.settings.icon }}</div>
+                {% endif %}
+                
+                {% if block.settings.title != blank %}
+                  <h3 class="order-step__title">{{ block.settings.title }}</h3>
+                {% endif %}
+                
+                {% if block.settings.description != blank %}
+                  <p class="order-step__description">{{ block.settings.description }}</p>
+                {% endif %}
+              </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    {% if section.settings.button_label != blank %}
+      <div class="order-steps__cta">
+        <a href="{{ section.settings.button_link | default: '#' }}" class="order-steps__button">
+          {{ section.settings.button_label }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Order Steps",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "布局样式",
+      "options": [
+        { "value": "cards", "label": "卡片（原始）" },
+        { "value": "compact", "label": "紧凑（图1样式）" }
+      ],
+      "default": "cards"
+    },
+    {
+      "type": "range",
+      "id": "compact_steps_limit",
+      "label": "紧凑样式显示的步骤数量",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Order in Just 6 Simple Steps! 😊",
+      "label": "Section Heading",
+      "info": "Main title for the order steps section"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "default": "Follow these easy steps to place your order and get your personalized video message",
+      "label": "Section Subtitle",
+      "info": "Description text below the main heading"
+    },
+    {
+      "type": "header",
+      "content": "颜色设置"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "启用渐变背景",
+      "default": false,
+      "info": "启用此选项以使用渐变背景而不是纯色背景"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "区块背景颜色",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "渐变起始颜色",
+      "default": "#8BC34A",
+      "info": "渐变的起始颜色（左上角）"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "渐变结束颜色",
+      "default": "#E91E63",
+      "info": "渐变的结束颜色（右下角）"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "主标题颜色",
+      "default": "#333"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "副标题颜色",
+      "default": "#666"
+    },
+    {
+      "type": "color",
+      "id": "step_bg_color",
+      "label": "步骤卡片背景颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "step_accent_color",
+      "label": "步骤卡片强调色",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "图标颜色",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "step_title_color",
+      "label": "步骤标题颜色",
+      "default": "#333"
+    },
+    {
+      "type": "color",
+      "id": "step_desc_color",
+      "label": "步骤描述颜色",
+      "default": "#666"
+    },
+    {
+      "type": "color",
+      "id": "number_bg_color",
+      "label": "步骤编号背景颜色",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "number_text_color",
+      "label": "步骤编号文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "按钮设置"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "按钮背景颜色",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "按钮文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "按钮悬停背景颜色",
+      "default": "#c2185b"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "按钮悬停文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "按钮边框颜色",
+      "default": "transparent"
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "label": "按钮边框宽度",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "按钮圆角",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "label": "按钮垂直内边距",
+      "min": 10,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "label": "按钮水平内边距",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "label": "按钮文字转换",
+      "options": [
+        { "value": "none", "label": "无" },
+        { "value": "uppercase", "label": "大写" },
+        { "value": "lowercase", "label": "小写" },
+        { "value": "capitalize", "label": "首字母大写" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "header",
+      "content": "文字大小设置"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "主标题文字大小",
+      "min": 1.5,
+      "max": 4.0,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 2.5
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "主标题文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" },
+        { "value": "700", "label": "粗体" },
+        { "value": "800", "label": "超粗体" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size",
+      "label": "副标题文字大小",
+      "min": 0.8,
+      "max": 1.8,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.1
+    },
+    {
+      "type": "select",
+      "id": "subtitle_font_weight",
+      "label": "副标题文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "500", "label": "中等" },
+        { "value": "600", "label": "半粗体" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "icon_font_size",
+      "label": "图标大小",
+      "min": 2.0,
+      "max": 5.0,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 3.0
+    },
+    {
+      "type": "range",
+      "id": "step_title_font_size",
+      "label": "步骤标题文字大小",
+      "min": 1.0,
+      "max": 2.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.5
+    },
+    {
+      "type": "select",
+      "id": "step_title_font_weight",
+      "label": "步骤标题文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" },
+        { "value": "700", "label": "粗体" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "step_desc_font_size",
+      "label": "步骤描述文字大小",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.0
+    },
+    {
+      "type": "select",
+      "id": "step_desc_font_weight",
+      "label": "步骤描述文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "500", "label": "中等" },
+        { "value": "600", "label": "半粗体" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "number_font_size",
+      "label": "步骤编号文字大小",
+      "min": 0.7,
+      "max": 1.2,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.9
+    },
+    {
+      "type": "select",
+      "id": "number_font_weight",
+      "label": "步骤编号文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" },
+        { "value": "700", "label": "粗体" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "按钮文字大小",
+      "min": 0.8,
+      "max": 1.8,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.1
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "按钮文字粗细",
+      "options": [
+        { "value": "normal", "label": "正常" },
+        { "value": "bold", "label": "粗体" },
+        { "value": "600", "label": "半粗体" },
+        { "value": "700", "label": "粗体" },
+        { "value": "800", "label": "超粗体" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "header",
+      "content": "移动端文字大小设置"
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_font_size",
+      "label": "移动端主标题文字大小",
+      "min": 1.2,
+      "max": 3.0,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 2.0
+    },
+    {
+      "type": "range",
+      "id": "mobile_subtitle_font_size",
+      "label": "移动端副标题文字大小",
+      "min": 0.7,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.0
+    },
+    {
+      "type": "range",
+      "id": "mobile_icon_font_size",
+      "label": "移动端图标大小",
+      "min": 1.5,
+      "max": 3.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 2.5
+    },
+    {
+      "type": "range",
+      "id": "mobile_step_title_font_size",
+      "label": "移动端步骤标题文字大小",
+      "min": 0.9,
+      "max": 2.0,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.3
+    },
+    {
+      "type": "range",
+      "id": "mobile_step_desc_font_size",
+      "label": "移动端步骤描述文字大小",
+      "min": 0.7,
+      "max": 1.3,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_number_font_size",
+      "label": "移动端步骤编号文字大小",
+      "min": 0.6,
+      "max": 1.0,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 0.8
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_font_size",
+      "label": "移动端按钮文字大小",
+      "min": 0.7,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.0
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_vertical",
+      "label": "移动端按钮垂直内边距",
+      "min": 8,
+      "max": 25,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_horizontal",
+      "label": "移动端按钮水平内边距",
+      "min": 15,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Call to Action Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "➜ ORDER NOW",
+      "label": "Button Label",
+      "info": "Text displayed on the call-to-action button"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link",
+      "info": "URL where the button should redirect"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "order_step",
+      "name": "Order Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "default": "🎁",
+          "label": "Step Icon",
+          "info": "Emoji or icon to represent this step"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Step Title",
+          "label": "Step Title",
+          "info": "Short title for this step"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "default": "Description of what happens in this step",
+          "label": "Step Description",
+          "info": "Detailed description of this step"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Order Steps",
+      "blocks": [
+        {
+          "type": "order_step",
+          "settings": {
+            "icon": "🎁",
+            "title": "Step 1",
+            "description": "Add a photo of the person you want to surprise. 📱"
+          }
+        },
+        {
+          "type": "order_step",
+          "settings": {
+            "icon": "📋",
+            "title": "Step 2",
+            "description": "Choose between Women or Men team to personalize your surprise! 🎭"
+          }
+        },
+        {
+          "type": "order_step",
+          "settings": {
+            "icon": "📋",
+            "title": "Step 3",
+            "description": "Write 2-4 short lines, they will appear on the chalkboard in the video. 🎬"
+          }
+        },
+        {
+          "type": "order_step",
+          "settings": {
+            "icon": "👍",
+            "title": "Step 4",
+            "description": "Let us know exactly what you want to hear so our African friends can pronounce it. 🗣️"
+          }
+        },
+        {
+          "type": "order_step",
+          "settings": {
+            "icon": "❤️",
+            "title": "Step 5",
+            "description": "Add your favorite song or let us pick a song. Our friends from Tanzania will dance to this great song. 🎵"
+          }
+        },
+        {
+          "type": "order_step",
+          "settings": {
+            "icon": "📧",
+            "title": "Step 6",
+            "description": "Once the video has been made, it will be delivered by email within 1 to 2 days. You may also want to keep an eye on your spam email. 📬"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

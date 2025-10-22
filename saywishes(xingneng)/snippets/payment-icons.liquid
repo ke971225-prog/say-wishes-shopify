@@ -1,0 +1,46 @@
+{% comment %}
+  Payment Icons Component - Matches custom-product-options block style
+  Displays supported payment method icons for the store
+  Accepts (optional):
+  - show_heading: boolean
+  - show_note: boolean
+  - heading_text: string
+  - note_text: string
+  - show_icon: boolean (default true)
+{% endcomment %}
+
+
+{% if shop.enabled_payment_types.size > 0 %}
+  <div class="product-payment-icons">
+    {% if show_heading %}
+    <h3 class="payment-icons-heading">
+      {% if show_icon != false %}
+      <svg class="payment-security-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M12 2L3 7V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V7L12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="currentColor"/>
+      </svg>
+      {% endif %}
+      {{ heading_text | default: 'Secure Payment Methods' }}
+    </h3>
+    {% endif %}
+    
+    {% assign is_decorative = decorative | default: false %}
+    <ul class="list list-payment" {% if is_decorative %}role="presentation" aria-hidden="true"{% else %}role="list" aria-label="{{ 'accessibility.accepted_payment_methods' | t | default: 'Accepted payment methods' }}"{% endif %}>
+      {% for type in shop.enabled_payment_types %}
+        <li class="list-payment__item">
+          {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
+        </li>
+      {% endfor %}
+    </ul>
+    
+    {% if show_note %}
+    <div class="payment-security-note">
+      {% if show_icon != false %}
+      <svg class="payment-security-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M12 2L3 7V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V7L12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="currentColor"/>
+      </svg>
+      {% endif %}
+      {{ note_text | default: 'Your payment information is secure and protected' }}
+    </div>
+    {% endif %}
+  </div>
+{% endif %}

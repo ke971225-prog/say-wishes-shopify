@@ -1,0 +1,382 @@
+/* =================================
+   ENHANCED CART DRAWER UX STYLES
+   ================================= */
+
+/* Enhanced checkout actions container */
+.cart__checkout-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Primary checkout button enhancement */
+.cart__checkout-button.button--primary {
+  position: relative;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1.8rem;
+  padding: 2rem 3rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cart__checkout-button.button--primary:hover {
+  background: linear-gradient(135deg, #218838 0%, #1ba085 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+}
+
+.cart__checkout-button.button--primary:disabled {
+  background: #6c757d;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.checkout-icon {
+  font-size: 2rem;
+}
+
+.checkout-total {
+  font-weight: 800;
+  font-size: 2rem;
+  margin-left: auto;
+}
+
+/* Express checkout section */
+.cart__express-checkout {
+  margin: 1.5rem 0;
+}
+
+.express-checkout-separator {
+  position: relative;
+  text-align: center;
+  margin: 2rem 0 1.5rem;
+}
+
+.express-checkout-separator::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: rgba(var(--color-foreground), 0.2);
+  z-index: 1;
+}
+
+.express-checkout-separator span {
+  background-color: rgb(var(--color-background));
+  padding: 0 1.5rem;
+  color: rgba(var(--color-foreground), 0.6);
+  font-size: 1.4rem;
+  font-weight: 500;
+  position: relative;
+  z-index: 2;
+}
+
+/* Express checkout buttons */
+.express-checkout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 2px solid rgba(var(--color-foreground), 0.1);
+  border-radius: 0.8rem;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  font-size: 1.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.express-checkout-btn:hover {
+  border-color: rgba(var(--color-foreground), 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--color-foreground), 0.1);
+}
+
+/* PayPal specific styling */
+.paypal-btn {
+  background-color: #0070ba;
+  color: white;
+  border-color: #0070ba;
+}
+
+.paypal-btn:hover {
+  background-color: #005ea6;
+  border-color: #005ea6;
+}
+
+.paypal-logo {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Apple Pay specific styling */
+.apple-pay-btn {
+  background-color: #000;
+  color: white;
+  border-color: #000;
+}
+
+.apple-pay-btn:hover {
+  background-color: #333;
+  border-color: #333;
+}
+
+/* Google Pay specific styling */
+.google-pay-btn {
+  background-color: #4285f4;
+  color: white;
+  border-color: #4285f4;
+}
+
+.google-pay-btn:hover {
+  background-color: #3367d6;
+  border-color: #3367d6;
+}
+
+/* Security badges */
+.cart__security-badges {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2rem 0 1.5rem;
+  padding: 1.5rem;
+  background-color: rgba(var(--color-foreground), 0.03);
+  border-radius: 0.8rem;
+  border: 1px solid rgba(var(--color-foreground), 0.08);
+}
+
+.security-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: rgba(var(--color-foreground), 0.7);
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.security-icon {
+  font-size: 1.6rem;
+  color: #28a745;
+}
+
+/* Continue shopping button */
+.cart__continue-shopping {
+  background-color: transparent;
+  color: rgba(var(--color-foreground), 0.7);
+  border: 2px solid rgba(var(--color-foreground), 0.2);
+  padding: 1.2rem 2rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  border-radius: 0.6rem;
+  transition: all 0.3s ease;
+}
+
+.cart__continue-shopping:hover {
+  color: rgb(var(--color-foreground));
+  border-color: rgba(var(--color-foreground), 0.4);
+  background-color: rgba(var(--color-foreground), 0.03);
+  transform: translateY(-1px);
+}
+
+/* Enhanced cart item display */
+.cart-item__enhanced-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: rgba(var(--color-foreground), 0.02);
+  border-radius: 0.6rem;
+}
+
+.cart-item__delivery-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  color: #28a745;
+  font-weight: 500;
+}
+
+.cart-item__delivery-icon {
+  font-size: 1.4rem;
+}
+
+/* Cart urgency timer */
+.cart__urgency-timer {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  margin: 1.5rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cart__urgency-timer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.urgency-timer__text {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.urgency-timer__countdown {
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 4rem;
+}
+
+.countdown-number {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.countdown-label {
+  font-size: 1rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Mobile optimizations */
+@media screen and (max-width: 749px) {
+  .cart__checkout-button.button--primary {
+    font-size: 1.6rem;
+    padding: 1.8rem 2rem;
+  }
+  
+  .checkout-total {
+    font-size: 1.8rem;
+  }
+  
+  .cart__security-badges {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .security-badge {
+    justify-content: center;
+  }
+  
+  .urgency-timer__countdown {
+    font-size: 1.8rem;
+  }
+  
+  .countdown-number {
+    font-size: 2rem;
+  }
+}
+
+/* Enhanced loading states */
+.cart-drawer__loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(var(--color-background), 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.cart-drawer__loading-spinner {
+  width: 4rem;
+  height: 4rem;
+  border: 0.4rem solid rgba(var(--color-foreground), 0.1);
+  border-top: 0.4rem solid rgb(var(--color-foreground));
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .cart__checkout-button.button--primary,
+  .express-checkout-btn,
+  .cart__continue-shopping,
+  .cart__urgency-timer::before,
+  .cart-drawer__loading-spinner {
+    animation: none;
+    transition: none;
+  }
+  
+  .cart__checkout-button.button--primary:hover,
+  .express-checkout-btn:hover,
+  .cart__continue-shopping:hover {
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .cart__checkout-button.button--primary {
+    border: 2px solid currentColor;
+  }
+  
+  .express-checkout-btn {
+    border-width: 3px;
+  }
+  
+  .cart__security-badges {
+    border-width: 2px;
+  }
+}

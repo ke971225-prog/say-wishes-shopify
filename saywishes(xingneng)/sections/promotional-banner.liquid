@@ -1,0 +1,382 @@
+<div id="promotional-banner-{{ section.id }}" class="promotional-banner" role="region" aria-label="Promotional banner">
+  <div class="pb-content" data-duration="{{ section.settings.display_duration | default: 5 | times: 1000 }}" data-pause-on-hover="{{ section.settings.pause_on_hover }}" data-reduced-motion="{{ section.settings.respect_reduced_motion }}">
+    {% if section.blocks.size > 0 %}
+      <div class="pb-items">
+        {% for block in section.blocks %}
+          <div class="pb-item" id="pb-item-{{ block.id }}" style="--pb-item-bg: {{ block.settings.bg_color | default: 'transparent' }}; --pb-item-text-color: {{ block.settings.text_color | default: section.settings.text_color }}; --pb-item-font-size: {{ block.settings.font_size | default: 14 }}px;" {{ block.shopify_attributes }}>
+            <span class="pb-icon" aria-hidden="true">🔥</span>
+            <span class="pb-text">{{ block.settings.text | default: section.settings.promo_text | escape }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="pb-items">
+        <div class="pb-item" style="--pb-item-bg: transparent; --pb-item-text-color: {{ section.settings.text_color | default: '#ffffff' }}; --pb-item-font-size: 14px;">
+          <span class="pb-icon" aria-hidden="true">🔥</span>
+          <span class="pb-text">{{ section.settings.promo_text | default: "Only Today: 30% Off 🔥 Don't Miss Out!" | escape }}</span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  /* 作用域隔离，避免与其他主题样式冲突 */
+  #promotional-banner-{{ section.id }} {
+    background: linear-gradient(135deg, {{ section.settings.bg_color_start | default: '#ff6b35' }}, {{ section.settings.bg_color_end | default: '#f7931e' }});
+    color: {{ section.settings.text_color | default: '#ffffff' }};
+    text-align: {{ section.settings.text_alignment | default: 'center' }};
+    padding: {{ section.settings.padding_vertical | default: 12 }}px {{ section.settings.padding_horizontal | default: 20 }}px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 可选闪光效果（保持轻量） */
+  #promotional-banner-{{ section.id }}::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    animation: pb-shine 3s infinite;
+    pointer-events: none;
+  }
+
+  #promotional-banner-{{ section.id }} .pb-content {
+    display: flex;
+    align-items: center;
+    justify-content: {{ section.settings.content_justify | default: 'center' }};
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    transition: height 250ms ease;
+  }
+
+  #promotional-banner-{{ section.id }} .pb-items {
+    position: relative;
+    width: 100%;
+  }
+
+  #promotional-banner-{{ section.id }} .pb-item {
+    position: absolute;
+    inset: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: {{ section.settings.content_justify | default: 'center' }};
+    gap: {{ section.settings.item_gap | default: 8 }}px;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+    background-color: var(--pb-item-bg, transparent);
+    color: var(--pb-item-text-color, {{ section.settings.text_color | default: '#ffffff' }});
+    font-size: var(--pb-item-font-size, 14px);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+    will-change: opacity, transform;
+  }
+
+  #promotional-banner-{{ section.id }} .pb-item.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #promotional-banner-{{ section.id }} .pb-icon {
+    font-size: 16px;
+    color: currentColor;
+  }
+
+  #promotional-banner-{{ section.id }} .pb-text {
+    color: currentColor;
+  }
+
+  /* 动画关键帧：跳动进入 + 淡出离开 */
+  @keyframes pb-bounce-in {
+    0% { opacity: 0; transform: translateY(-8px) scale(0.98); }
+    60% { opacity: 1; transform: translateY(3px) scale(1.01); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes pb-fade-out {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(4px); }
+  }
+
+  #promotional-banner-{{ section.id }} .pb-item.is-entering {
+    animation: pb-bounce-in 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #promotional-banner-{{ section.id }} .pb-item.is-leaving {
+    animation: pb-fade-out 400ms ease-out both;
+  }
+
+  @keyframes pb-shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  @media (max-width: 768px) {
+    #promotional-banner-{{ section.id }} {
+      padding: {{ section.settings.padding_vertical | default: 12 | times: 0.8 }}px {{ section.settings.padding_horizontal | default: 20 | times: 0.8 }}px;
+    }
+    #promotional-banner-{{ section.id }} .pb-icon { font-size: 15px; }
+  }
+
+  /* 无障碍：系统减少动态时弱化动画 */
+  @media (prefers-reduced-motion: reduce) {
+    #promotional-banner-{{ section.id }} .pb-item.is-entering,
+    #promotional-banner-{{ section.id }} .pb-item.is-leaving {
+      animation: none;
+    }
+    #promotional-banner-{{ section.id }} .pb-content { transition: none; }
+  }
+</style>
+
+<script>
+  (function() {
+    var root = document.getElementById('promotional-banner-{{ section.id }}');
+    if (!root) return;
+    var content = root.querySelector('.pb-content');
+    var items = Array.prototype.slice.call(root.querySelectorAll('.pb-item'));
+    if (!items.length) return;
+
+    // 预先计算设置，用于初始化时的弹跳动画（单条消息也能看到变化）
+    var durationMs = parseInt(content.getAttribute('data-duration') || '5000', 10);
+    var pauseOnHover = String(content.getAttribute('data-pause-on-hover')).toLowerCase() === 'true';
+    var respectReduced = String(content.getAttribute('data-reduced-motion')).toLowerCase() === 'true';
+    var prefersReduced = false;
+    try { prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) {}
+    var useReducedMotion = respectReduced && prefersReduced;
+
+    // 初始显示第一个
+    items.forEach(function(el, i) {
+      el.classList.toggle('is-active', i === 0);
+      el.style.opacity = i === 0 ? '1' : '0';
+    });
+
+    // 动态高度，避免切换时跳动/闪烁
+    function setHeight(el) {
+      try { content.style.height = el.offsetHeight + 'px'; } catch(e) {}
+    }
+    setHeight(items[0]);
+
+    // 初始化也给首条一个轻微弹跳，确保“有变化可见”
+    if (!useReducedMotion) {
+      items[0].classList.add('is-entering');
+      setTimeout(function() { items[0].classList.remove('is-entering'); }, 600);
+    }
+
+    var index = 0;
+    var timer = null;
+
+    function schedule() {
+      clearTimeout(timer);
+      timer = setTimeout(step, durationMs);
+    }
+
+    function step() {
+      if (items.length <= 1) return;
+      var current = items[index];
+      var nextIndex = (index + 1) % items.length;
+      var next = items[nextIndex];
+
+      // 预设下一帧高度，避免跳动
+      setHeight(next);
+
+      // 应用类名进行动画
+      if (!useReducedMotion) {
+        next.classList.add('is-entering');
+        current.classList.add('is-leaving');
+      }
+
+      // 切换可见性
+      next.style.opacity = '1';
+      next.classList.add('is-active');
+
+      // 轻微延时后隐藏当前，移除类名
+      setTimeout(function() {
+        current.style.opacity = '0';
+        current.classList.remove('is-active');
+        if (!useReducedMotion) {
+          // 清理类名
+          setTimeout(function() {
+            next.classList.remove('is-entering');
+            current.classList.remove('is-leaving');
+          }, 600);
+        }
+        index = nextIndex;
+        schedule();
+      }, useReducedMotion ? 0 : 60);
+    }
+
+    if (pauseOnHover) {
+      root.addEventListener('mouseenter', function() { clearTimeout(timer); });
+      root.addEventListener('mouseleave', function() { schedule(); });
+    }
+
+    schedule();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "促销横幅",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "promo_text",
+      "label": "默认促销文案",
+      "default": "Only Today: 30% Off 🔥 Don't Miss Out!",
+      "info": "当未添加信息块时使用该文案。"
+    },
+    {
+      "type": "header",
+      "content": "显示设置"
+    },
+    {
+      "type": "range",
+      "id": "display_duration",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "unit": "s",
+      "label": "每条信息显示时长（秒）",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "悬停暂停",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "respect_reduced_motion",
+      "label": "遵循系统的减少动态",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "布局与样式"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "垂直内边距",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "水平内边距",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "条目间距",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "bg_color_start",
+      "label": "背景渐变起始色",
+      "default": "#ff6b35"
+    },
+    {
+      "type": "color",
+      "id": "bg_color_end",
+      "label": "背景渐变结束色",
+      "default": "#f7931e"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "默认文字颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "文本对齐",
+      "options": [
+        { "value": "left", "label": "靠左" },
+        { "value": "center", "label": "居中" },
+        { "value": "right", "label": "靠右" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "content_justify",
+      "label": "信息位置",
+      "options": [
+        { "value": "flex-start", "label": "靠左" },
+        { "value": "center", "label": "居中" },
+        { "value": "flex-end", "label": "靠右" }
+      ],
+      "default": "center"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "信息",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "信息文本",
+          "default": "Only Today: 30% Off 🔥 Don't Miss Out!"
+        },
+        {
+          "type": "range",
+          "id": "font_size",
+          "min": 12,
+          "max": 32,
+          "step": 1,
+          "unit": "px",
+          "label": "字号(px)",
+          "default": 14
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "文字颜色",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "背景颜色",
+          "default": "transparent"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "促销横幅",
+      "blocks": [
+        { "type": "message" },
+        { "type": "message" }
+      ]
+    }
+  ]
+}
+{% endschema %}

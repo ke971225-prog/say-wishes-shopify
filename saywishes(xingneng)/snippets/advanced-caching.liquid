@@ -1,0 +1,522 @@
+<!-- Advanced Caching and Resource Management -->
+<script>
+(function() {
+  'use strict';
+  
+  // Advanced caching configuration
+  const CACHE_CONFIG = {
+    version: '{{ shop.id }}-v1.2.0',
+    staticCacheName: 'saywishes-static-v1',
+    dynamicCacheName: 'saywishes-dynamic-v1',
+    imageCacheName: 'saywishes-images-v1',
+    maxEntries: {
+      static: 50,
+      dynamic: 30,
+      images: 100
+    },
+    maxAge: {
+      static: 30 * 24 * 60 * 60 * 1000, // 30 days
+      dynamic: 24 * 60 * 60 * 1000,     // 1 day
+      images: 7 * 24 * 60 * 60 * 1000   // 7 days
+    }
+  };
+  
+  // Enhanced Service Worker registration
+  function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          const registration = await navigator.serviceWorker.register('/sw.js', {
+            scope: '/',
+            updateViaCache: 'none'
+          });
+          
+          console.log('SW registered:', registration);
+          
+          // Handle updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateNotification();
+              }
+            });
+          });
+          
+          // Listen for messages from SW
+          navigator.serviceWorker.addEventListener('message', handleSWMessage);
+          
+        } catch (error) {
+          console.log('SW registration failed:', error);
+        }
+      });
+    }
+  }
+  
+  // Browser cache optimization
+  function optimizeBrowserCache() {
+    // Preload critical resources
+    const criticalResources = [
+      '{{ "base.css" | asset_url }}',
+        '{{ "global.js" | asset_url }}',
+      '{{ settings.favicon | image_url }}',
+      '{{ "logo.svg" | asset_url }}'
+    ];
+    
+    criticalResources.forEach(url => {
+      if (url && url !== '') {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.href = url;
+        
+        if (url.endsWith('.css')) {
+          link.as = 'style';
+        } else if (url.endsWith('.js')) {
+          link.as = 'script';
+        } else if (url.match(/\.(jpg|jpeg|png|webp|avif)$/)) {
+          link.as = 'image';
+        }
+        
+        document.head.appendChild(link);
+      }
+    });
+  }
+  
+  // Memory cache for API responses
+  class MemoryCache {
+    constructor(maxSize = 50) {
+      this.cache = new Map();
+      this.maxSize = maxSize;
+    }
+    
+    set(key, value, ttl = 300000) { // 5 minutes default
+      if (this.cache.size >= this.maxSize) {
+        const firstKey = this.cache.keys().next().value;
+        this.cache.delete(firstKey);
+      }
+      
+      this.cache.set(key, {
+        value,
+        expires: Date.now() + ttl
+      });
+    }
+    
+    get(key) {
+      const item = this.cache.get(key);
+      if (!item) return null;
+      
+      if (Date.now() > item.expires) {
+        this.cache.delete(key);
+        return null;
+      }
+      
+      return item.value;
+    }
+    
+    clear() {
+      this.cache.clear();
+    }
+  }
+  
+  // Initialize memory cache
+  const memoryCache = new MemoryCache();
+  
+  // Enhanced fetch with caching
+  function cachedFetch(url, options = {}) {
+    const cacheKey = `${url}-${JSON.stringify(options)}`;
+    
+    // Check memory cache first
+    const cached = memoryCache.get(cacheKey);
+    if (cached) {
+      return Promise.resolve(new Response(JSON.stringify(cached)));
+    }
+    
+    return fetch(url, {
+      ...options,
+      headers: {
+        'Cache-Control': 'max-age=300',
+        ...options.headers
+      }
+    }).then(response => {
+      if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
+        return response.clone().json().then(data => {
+          memoryCache.set(cacheKey, data);
+          return response;
+        });
+      }
+      return response;
+    });
+  }
+  
+  // Resource prefetching based on user behavior
+  class SmartPrefetcher {
+    constructor() {
+      this.prefetchQueue = new Set();
+      this.prefetchedUrls = new Set();
+      this.isOnline = navigator.onLine;
+      this.connectionSpeed = this.getConnectionSpeed();
+      
+      this.init();
+    }
+    
+    init() {
+      // Monitor connection changes
+      window.addEventListener('online', () => this.isOnline = true);
+      window.addEventListener('offline', () => this.isOnline = false);
+      
+      // Monitor connection speed
+      if ('connection' in navigator) {
+        navigator.connection.addEventListener('change', () => {
+          this.connectionSpeed = this.getConnectionSpeed();
+        });
+      }
+      
+      // Setup intersection observer for visible links
+      this.setupIntersectionObserver();
+      
+      // Setup hover prefetching
+      this.setupHoverPrefetching();
+    }
+    
+    getConnectionSpeed() {
+      if ('connection' in navigator) {
+        const connection = navigator.connection;
+        if (connection.effectiveType === '4g') return 'fast';
+        if (connection.effectiveType === '3g') return 'medium';
+        return 'slow';
+      }
+      return 'unknown';
+    }
+    
+    setupIntersectionObserver() {
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const link = entry.target;
+              this.prefetchUrl(link.href, 'visible');
+            }
+          });
+        }, {
+          rootMargin: '100px'
+        });
+        
+        // Observe product links and navigation links
+        document.querySelectorAll('a[href^="/products/"], a[href^="/collections/"]').forEach(link => {
+          observer.observe(link);
+        });
+      }
+    }
+    
+    setupHoverPrefetching() {
+      let hoverTimer;
+      
+      document.addEventListener('mouseover', (e) => {
+        if (e.target.tagName === 'A' && e.target.href) {
+          hoverTimer = setTimeout(() => {
+            this.prefetchUrl(e.target.href, 'hover');
+          }, 100);
+        }
+      });
+      
+      document.addEventListener('mouseout', () => {
+        clearTimeout(hoverTimer);
+      });
+    }
+    
+    prefetchUrl(url, reason = 'manual') {
+      if (!this.isOnline || this.prefetchedUrls.has(url) || this.prefetchQueue.has(url)) {
+        return;
+      }
+      
+      // Skip prefetching on slow connections for non-critical resources
+      if (this.connectionSpeed === 'slow' && reason !== 'critical') {
+        return;
+      }
+      
+      this.prefetchQueue.add(url);
+      
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = url;
+      
+      link.onload = () => {
+        this.prefetchedUrls.add(url);
+        this.prefetchQueue.delete(url);
+        console.log(`Prefetched: ${url} (${reason})`);
+      };
+      
+      link.onerror = () => {
+        this.prefetchQueue.delete(url);
+      };
+      
+      document.head.appendChild(link);
+    }
+  }
+  
+  // Initialize smart prefetcher
+  const smartPrefetcher = new SmartPrefetcher();
+  
+  // Cache warming for critical pages
+  function warmCache() {
+    const criticalPages = [
+      '{{ routes.root_url }}',
+      '{{ routes.collections_url }}',
+      '{{ routes.cart_url }}'
+    ];
+    
+    criticalPages.forEach(url => {
+      if (url && url !== '') {
+        smartPrefetcher.prefetchUrl(url, 'critical');
+      }
+    });
+  }
+  
+  // Local storage cache management
+  class LocalStorageCache {
+    constructor(prefix = 'saywishes_') {
+      this.prefix = prefix;
+      this.maxSize = 5 * 1024 * 1024; // 5MB limit
+    }
+    
+    set(key, value, ttl = 3600000) { // 1 hour default
+      try {
+        const item = {
+          value,
+          expires: Date.now() + ttl,
+          size: JSON.stringify(value).length
+        };
+        
+        localStorage.setItem(this.prefix + key, JSON.stringify(item));
+        this.cleanup();
+      } catch (e) {
+        console.warn('LocalStorage cache set failed:', e);
+        this.cleanup(true);
+      }
+    }
+    
+    get(key) {
+      try {
+        const item = JSON.parse(localStorage.getItem(this.prefix + key));
+        if (!item) return null;
+        
+        if (Date.now() > item.expires) {
+          localStorage.removeItem(this.prefix + key);
+          return null;
+        }
+        
+        return item.value;
+      } catch (e) {
+        return null;
+      }
+    }
+    
+    cleanup(force = false) {
+      const keys = Object.keys(localStorage).filter(key => key.startsWith(this.prefix));
+      let totalSize = 0;
+      const items = [];
+      
+      keys.forEach(key => {
+        try {
+          const item = JSON.parse(localStorage.getItem(key));
+          if (item) {
+            totalSize += item.size || 0;
+            items.push({ key, ...item });
+          }
+        } catch (e) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // Remove expired items
+      items.forEach(item => {
+        if (Date.now() > item.expires) {
+          localStorage.removeItem(item.key);
+        }
+      });
+      
+      // If still over limit or forced cleanup, remove oldest items
+      if (force || totalSize > this.maxSize) {
+        items
+          .filter(item => Date.now() <= item.expires)
+          .sort((a, b) => a.expires - b.expires)
+          .slice(0, Math.floor(items.length / 2))
+          .forEach(item => localStorage.removeItem(item.key));
+      }
+    }
+  }
+  
+  // Initialize local storage cache
+  const localCache = new LocalStorageCache();
+  
+  // Service Worker message handler
+  function handleSWMessage(event) {
+    const { type, payload } = event.data;
+    
+    switch (type) {
+      case 'CACHE_UPDATED':
+        console.log('Cache updated:', payload);
+        break;
+      case 'OFFLINE_READY':
+        document.documentElement.classList.add('offline-ready');
+        break;
+      case 'UPDATE_AVAILABLE':
+        showUpdateNotification();
+        break;
+    }
+  }
+  
+  // Update notification
+  function showUpdateNotification() {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Update Available', {
+        body: 'A new version is available. Refresh to update.',
+        icon: '{{ settings.favicon | image_url }}',
+        tag: 'update-available'
+      });
+    } else {
+      // Fallback to in-page notification
+      const notification = document.createElement('div');
+      notification.className = 'update-notification';
+      notification.innerHTML = `
+        <div class="update-notification__content">
+          <span>New version available!</span>
+          <button onclick="location.reload()">Refresh</button>
+          <button onclick="this.parentElement.parentElement.remove()">×</button>
+        </div>
+      `;
+      document.body.appendChild(notification);
+    }
+  }
+  
+  // Performance monitoring and cache optimization
+  function monitorCachePerformance() {
+    if ('PerformanceObserver' in window) {
+      const observer = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          if (entry.transferSize === 0) {
+            console.log('Cache hit:', entry.name);
+          } else {
+            console.log('Network request:', entry.name, entry.transferSize);
+          }
+        });
+      });
+      
+      try {
+        observer.observe({ entryTypes: ['resource'] });
+      } catch (e) {
+        console.log('Performance observer not supported');
+      }
+    }
+  }
+  
+  // Initialize all caching systems
+  function initializeCaching() {
+    registerServiceWorker();
+    optimizeBrowserCache();
+    warmCache();
+    monitorCachePerformance();
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      localCache.cleanup();
+    });
+    
+    console.log('Advanced caching initialized');
+  }
+  
+  // Start initialization
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeCaching);
+  } else {
+    initializeCaching();
+  }
+  
+  // Expose cache utilities globally
+  window.SaywishesCache = {
+    memory: memoryCache,
+    local: localCache,
+    prefetcher: smartPrefetcher,
+    fetch: cachedFetch
+  };
+  
+})();
+</script>
+
+<style>
+/* Update notification styles */
+.update-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  background: #007bff;
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease;
+}
+
+.update-notification__content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.update-notification button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.update-notification button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Offline indicator */
+.offline-indicator {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: #ffc107;
+  color: #000;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  z-index: 1000;
+}
+
+/* Cache status indicators */
+.cache-status {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  z-index: 999;
+}
+
+.cache-status--hit {
+  color: #28a745;
+}
+
+.cache-status--miss {
+  color: #dc3545;
+}
+</style>

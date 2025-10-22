@@ -1,0 +1,214 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .tls-card {
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 20px;
+  }
+  .tls-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .tls-icon {
+    width: 28px;
+    height: 28px;
+    color: {{ settings.colors_accent_1 | default: '#0a7cff' }};
+  }
+  .tls-title {
+    margin: 0;
+  }
+  .tls-list {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tls-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 6px 0;
+  }
+  .tls-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(10,124,255,0.08);
+    color: #0a7cff;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tls-badge--secure {
+    background: rgba(24,160,61,0.12);
+    color: #18A03D;
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign is_https = false
+  if canonical_url and canonical_url contains 'https://'
+    assign is_https = true
+  endif
+-%}
+
+<div class="page-width section-{{ section.id }}-padding">
+  <div class="tls-card{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+    <div class="tls-header">
+      <svg class="tls-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M12 2C8.686 2 6 4.686 6 8V10H5C3.895 10 3 10.895 3 12V20C3 21.105 3.895 22 5 22H19C20.105 22 21 21.105 21 20V12C21 10.895 20.105 10 19 10H18V8C18 4.686 15.314 2 12 2ZM8 8C8 5.791 9.791 4 12 4C14.209 4 16 5.791 16 8V10H8V8ZM5 12H19V20H5V12Z" fill="currentColor"/>
+      </svg>
+      <h2 class="h2 tls-title">{{ section.settings.title }}</h2>
+      {% if section.settings.show_protocol_status %}
+         <span class="tls-badge {% if is_https %}tls-badge--secure{% endif %}" role="status" aria-live="polite">
+           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+             <path d="M12 2C8.686 2 6 4.686 6 8V10H5C3.895 10 3 10.895 3 12V20C3 21.105 3.895 22 5 22H19C20.105 22 21 21.105 21 20V12C21 10.895 20.105 10 19 10H18V8C18 4.686 15.314 2 12 2ZM8 8C8 5.791 9.791 4 12 4C14.209 4 16 5.791 16 8V10H8V8ZM5 12H19V20H5V12Z" fill="currentColor"/>
+           </svg>
+           {% if is_https %}Protected by TLS encryption{% else %}Connection is not secured{% endif %}
+         </span>
+       {% endif %}
+    </div>
+
+    {% if section.settings.description != blank %}
+      <div class="rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">{{ section.settings.description }}</div>
+    {% else %}
+      <p class="{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">This website uses HTTPS (TLS) encryption. Your data is protected during browsing and checkout.</p>
+    {% endif %}
+
+    <ul class="tls-list">
+      {% if section.settings.show_domain %}
+        <li>
+          <strong>Site domain:</strong>
+          <span>{{ shop.primary_domain | default: shop.domain }}</span>
+        </li>
+      {% endif %}
+      {% if section.settings.show_help_tips %}
+        <li>
+          <strong>Certificate details:</strong>
+          <span>Click the lock icon (security indicator) in your browser’s address bar to view the certificate issuer, validity period, and details.</span>
+        </li>
+      {% endif %}
+
+      {% for block in section.blocks %}
+        {% if block.type == 'bullet' and block.settings.text != blank %}
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9 16.172L5.414 12.586L4 14L9 19L20 8L18.586 6.586L9 16.172Z" fill="currentColor"/>
+            </svg>
+            <span>{{ block.settings.text }}</span>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "HTTPS/TLS Security",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "HTTPS (TLS) Security Certificate"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>This site uses HTTPS (TLS) encryption, ensuring your information is protected during browsing and checkout.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_protocol_status",
+      "label": "Show protocol status (HTTPS enabled)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_domain",
+      "label": "Show site domain",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_help_tips",
+      "label": "Show certificate viewing guide",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Blocks & Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bullet",
+      "name": "Bullet point",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Bullet text",
+          "default": "Industry-standard encryption protects user data"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "HTTPS/TLS Certificate",
+      "category": "Trust & Security",
+      "blocks": [
+        {
+          "type": "bullet",
+          "settings": { "text": "TLS encryption protects transmission" }
+        },
+        {
+          "type": "bullet",
+          "settings": { "text": "Secure checkout and account pages" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,98 @@
+{%- style -%}
+  .bottom-banner__button {
+    background: {{ section.settings.button_color | default: '#ff6b6b' }};
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+  }
+  
+  .bottom-banner__button:hover {
+    background: {{ section.settings.button_hover_color | default: '#ff5252' }};
+  }
+{%- endstyle -%}
+
+<div class="bottom-banner section-{{ section.id }}-padding">
+  {%- if section.settings.image != blank -%}
+    <img src="{{ section.settings.image | image_url: width: 1920 }}" 
+         alt="{{ section.settings.title }}" 
+         class="bottom-banner__image"
+         width="1920"
+         height="600"
+         loading="lazy">
+  {%- endif -%}
+  
+  <div class="bottom-banner__overlay"></div>
+  
+  <div class="bottom-banner__content">
+    {%- unless section.settings.title == blank -%}
+      <h2 class="bottom-banner__title">{{ section.settings.title }}</h2>
+    {%- endunless -%}
+    
+    {%- unless section.settings.text == blank -%}
+      <p class="bottom-banner__text">{{ section.settings.text }}</p>
+    {%- endunless -%}
+    
+    {%- unless section.settings.button_text == blank -%}
+      <a href="{{ section.settings.button_link }}" class="bottom-banner__button">
+        {{ section.settings.button_text }}
+      </a>
+    {%- endunless -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Bottom Banner",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Special Offer"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Don't miss out on our amazing deals!"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button Color",
+      "default": "#ff6b6b"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button Hover Color",
+      "default": "#ff5252"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bottom Banner"
+    }
+  ]
+}
+{% endschema %}

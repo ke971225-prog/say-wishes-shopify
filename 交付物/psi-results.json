@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "timestamp": "2025-10-23 01:40:32",
+    "locale": "zh_CN",
+    "strategy": "both",
+    "urls": [
+      "https://wishesvideo.com/",
+      "https://wishesvideo.com/collections/all"
+    ],
+    "status": "failed",
+    "error": "ETIMEDOUT to googleapis"
+  },
+  "results": {
+    "https://wishesvideo.com/": {
+      "mobile": { "error": "ETIMEDOUT" },
+      "desktop": { "error": "ETIMEDOUT" }
+    },
+    "https://wishesvideo.com/collections/all": {
+      "mobile": { "error": "ETIMEDOUT" },
+      "desktop": { "error": "ETIMEDOUT" }
+    }
+  }
+}

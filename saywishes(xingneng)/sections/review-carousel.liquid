@@ -1,0 +1,257 @@
+{{ 'component-slider.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start }} 0%, {{ section.settings.gradient_color_end }} 100%);
+    {% else %}
+      background-color: {{ section.settings.section_background_color }};
+    {% endif %}
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .review-carousel .reviews-header {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .review-carousel .reviews-header .summary {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    color: rgb(var(--color-foreground));
+  }
+  .review-carousel .stars {
+    display: inline-flex;
+    gap: 2px;
+    line-height: 1;
+  }
+  .review-carousel .star { color: #FFD700; font-size: 16px; }
+  .review-carousel .star--empty { color: var(--color-foreground-50); }
+
+  /* Ratings distribution removed */
+  .review-carousel .rating-distribution,
+  .review-carousel .distribution,
+  .review-carousel .rating-bar,
+  .review-carousel .bar-container,
+  .review-carousel .bar-fill,
+  .review-carousel .rating-label,
+  .review-carousel .rating-count { display: none !important; visibility: hidden !important; }
+
+  .review-card.card {
+    padding: 1rem;
+    min-height: 160px;
+  }
+  .review-card__title { font-weight: 600; margin: .25rem 0 .5rem; }
+  .review-card__content { color: rgb(var(--color-foreground)); opacity: .9; }
+  .review-card__meta { margin-top: .75rem; font-size: .9rem; color: rgb(var(--color-foreground)); opacity: .8; }
+
+  /* Review video */
+  .review-video { position: relative; width: 100%; height: 200px; background: #f0f0f0; overflow: hidden; border-radius: 6px; }
+  .review-video img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .video-play-button { position: relative; border: 0; background: none; width: 100%; height: 100%; cursor: pointer; }
+  .video-play-button::after { content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; border-radius: 50%; background: rgba(0,0,0,0.55); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .video-play-button::before { content: ''; position: absolute; left: calc(50% + 6px); top: 50%; transform: translate(-50%, -50%); border-style: solid; border-width: 12px 0 12px 18px; border-color: transparent transparent transparent #fff; }
+{%- endstyle -%}
+
+{%- liquid
+  assign blocks_count = section.blocks.size
+  assign columns_mobile_int = section.settings.columns_mobile | plus: 0
+  assign columns_desktop_int = section.settings.columns_desktop | plus: 0
+  assign show_mobile_slider = true
+  if blocks_count <= columns_mobile_int
+    assign show_mobile_slider = false
+  endif
+  assign show_desktop_slider = true
+  if blocks_count <= columns_desktop_int
+    assign show_desktop_slider = false
+  endif
+-%}
+
+<div class="review-carousel color-{{ section.settings.color_scheme }} gradient" {% if section.settings.enable_gradient_background %}style="background: linear-gradient(135deg, {{ section.settings.gradient_color_start }} 0%, {{ section.settings.gradient_color_end }} 100%);"{% else %}style="background-color: {{ section.settings.section_background_color }};"{% endif %}>
+  <div class="page-width isolate section-{{ section.id }}-padding">
+    {%- unless section.settings.title == blank -%}
+      <div class="title-wrapper-with-link title-wrapper--no-top-margin{% if show_mobile_slider %} title-wrapper--self-padded-tablet-down{% else %} title-wrapper--self-padded-mobile{% endif %}">
+        <h2 id="SectionHeading-{{ section.id }}" class="inline-richtext {{ section.settings.heading_size }}">{{ section.settings.title }}</h2>
+      </div>
+    {%- endunless -%}
+
+    <header class="reviews-header" aria-label="Customer reviews header">
+      <div class="summary" aria-live="polite">
+        <span class="visually-hidden">Average rating</span>
+        <span class="stars" role="img" aria-label="{{ section.settings.average_rating | default: 4.9 }} out of 5 stars">
+          {%- assign avg = section.settings.average_rating | default: 4.9 | round -%}
+          {%- for i in (1..5) -%}
+            <span class="star {% unless i <= avg %}star--empty{% endunless %}" aria-hidden="true">★</span>
+          {%- endfor -%}
+        </span>
+        <span>{{ section.settings.average_rating | default: 4.9 }}/5</span>
+        {% assign reviews_count = section.settings.total_reviews | default: 100 %}
+        <span>· {{ 'sections.review-carousel.total_reviews' | t: count: reviews_count }}</span>
+      </div>
+
+     
+    </header>
+
+    <slideshow-component
+      class="slider-mobile-gutter{% if show_desktop_slider %} slider-component-desktop{% endif %}{% if show_mobile_slider == false %} page-width{% endif %}"
+    >
+      <ul
+        id="Slider-{{ section.id }}"
+        class="grid contains-card grid--{{ section.settings.columns_desktop }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down slider{% if show_desktop_slider %} slider--desktop{% endif %}{% if show_mobile_slider %} slider--tablet grid--peek{% endif %}"
+        role="list"
+        aria-label="{{ 'general.slider.name' | t }}"
+        aria-live="polite" aria-atomic="true"
+        data-autoplay="{{ section.settings.enable_autoplay }}"
+        data-speed="{{ section.settings.autoplay_interval }}"
+      >
+        {%- for block in section.blocks -%}
+          <li id="Slide-{{ section.id }}-{{ forloop.index }}" class="grid__item slider__slide slideshow__slide" {{ block.shopify_attributes }}>
+            <div class="card review-card">
+              <div class="stars" role="img" aria-label="{{ block.settings.rating }}/5">
+                {%- assign br = block.settings.rating | default: 5 | round -%}
+                {%- for i in (1..5) -%}
+                  <span class="star {% unless i <= br %}star--empty{% endunless %}" aria-hidden="true">★</span>
+                {%- endfor -%}
+              </div>
+              {%- if block.settings.heading != blank -%}
+                <div class="review-card__title">{{ block.settings.heading }}</div>
+              {%- endif -%}
+              {%- if block.settings.video_url != blank -%}
+                <div class="review-video">
+                  <modal-opener data-modal="#PopupModal-{{ section.id }}-{{ forloop.index }}">
+                    <button class="video-play-button" aria-label="Play video review by {{ block.settings.author | default: 'Anonymous' }}">
+                      {%- if block.settings.image != blank -%}
+                        <img src="{{ block.settings.image | image_url: width: 640 }}" alt="{{ block.settings.image.alt | escape }}" loading="lazy" width="320" height="200" />
+                      {%- endif -%}
+                    </button>
+                  </modal-opener>
+                  <modal-dialog id="PopupModal-{{ section.id }}-{{ forloop.index }}" class="modal-video media-modal color-{{ settings.color_schemes | first }}">
+                    <div class="modal-video__content" role="dialog" aria-label="{{ block.settings.heading | default: 'Review video' | escape }}" aria-modal="true" tabindex="-1">
+                      <button type="button" class="modal-video__toggle" aria-label="{{ 'accessibility.close' | t }}">
+                        <span class="svg-wrapper">{{- 'icon-close.svg' | inline_asset_content -}}</span>
+                      </button>
+                      <div class="modal-video__content-info">
+                        <deferred-media class="modal-video__video template-popup">
+                          <template>
+                            {%- if block.settings.video_url.type == 'youtube' -%}
+                              <iframe src="https://www.youtube.com/embed/{{ block.settings.video_url.id }}?enablejsapi=1" class="js-youtube" allow="autoplay; encrypted-media" allowfullscreen title="{{ block.settings.heading | default: 'Review video' | escape }}"></iframe>
+                            {%- else -%}
+                              <iframe src="https://player.vimeo.com/video/{{ block.settings.video_url.id }}" class="js-vimeo" allow="autoplay; encrypted-media" allowfullscreen title="{{ block.settings.heading | default: 'Review video' | escape }}"></iframe>
+                            {%- endif -%}
+                          </template>
+                        </deferred-media>
+                      </div>
+                    </div>
+                  </modal-dialog>
+                </div>
+              {%- elsif block.settings.image != blank -%}
+                <div class="media" style="margin:.5rem 0;">
+                  <img src="{{ block.settings.image | image_url: width: 480 }}" alt="{{ block.settings.image.alt | escape }}" loading="lazy" width="240" height="auto" />
+                </div>
+              {%- endif -%}
+              {%- if block.settings.content != blank -%}
+                <div class="review-card__content rte">{{ block.settings.content }}</div>
+              {%- endif -%}
+              <div class="review-card__meta">
+                {%- if block.settings.author != blank -%}
+                  <span>{{ block.settings.author }}</span>
+                {%- endif -%}
+                {%- if block.settings.date != blank -%}
+                  <span> · {{ block.settings.date }}</span>
+                {%- endif -%}
+                {%- if block.settings.verified -%}
+                  <span> · {{ section.settings.badge_text | default: 'Verified purchase' }}</span>
+                {%- endif -%}
+              </div>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+      {%- if blocks_count > 1 -%}
+        <div class="slider-buttons">
+          <button type="button" class="slider-button slider-button--prev" name="previous" aria-label="{{ 'general.slider.previous_slide' | t }}" aria-controls="Slider-{{ section.id }}">
+            <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+          </button>
+          <div class="slider-counter caption" aria-live="polite">
+            <span class="slider-counter--current">1</span>
+            <span aria-hidden="true"> / </span>
+            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+            <span class="slider-counter--total">{{ blocks_count }}</span>
+          </div>
+          <button type="button" class="slider-button slider-button--next" name="next" aria-label="{{ 'general.slider.next_slide' | t }}" aria-controls="Slider-{{ section.id }}">
+            <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+          </button>
+          <button type="button" class="slideshow__autoplay" aria-label="{{ 'sections.slideshow.pause_slideshow' | t }}"></button>
+        </div>
+      {%- endif -%}
+    </slideshow-component>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Review Carousel",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": { "templates": ["index","page","collection","product","search","blog","article","cart"], "groups": ["header","footer"] },
+  "settings": [
+    {"type":"inline_richtext","id":"title","label":"Title","default":"Customer Reviews"},
+    {"type":"text","id":"badge_text","label":"Verified badge text","default":"Verified purchase"},
+    {"type":"range","id":"average_rating","label":"Average rating","min":1,"max":5,"step":0.1,"default":4.9},
+    {"type":"number","id":"total_reviews","label":"Total reviews","default":100},
+    {"type":"number","id":"five_star_count","label":"5-star reviews","default":90},
+    {"type":"number","id":"four_star_count","label":"4-star reviews","default":8},
+    {"type":"number","id":"three_star_count","label":"3-star reviews","default":1},
+    {"type":"number","id":"two_star_count","label":"2-star reviews","default":1},
+    {"type":"number","id":"one_star_count","label":"1-star reviews","default":0},
+    {"type":"select","id":"heading_size","label":"Heading size","default":"h2","options":[{"value":"h2","label":"Large"},{"value":"h3","label":"Medium"},{"value":"h4","label":"Small"}]},
+    {"type":"range","id":"columns_desktop","label":"Columns (desktop)","min":2,"max":4,"step":1,"default":4},
+    {"type":"select","id":"columns_mobile","label":"Columns (mobile)","options":[{"value":"1","label":"1"},{"value":"2","label":"2"}],"default":"1"},
+    {"type":"checkbox","id":"enable_desktop_slider","label":"Enable desktop slider","default":true},
+    {"type":"checkbox","id":"enable_autoplay","label":"Enable autoplay","default":true},
+    {"type":"range","id":"autoplay_interval","label":"Autoplay interval (seconds)","min":2,"max":15,"step":1,"default":5,"info":"Time between slides when autoplay is on"},
+    {"type":"checkbox","id":"pause_on_hover","label":"Pause on hover","default":true},
+    {"type":"color_scheme","id":"color_scheme","label":"Color scheme","default":"scheme-1"},
+    {"type":"header","content":"Background"},
+    {"type":"checkbox","id":"use_custom_background","label":"Use custom background color","default":false},
+    {"type":"checkbox","id":"enable_gradient_background","label":"Enable gradient background","default":false},
+    {"type":"select","id":"gradient_direction","label":"Gradient direction","default":"to right","options":[{"value":"to right","label":"Left to right"},{"value":"to bottom","label":"Top to bottom"},{"value":"to top","label":"Bottom to top"},{"value":"to left","label":"Right to left"},{"value":"45deg","label":"45°"},{"value":"135deg","label":"135°"}]},
+    {"type":"color","id":"gradient_color_start","label":"Gradient start color","default":"#8BC34A"},
+    {"type":"color","id":"gradient_color_end","label":"Gradient end color","default":"#E91E63"},
+    {"type":"color","id":"section_background_color","label":"Section background color","default":"#ffffff"},
+    {"type":"color","id":"background_color","label":"Background color (legacy)","default":"#ffffff"},
+    {"type":"range","id":"padding_top","min":0,"max":100,"step":4,"unit":"px","label":"Padding top","default":36},
+    {"type":"range","id":"padding_bottom","min":0,"max":100,"step":4,"unit":"px","label":"Padding bottom","default":36}
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {"type":"range","id":"rating","label":"Rating","min":1,"max":5,"step":1,"default":5},
+        {"type":"text","id":"heading","label":"Review title","default":"Brilliant!"},
+        {"type":"richtext","id":"content","label":"Review content","default":"<p>Very pleased with the video...</p>"},
+        {"type":"text","id":"author","label":"Author name","default":"John Doe"},
+        {"type":"text","id":"date","label":"Date","default":"2025-01-01"},
+        {"type":"checkbox","id":"verified","label":"Verified purchase","default":true},
+        {"type":"image_picker","id":"image","label":"Optional image"},
+        {"type":"video_url","id":"video_url","label":"Review video URL","accept":["youtube","vimeo"]}
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [{ "name": "Review Carousel", "category": "Custom" }]
+}
+{% endschema %}

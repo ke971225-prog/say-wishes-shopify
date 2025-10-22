@@ -1,0 +1,692 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    {% if section.settings.enable_gradient_background %}
+      background: linear-gradient(135deg, {{ section.settings.gradient_color_start }} 0%, {{ section.settings.gradient_color_end }} 100%);
+    {% else %}
+      background-color: {{ section.settings.section_background_color }};
+    {% endif %}
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .customer-reviews {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .customer-reviews {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+  }
+
+  .customer-reviews__content {
+    text-align: left;
+  }
+
+  .customer-reviews__title {
+    font-size: {{ section.settings.heading_font_size_desktop }}px;
+    font-weight: {{ section.settings.heading_font_weight }};
+    color: {{ section.settings.heading_color }};
+    text-transform: {{ section.settings.heading_text_transform }};
+    margin-bottom: {{ section.settings.heading_bottom_margin }}px;
+    line-height: 1.2;
+  }
+
+  @media screen and (max-width: 749px) {
+    .customer-reviews__title {
+      font-size: {{ section.settings.heading_font_size_mobile }}px;
+    }
+  }
+
+  .customer-reviews__description {
+    font-size: {{ section.settings.description_font_size }}px;
+    font-weight: {{ section.settings.description_font_weight }};
+    color: {{ section.settings.description_color }};
+    font-style: {{ section.settings.description_font_style }};
+    line-height: {{ section.settings.description_line_height }};
+    margin-bottom: {{ section.settings.description_bottom_margin }}px;
+  }
+
+  .customer-reviews__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .customer-reviews__stars {
+    color: #ffd700;
+    font-size: 1.2rem;
+  }
+
+  .customer-reviews__rating-text {
+    font-size: 0.9rem;
+    color: {{ section.settings.description_color }};
+    font-weight: 600;
+  }
+
+  /* 按钮容器对齐样式 */
+  .button-container {
+    text-align: {{ section.settings.button_alignment | default: 'left' }};
+    margin-top: 1.5rem;
+  }
+
+  /* 与 win-win-situation 相同的按钮样式 */
+  .customer-reviews-button {
+    background: {{ section.settings.button_background_color | default: 'linear-gradient(135deg, #e91e63, #f06292)' }};
+    color: {{ section.settings.button_text_color | default: 'white' }};
+    padding: {{ section.settings.button_padding_vertical_desktop }}px {{ section.settings.button_padding_horizontal_desktop }}px;
+    border: {{ section.settings.button_border_width }}px solid {{ section.settings.button_border_color }};
+    border-radius: {{ section.settings.button_border_radius }}px;
+    font-size: {{ section.settings.button_font_size_desktop }}px;
+    font-weight: {{ section.settings.button_font_weight }};
+    text-transform: {{ section.settings.button_text_transform }};
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  @media screen and (max-width: 749px) {
+    .customer-reviews-button {
+      font-size: {{ section.settings.button_font_size_mobile }}px;
+      padding: {{ section.settings.button_padding_vertical_mobile }}px {{ section.settings.button_padding_horizontal_mobile }}px;
+    }
+  }
+
+  .customer-reviews-button:hover {
+    background: {{ section.settings.button_hover_background_color }};
+    color: {{ section.settings.button_hover_text_color }};
+    transform: translateY(-2px);
+  }
+
+  .customer-reviews__showcase {
+    background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+  }
+
+  .customer-reviews__showcase-stars {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: #ffd700;
+    font-size: 1.5rem;
+  }
+
+  .customer-reviews__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    transform: rotate(-5deg);
+  }
+
+  .customer-reviews__card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    transform: rotate(5deg);
+    transition: transform 0.3s ease;
+  }
+
+  .customer-reviews__card:hover {
+    transform: rotate(0deg) scale(1.05);
+  }
+
+  .customer-reviews__card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .customer-reviews__card-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #ddd;
+  }
+
+  .customer-reviews__card-name {
+    font-weight: bold;
+    font-size: 0.7rem;
+  }
+
+  .customer-reviews__card-rating {
+    color: #ffd700;
+    font-size: 0.7rem;
+  }
+
+  .customer-reviews__card-text {
+    font-size: 0.7rem;
+    color: #333;
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="customer-reviews isolate{% unless section.settings.full_width %} page-width{% endunless %} section-{{ section.id }}-padding">
+    <div class="customer-reviews__content">
+      {%- unless section.settings.heading == blank -%}
+        <h2 class="customer-reviews__title">{{ section.settings.heading }}</h2>
+      {%- endunless -%}
+      
+      {%- unless section.settings.description == blank -%}
+        <div class="customer-reviews__description">{{ section.settings.description }}</div>
+      {%- endunless -%}
+      
+      <div class="customer-reviews__rating">
+        <div class="customer-reviews__stars">⭐⭐⭐⭐⭐</div>
+        <div class="customer-reviews__rating-text">{{ section.settings.rating_text }}</div>
+      </div>
+      
+      {%- unless section.settings.button_label == blank -%}
+        <div class="button-container">
+          <a href="{{ section.settings.button_link }}" class="customer-reviews-button">
+            {{ section.settings.button_label }}
+          </a>
+        </div>
+      {%- endunless -%}
+    </div>
+    
+    <div class="customer-reviews__showcase">
+      <div class="customer-reviews__showcase-stars">⭐⭐⭐⭐⭐</div>
+      <div class="customer-reviews__cards">
+        {% for block in section.blocks %}
+          <div class="customer-reviews__card">
+            <div class="customer-reviews__card-header">
+              <div class="customer-reviews__card-avatar"></div>
+              <div class="customer-reviews__card-name">{{ block.settings.customer_name }}</div>
+              <div class="customer-reviews__card-rating">{{ block.settings.rating }}</div>
+            </div>
+            <div class="customer-reviews__card-text">{{ block.settings.review_text }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Customer Reviews",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "OUR HAPPY CUSTOMERS! 🥰",
+      "label": "Heading"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_desktop",
+      "min": 16,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading font size (desktop)",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "min": 14,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading font size (mobile)",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" }
+      ],
+      "default": "700",
+      "label": "Heading font weight"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none",
+      "label": "Heading text transform"
+    },
+    {
+      "type": "range",
+      "id": "heading_bottom_margin",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Heading bottom margin",
+      "default": 20
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "default": "Our customers love their greeting videos. Here are some of the great things they said about us.",
+      "label": "Description"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Description font size",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "description_font_weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400",
+      "label": "Description font weight"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#666666"
+    },
+    {
+      "type": "select",
+      "id": "description_font_style",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "italic", "label": "Italic" }
+      ],
+      "default": "normal",
+      "label": "Description font style"
+    },
+    {
+      "type": "range",
+      "id": "description_line_height",
+      "min": 1.0,
+      "max": 2.5,
+      "step": 0.1,
+      "label": "Description line height",
+      "default": 1.5
+    },
+    {
+      "type": "range",
+      "id": "description_bottom_margin",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Description bottom margin",
+      "default": 24
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "default": "Rated 4.9/5 by 50,000+ Happy Customers",
+      "label": "Rating text"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "➤ ORDER NOW",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left",
+      "label": "Button alignment"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background color",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background_color",
+      "label": "Button hover background color",
+      "default": "#ad1457"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button hover text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_desktop",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Button font size (desktop)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_mobile",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Button font size (mobile)",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600",
+      "label": "Button font weight"
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase",
+      "label": "Button text transform"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical_desktop",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Button vertical padding (desktop)",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal_desktop",
+      "min": 8,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Button horizontal padding (desktop)",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical_mobile",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Button vertical padding (mobile)",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal_mobile",
+      "min": 8,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Button horizontal padding (mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "label": "Button border width",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button border color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient_background",
+      "label": "Enable gradient background",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_start",
+      "label": "Gradient start color",
+      "default": "#f5f5dc"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_end",
+      "label": "Gradient end color",
+      "default": "#deb887"
+    },
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Section background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Make section full width",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Customer Review",
+      "settings": [
+        {
+          "type": "text",
+          "id": "customer_name",
+          "label": "Customer name",
+          "default": "John D."
+        },
+        {
+          "type": "select",
+          "id": "rating",
+          "options": [
+            { "value": "⭐⭐⭐⭐⭐", "label": "5 stars" },
+            { "value": "⭐⭐⭐⭐", "label": "4 stars" },
+            { "value": "⭐⭐⭐", "label": "3 stars" },
+            { "value": "⭐⭐", "label": "2 stars" },
+            { "value": "⭐", "label": "1 star" }
+          ],
+          "default": "⭐⭐⭐⭐⭐",
+          "label": "Rating"
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "Review text",
+          "default": "Amazing service! The video was perfect and made my friend so happy. Highly recommended!"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer Reviews",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Sarah M.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Absolutely loved the personalized video! It brought tears of joy to my mom's eyes."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Mike R.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Fast delivery and amazing quality. Will definitely order again!"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Lisa K.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Such a unique gift idea! The team was so professional and friendly."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "David L.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Perfect for my anniversary surprise. My wife was so touched!"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Emma T.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Great customer service and the video exceeded my expectations!"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Chris P.",
+            "rating": "⭐⭐⭐⭐⭐",
+            "review_text": "Highly recommend! Made my friend's birthday extra special."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
