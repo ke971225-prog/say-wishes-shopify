@@ -17,6 +17,9 @@ on:
         default: 'both'
   schedule:
     - cron: '0 3 * * *'  # 每天 03:00 UTC 运行
+  push:
+    branches:
+      - main
 
 jobs:
   run-psi:
