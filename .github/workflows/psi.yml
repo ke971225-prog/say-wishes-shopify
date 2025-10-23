@@ -24,6 +24,8 @@ on:
 jobs:
   run-psi:
     runs-on: ubuntu-latest
+    env:
+      PSI_API_KEY: ${{ secrets.PSI_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,15 +57,21 @@ jobs:
             fi
           fi
 
-      - name: Run PSI (with API key)
-        if: ${{ secrets.PSI_API_KEY != '' }}
+      - name: Run PSI
+        shell: bash
         run: |
-          node fetch-psi-report.js ${{ steps.urls.outputs.urls }} --strategy "${{ github.event.inputs.strategy || 'both' }}" --locale "${{ github.event.inputs.locale || 'zh_CN' }}" --key "${{ secrets.PSI_API_KEY }}"
+          STRATEGY="${{ github.event.inputs.strategy }}"
+          LOCALE="${{ github.event.inputs.locale }}"
+          if [ -z "$STRATEGY" ]; then STRATEGY="both"; fi
+          if [ -z "$LOCALE" ]; then LOCALE="zh_CN"; fi
 
-      - name: Run PSI (no API key)
-        if: ${{ secrets.PSI_API_KEY == '' }}
-        run: |
-          node fetch-psi-report.js ${{ steps.urls.outputs.urls }} --strategy "${{ github.event.inputs.strategy || 'both' }}" --locale "${{ github.event.inputs.locale || 'zh_CN' }}"
+          if [ -n "$PSI_API_KEY" ]; then
+            echo "Using PSI API key"
+            node fetch-psi-report.js ${{ steps.urls.outputs.urls }} --strategy "$STRATEGY" --locale "$LOCALE" --key "$PSI_API_KEY"
+          else
+            echo "No PSI API key; running without key"
+            node fetch-psi-report.js ${{ steps.urls.outputs.urls }} --strategy "$STRATEGY" --locale "$LOCALE"
+          fi
 
       - name: Upload deliverables
         uses: actions/upload-artifact@v4
