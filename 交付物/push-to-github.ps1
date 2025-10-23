@@ -64,8 +64,10 @@ try {
     $pushUrl = "https://$UserName:$Token@github.com/$repoPath"
     Write-Host "使用 token 进行推送：$pushUrl"
     & $git push -u $pushUrl $Branch
+    if ($LASTEXITCODE -ne 0) { throw "推送失败 (PAT)" }
   } else {
     & $git push -u origin $Branch
+    if ($LASTEXITCODE -ne 0) { throw "推送失败 (origin)" }
   }
   Write-Host "推送成功：分支 $Branch"
 }
