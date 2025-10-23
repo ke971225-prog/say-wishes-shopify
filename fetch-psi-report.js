@@ -28,6 +28,7 @@ const TIMEOUT_MS = parseInt(getFlag('timeout', '30000'), 10);
 const RETRIES = parseInt(getFlag('retries', '2'), 10);
 const MAX_OPPS = parseInt(getFlag('max-opps', '10'), 10);
 const API_KEY = getFlag('key', '');
+const FAIL_ON_ERROR = getFlag('fail-on-error', 'false') === 'true';
 
 function printUsage() {
   console.log(`\n用法: node fetch-psi-report.js <URL...?> [--locale zh_CN] [--output 交付物\\性能报告.md] [--json 交付物\\psi-results.json] [--suggest 交付物\\优化建议.md] [--strategy both|mobile|desktop] [--timeout 30000] [--retries 2] [--max-opps 10] [--key <Google API Key>]\n`);
@@ -130,14 +131,25 @@ async function main() {
   const strategies = STRATEGY === 'both' ? ['MOBILE', 'DESKTOP'] : [STRATEGY.toUpperCase()];
 
   const allResults = {};
+  let hadError = false;
+  let hadSuccess = false;
+
   for (const url of targets) {
     allResults[url] = {};
     for (const s of strategies) {
-      allResults[url][s.toLowerCase()] = await runForUrl(url, s);
+      try {
+        const data = await runForUrl(url, s);
+        allResults[url][s.toLowerCase()] = data;
+        hadSuccess = true;
+      } catch (err) {
+        allResults[url][s.toLowerCase()] = { error: String(err?.message || err) };
+        console.error(`抓取失败(${url}, ${s}):`, err?.message || err);
+        hadError = true;
+      }
     }
   }
 
-  // 写入 JSON
+  // 写入 JSON（包含成功与失败的详细信息）
   fs.writeFileSync(JSON_OUT, JSON.stringify(allResults, null, 2));
 
   // 组装 Markdown
@@ -149,16 +161,24 @@ async function main() {
     sections.push(`\n### 页面: ${url}`);
     const r = allResults[url];
     if (r.mobile) {
-      const score = getScore(r.mobile);
-      const metrics = pickMetrics(r.mobile);
-      const opps = pickOpportunities(r.mobile, MAX_OPPS);
-      sections.push(formatMd('移动端', score, metrics, opps));
+      if (!r.mobile.error) {
+        const score = getScore(r.mobile);
+        const metrics = pickMetrics(r.mobile);
+        const opps = pickOpportunities(r.mobile, MAX_OPPS);
+        sections.push(formatMd('移动端', score, metrics, opps));
+      } else {
+        sections.push(`- 移动端抓取失败: ${r.mobile.error}`);
+      }
     }
     if (r.desktop) {
-      const score = getScore(r.desktop);
-      const metrics = pickMetrics(r.desktop);
-      const opps = pickOpportunities(r.desktop, MAX_OPPS);
-      sections.push(formatMd('桌面端', score, metrics, opps));
+      if (!r.desktop.error) {
+        const score = getScore(r.desktop);
+        const metrics = pickMetrics(r.desktop);
+        const opps = pickOpportunities(r.desktop, MAX_OPPS);
+        sections.push(formatMd('桌面端', score, metrics, opps));
+      } else {
+        sections.push(`- 桌面端抓取失败: ${r.desktop.error}`);
+      }
     }
   }
 
@@ -176,13 +196,30 @@ async function main() {
     `\n\n> 若需要原始 JSON，请查看 ${JSON_OUT}。`,
     `> 若需中文界面文案，请保持 locale=${LOCALE}；可改为 zh_TW/en。`,
     `> 可传多个 URL，同步抓取集合页/产品页/首页等。`,
-    API_KEY ? `> 已使用提供的 API Key（提高配额稳定性）。` : `> 未提供 API Key（使用匿名配额）。`
+    API_KEY ? `> 已使用提供的 API Key（提高配额稳定性）。` : `> 未提供 API Key（使用匿名配额）。`,
+    hadError ? `> 有部分抓取失败，请稍后重试或在 Secrets 配置 PSI_API_KEY。` : ''
   ].filter(Boolean).join('\n');
   fs.appendFileSync(SUGGEST_OUT, md + advice, { flag: 'a' });
+
+  if (hadError && !hadSuccess && FAIL_ON_ERROR) {
+    process.exit(1);
+  } else {
+    process.exit(0);
+  }
 }
 
 main().catch(e => {
   console.error('抓取失败:', e.message);
   printUsage();
-  process.exit(1);
+  if (FAIL_ON_ERROR) {
+    process.exit(1);
+  } else {
+    try {
+      if (!fs.existsSync(JSON_OUT)) fs.writeFileSync(JSON_OUT, JSON.stringify({ error: e.message }, null, 2));
+      const msg = `\n\n## PSI 抓取失败\n原因: ${e.message}\n请稍后重试或在 secrets 配置 PSI_API_KEY。`;
+      fs.appendFileSync(MD_OUT, msg);
+      fs.appendFileSync(SUGGEST_OUT, msg);
+    } catch {}
+    process.exit(0);
+  }
 });
