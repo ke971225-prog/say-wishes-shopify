@@ -15,6 +15,10 @@ on:
         description: 'PSI strategy (mobile, desktop, both)'
         required: false
         default: 'both'
+      fail_on_error:
+        description: 'Fail job if all requests fail (true/false)'
+        required: false
+        default: 'false'
   schedule:
     - cron: '0 3 * * *'  # 每天 03:00 UTC 运行
   push:
@@ -57,20 +61,34 @@ jobs:
             fi
           fi
 
+      - name: Network diagnostics to PSI API and site
+        shell: bash
+        run: |
+          set -e
+          for U in \
+            "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://wishesvideo.com/&strategy=mobile" \
+            "https://wishesvideo.com/"; do
+            echo ">>> $U"
+            curl -sS -o /dev/null -w "lookup:%{time_namelookup}\nconnect:%{time_connect}\nappconnect:%{time_appconnect}\nstarttransfer:%{time_starttransfer}\ntotal:%{time_total}\n" "$U" || true
+          done
+
       - name: Run PSI
         shell: bash
         run: |
           STRATEGY="${{ github.event.inputs.strategy }}"
           LOCALE="${{ github.event.inputs.locale }}"
+          FAIL="${{ github.event.inputs.fail_on_error }}"
           if [ -z "$STRATEGY" ]; then STRATEGY="both"; fi
           if [ -z "$LOCALE" ]; then LOCALE="zh_CN"; fi
+          if [ -z "$FAIL" ]; then FAIL="false"; fi
+          EXTRA="--fail-on-error $FAIL"
 
           if [ -n "$PSI_API_KEY" ]; then
             echo "Using PSI API key"
-            node fetch-psi-report.js ${{ steps.urls.outputs.urls }} --strategy "$STRATEGY" --locale "$LOCALE" --key "$PSI_API_KEY"
+            node fetch-psi-report.js ${{ steps.urls.outputs.urls }} --strategy "$STRATEGY" --locale "$LOCALE" --key "$PSI_API_KEY" $EXTRA
           else
             echo "No PSI API key; running without key"
-            node fetch-psi-report.js ${{ steps.urls.outputs.urls }} --strategy "$STRATEGY" --locale "$LOCALE"
+            node fetch-psi-report.js ${{ steps.urls.outputs.urls }} --strategy "$STRATEGY" --locale "$LOCALE" $EXTRA
           fi
 
       - name: Upload deliverables
