@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 // 参数解析：所有非 -- 开头的参数作为 URL 列表
 const argv = process.argv.slice(2).filter(Boolean);
@@ -19,9 +20,9 @@ function getFlag(name, fallback) {
 
 const LOCALE = getFlag('locale', 'zh_CN');
 // 默认输出到交付物目录，便于归档
-const MD_OUT = getFlag('output', '交付物\\性能报告.md');
-const JSON_OUT = getFlag('json', '交付物\\psi-results.json');
-const SUGGEST_OUT = getFlag('suggest', '交付物\\优化建议.md');
+const MD_OUT = getFlag('output', path.join('交付物', '性能报告.md'));
+const JSON_OUT = getFlag('json', path.join('交付物', 'psi-results.json'));
+const SUGGEST_OUT = getFlag('suggest', path.join('交付物', '优化建议.md'));
 const STRATEGY = getFlag('strategy', 'both').toLowerCase(); // mobile | desktop | both
 const TIMEOUT_MS = parseInt(getFlag('timeout', '30000'), 10);
 const RETRIES = parseInt(getFlag('retries', '2'), 10);
